@@ -1,91 +1,129 @@
-:root {
-    --red: #ff1a1a;
-    --dark: #050508;
-    --card: #14141f;
-    --yellow: #ffcc00;
-    --green: #4ecca3;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBt9o",
+    authDomain: "mindingclicker.firebaseapp.com",
+    projectId: "mindingclicker",
+    storageBucket: "mindingclicker.firebasestorage.app",
+    messagingSenderId: "484824275063",
+    appId: "1:484824275063:web:b98565344eea2760a34e72"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const ADMIN_EMAIL = "raimaslanov222@gmail.com";
+let p = { score: 0, power: 1, mult: 1, auto: 0, c1: 10, c2: 100, c3: 500, name: "Pilot", id: 0, banUntil: 0 };
+
+// 1. ПРОВЕРКА ВХОДА
+onAuthStateChanged(auth, async (u) => {
+    if (u) {
+        if (u.email === ADMIN_EMAIL) document.getElementById('open-admin').style.display = 'block';
+        
+        const snap = await getDoc(doc(db, "leaders", u.uid));
+        if (snap.exists()) {
+            p = { ...p, ...snap.data() };
+            if (p.banUntil > Date.now()) {
+                alert("ВЫ ЗАБАНЕНЫ!");
+                window.location.href = "about:blank";
+                return;
+            }
+        } else {
+            p.id = Math.floor(1000 + Math.random() * 8999);
+            p.name = u.email.split('@')[0];
+            await setDoc(doc(db, "leaders", u.uid), p);
+        }
+        
+        // Импорт админки если ты админ
+        if (u.email === ADMIN_EMAIL) {
+            const { initAdmin } = await import('./admin.js');
+            initAdmin(db);
+        }
+        
+        initGameEvents();
+        updateUI();
+        setInterval(autoFarm, 1000); // Авто-бот
+        setInterval(save, 10000);    // Авто-сейв
+    }
+});
+
+// 2. СОБЫТИЯ (КЛИКЕР И МАГАЗИН)
+function initGameEvents() {
+    // Главный клик
+    document.getElementById('main-clicker').onclick = (e) => {
+        const gain = p.power * p.mult;
+        p.score += gain;
+        showText(e.clientX, e.clientY, `+${Math.floor(gain)}`);
+        updateUI();
+    };
+
+    // Покупки
+    document.getElementById('buy-power').onclick = () => {
+        if(p.score >= p.c1) { p.score -= p.c1; p.power += 1; p.c1 = Math.floor(p.c1 * 1.7); updateUI(); save(); }
+    };
+    document.getElementById('buy-mult').onclick = () => {
+        if(p.score >= p.c2) { p.score -= p.c2; p.mult += 0.2; p.c2 = Math.floor(p.c2 * 2.5); updateUI(); save(); }
+    };
+    document.getElementById('buy-auto').onclick = () => {
+        if(p.score >= p.c3) { p.score -= p.c3; p.auto += 1; p.c3 = Math.floor(p.c3 * 2.1); updateUI(); save(); }
+    };
+
+    // Модалки
+    document.getElementById('open-settings').onclick = () => document.getElementById('modal-settings').style.display = 'flex';
+    document.getElementById('open-leaders').onclick = () => {
+        document.getElementById('modal-leaders').style.display = 'flex';
+        renderLeaders();
+    };
+    document.querySelectorAll('.close-modal').forEach(b => b.onclick = () => {
+        document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+    });
+
+    // Никнейм
+    document.getElementById('save-name').onclick = () => {
+        const n = document.getElementById('new-name').value;
+        if(n.length > 2) { p.name = n; updateUI(); save(); alert("Имя сохранено!"); }
+    };
 }
 
-body, html {
-    margin: 0; padding: 0; background: var(--dark); color: #fff;
-    font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden;
-    user-select: none; -webkit-tap-highlight-color: transparent;
+// 3. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+function updateUI() {
+    document.getElementById('balance').innerText = Math.floor(p.score).toLocaleString();
+    document.getElementById('user-tag').innerText = `${p.name.toUpperCase()} | ID: #${p.id}`;
+    document.getElementById('click-val').innerText = `+${(p.power * p.mult).toFixed(1)}`;
+    document.getElementById('mult-val').innerText = `x${p.mult.toFixed(1)}`;
+    document.getElementById('auto-val').innerText = p.auto;
+    document.getElementById('cost-p').innerText = p.c1.toLocaleString();
+    document.getElementById('cost-m').innerText = p.c2.toLocaleString();
+    document.getElementById('cost-a').innerText = p.c3.toLocaleString();
 }
 
-/* Шапка из скриншота */
-.top-header {
-    background: linear-gradient(180deg, var(--red) 0%, #800 100%);
-    height: 110px; display: flex; justify-content: space-between;
-    align-items: center; padding: 0 20px; border-bottom-left-radius: 35px;
-    border-bottom-right-radius: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+function showText(x, y, txt) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    el.innerText = txt;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 700);
 }
 
-.header-center { text-align: center; }
-.logo { font-size: 1.8rem; font-weight: 900; margin: 0; letter-spacing: 1px; }
-#user-tag { font-size: 0.65rem; opacity: 0.9; margin-top: 5px; font-weight: bold; }
+function autoFarm() { if(p.auto > 0) { p.score += p.auto; updateUI(); } }
 
-/* Зона баланса и клика */
-.main-area {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; height: 55vh; position: relative;
+async function renderLeaders() {
+    const q = query(collection(db, "leaders"), orderBy("score", "desc"), limit(10));
+    const snap = await getDocs(q);
+    const cont = document.getElementById('leader-list');
+    cont.innerHTML = "";
+    snap.forEach((d, i) => {
+        const data = d.data();
+        cont.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #222;">
+            <span>${i+1}. ${data.name}</span> <b>${Math.floor(data.score).toLocaleString()}</b>
+        </div>`;
+    });
 }
 
-#balance { font-size: 3.5rem; margin-bottom: 25px; font-weight: 900; }
-
-#main-clicker {
-    width: 190px; height: 190px; border-radius: 50%;
-    border: 6px solid #fff; display: flex; align-items: center; justify-content: center;
-    background: rgba(255, 255, 255, 0.05); cursor: pointer;
-    transition: transform 0.05s ease; position: relative;
-}
-
-#main-clicker:active { transform: scale(0.88); }
-
-/* Всплывающие цифры */
-.particle {
-    position: fixed; color: #fff; font-weight: 900; pointer-events: none;
-    font-size: 1.8rem; text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    animation: floatUp 0.7s ease-out forwards; z-index: 9999;
-}
-
-@keyframes floatUp {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
-}
-
-/* Магазин */
-.shop-area { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-.shop-card {
-    background: var(--card); border: 1px solid rgba(255,255,255,0.05);
-    padding: 15px 20px; border-radius: 18px; color: #fff;
-    display: flex; justify-content: space-between; align-items: center;
-    cursor: pointer; transition: 0.2s;
-}
-
-.shop-card:active { background: #1c1c2e; }
-.shop-card b { font-size: 0.9rem; display: block; }
-.shop-card span { color: var(--yellow); font-size: 1rem; font-weight: 900; }
-
-/* Модалки */
-.modal {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-    display: none; align-items: center; justify-content: center; z-index: 1000;
-}
-
-.modal-content {
-    background: var(--card); width: 88%; max-width: 380px;
-    padding: 25px; border-radius: 25px; text-align: center;
-    border: 1px solid var(--red);
-}
-
-.action-btn {
-    width: 100%; padding: 15px; border-radius: 12px; border: none;
-    font-weight: 900; margin-top: 10px; cursor: pointer; text-transform: uppercase;
-}
-
-.save { background: var(--green); color: #000; }
-.admin { background: var(--yellow); color: #000; }
-.ban { background: var(--red); color: #fff; }
-.close-modal { background: #333; color: #fff; }
-
-.icon-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3)); }
+const save = () => auth.currentUser && updateDoc(doc(db, "leaders", auth.currentUser.uid), p);
+                
