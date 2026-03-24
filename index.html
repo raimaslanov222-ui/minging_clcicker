@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>InfinityB: Omega Script (500+ Lines)</title>
+    <title>InfinityB - Master Admin Edition</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- CSS: СТИЛИ И ВИЗУАЛЬНЫЕ ЭФФЕКТЫ --- */
+        /* --- CSS: КРУТОЙ ГУИ И АНИМАЦИИ --- */
         :root {
             --red: #ff1a1a;
-            --dark-red: #800000;
+            --dark-red: #8b0000;
             --bg: #050508;
-            --card: #0f0f16;
+            --card: #11111b;
             --yellow: #ffcc00;
             --green: #00ff88;
             --blue: #00d4ff;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.08);
-            --shadow: 0 10px 40px rgba(0,0,0,0.7);
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         * {
@@ -30,7 +29,7 @@
 
         body, html {
             margin: 0; padding: 0;
-            background-color: var(--bg);
+            background: var(--bg);
             color: #fff;
             font-family: 'Montserrat', sans-serif;
             height: 100vh;
@@ -39,54 +38,52 @@
             flex-direction: column;
         }
 
-        /* Анимированный фон */
-        .bg-glow {
+        /* Динамический фон */
+        .glow-bg {
             position: fixed; top: 50%; left: 50%;
-            width: 400px; height: 400px;
-            background: radial-gradient(circle, rgba(255, 26, 26, 0.15) 0%, transparent 70%);
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(255, 26, 26, 0.1) 0%, transparent 70%);
             transform: translate(-50%, -50%);
             z-index: -1; pointer-events: none;
         }
 
-        /* --- ШАПКА (HEADER) --- */
-        .top-header {
+        /* --- ШАПКА КАК НА СКРИНШОТАХ --- */
+        .header {
             background: linear-gradient(180deg, var(--red) 0%, var(--dark-red) 100%);
             height: 130px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 40px 20px 15px;
-            border-bottom-left-radius: 45px;
-            border-bottom-right-radius: 45px;
-            box-shadow: var(--shadow);
+            padding: 40px 20px 10px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
             z-index: 100;
-            position: relative;
         }
 
-        .header-center { text-align: center; flex: 1; }
-        .logo { 
+        .logo-area { text-align: center; flex: 1; }
+        .logo-text { 
             font-family: 'Orbitron', sans-serif; 
-            font-size: 1.9rem; 
+            font-size: 1.8rem; 
             font-weight: 900; 
             margin: 0; 
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-shadow: 0 0 15px rgba(255,255,255,0.4);
         }
         
-        #user-tag { 
+        #user-info { 
             font-size: 0.65rem; 
             opacity: 0.9; 
             margin-top: 5px; 
             font-weight: 700; 
             background: rgba(0,0,0,0.3);
-            padding: 3px 10px;
+            padding: 3px 12px;
             border-radius: 12px;
             display: inline-block;
-            color: #fff;
         }
 
-        /* --- ИГРОВАЯ ПАНЕЛЬ --- */
-        .main-game {
+        /* --- ИГРОВОЕ ПОЛЕ --- */
+        .game-main {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -95,273 +92,180 @@
             position: relative;
         }
 
-        .level-badge {
+        .lvl-tag {
             background: var(--glass);
             border: 1px solid var(--border);
-            padding: 6px 18px;
-            border-radius: 25px;
-            font-size: 0.75rem;
-            margin-bottom: 15px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
             color: var(--blue);
             font-weight: 900;
-            text-transform: uppercase;
         }
 
-        #balance {
+        #score-display {
             font-family: 'Orbitron', sans-serif;
-            font-size: 3.8rem;
-            margin: 0 0 25px;
+            font-size: 3.5rem;
+            margin: 0 0 20px;
             font-weight: 900;
-            color: #fff;
-            text-shadow: 0 0 25px rgba(255,26,26,0.4);
+            text-shadow: 0 0 25px rgba(255,26,26,0.3);
         }
 
-        /* Кнопка Клик */
-        .click-circle {
-            position: relative;
-            width: 230px;
-            height: 230px;
-        }
-
-        #clicker-btn {
-            width: 100%; height: 100%;
+        .clicker-circle {
+            width: 220px; height: 220px;
             border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #2a2a35, #000);
-            border: 10px solid #fff;
+            background: radial-gradient(circle at 30% 30%, #333, #000);
+            border: 8px solid #fff;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.05s ease;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 30px rgba(255,255,255,0.1);
-            z-index: 10;
+            transition: 0.05s;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
-        #clicker-btn:active { transform: scale(0.9); }
-        #clicker-btn img { width: 100px; filter: drop-shadow(0 0 15px #fff); }
+        .clicker-circle:active { transform: scale(0.92); }
+        .clicker-circle img { width: 90px; filter: drop-shadow(0 0 10px white); }
 
         /* Статистика */
-        .stats-grid {
-            display: flex;
-            gap: 25px;
-            margin-top: 35px;
-            background: var(--glass);
-            padding: 12px 30px;
-            border-radius: 25px;
-            border: 1px solid var(--border);
+        .stats-bar {
+            display: flex; gap: 20px; margin-top: 30px;
+            background: var(--glass); padding: 12px 25px;
+            border-radius: 20px; border: 1px solid var(--border);
         }
+        .stat-unit { text-align: center; }
+        .stat-unit small { display: block; font-size: 0.55rem; color: #888; font-weight: 900; }
+        .stat-unit span { font-size: 1rem; font-weight: 900; color: var(--green); }
 
-        .stat-item { text-align: center; }
-        .stat-item label { display: block; font-size: 0.6rem; color: #777; font-weight: 900; margin-bottom: 2px; }
-        .stat-item b { font-size: 1rem; color: var(--green); font-weight: 900; }
-
-        /* --- МАГАЗИН (SHOP) --- */
-        .shop-container {
-            padding: 0 20px 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        /* --- МАГАЗИН --- */
+        .shop-list { padding: 0 20px 20px; display: flex; flex-direction: column; gap: 10px; }
+        .card {
+            background: var(--card); border: 1px solid var(--border);
+            padding: 15px 20px; border-radius: 20px;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        .shop-item {
-            background: var(--card);
-            border: 1px solid var(--border);
-            padding: 18px 22px;
-            border-radius: 22px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background 0.2s;
-        }
-
-        .shop-item:active { background: #1a1a25; }
-        
-        .item-info b { display: block; font-size: 0.95rem; color: #fff; }
-        .item-info span { color: #555; font-size: 0.7rem; font-weight: 600; }
-
-        .item-price {
-            background: rgba(255, 204, 0, 0.12);
-            color: var(--yellow);
-            padding: 10px 18px;
-            border-radius: 14px;
-            font-weight: 900;
-            font-size: 0.9rem;
+        .card b { display: block; font-size: 0.9rem; }
+        .card span { color: #666; font-size: 0.7rem; }
+        .price {
+            background: rgba(255, 204, 0, 0.1); color: var(--yellow);
+            padding: 8px 15px; border-radius: 12px; font-weight: 900;
             border: 1px solid rgba(255, 204, 0, 0.3);
         }
 
-        /* --- МОДАЛЬНЫЕ ОКНА --- */
+        /* --- МОДАЛКИ --- */
         .modal {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.96);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            backdrop-filter: blur(12px);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
         }
-
         .modal-box {
-            background: var(--card);
-            width: 90%;
-            max-width: 420px;
-            border-radius: 35px;
-            padding: 35px;
-            border: 1px solid var(--red);
-            text-align: center;
+            background: var(--card); width: 88%; max-width: 400px;
+            border-radius: 30px; padding: 30px; border: 1px solid var(--red);
         }
-
-        .modal-box h2 { 
-            font-family: 'Orbitron'; 
-            font-size: 1.5rem; 
-            margin-bottom: 25px; 
-            color: var(--red);
-            letter-spacing: 2px;
-        }
-
+        .modal-box h2 { font-family: 'Orbitron'; color: var(--red); margin-bottom: 20px; }
+        
         input {
-            width: 100%;
-            padding: 16px;
-            background: #000;
-            border: 1px dotted #444;
-            border-radius: 18px;
-            color: #fff;
-            margin-bottom: 18px;
-            font-size: 1rem;
-            text-align: center;
+            width: 100%; padding: 15px; background: #000; border: 1px solid #333;
+            border-radius: 15px; color: #fff; margin-bottom: 12px;
         }
 
         .btn {
-            width: 100%;
-            padding: 18px;
-            border-radius: 18px;
-            border: none;
-            font-weight: 900;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            margin-bottom: 12px;
+            width: 100%; padding: 16px; border-radius: 15px; border: none;
+            font-weight: 900; text-transform: uppercase; cursor: pointer; margin-bottom: 8px;
         }
-
         .btn-green { background: var(--green); color: #000; }
         .btn-yellow { background: var(--yellow); color: #000; }
         .btn-red { background: var(--red); color: #fff; }
-        .btn-dark { background: #222; color: #999; }
+        .btn-gray { background: #333; color: #fff; }
 
-        /* Всплывающие цифры */
-        .float-text {
-            position: fixed;
-            pointer-events: none;
-            font-weight: 900;
-            font-family: 'Orbitron';
-            z-index: 9999;
-            animation: floatAnim 0.8s ease-out forwards;
+        /* Всплывающий текст */
+        .pop {
+            position: fixed; pointer-events: none; font-weight: 900;
+            font-family: 'Orbitron'; z-index: 2000; animation: popUp 0.8s forwards;
         }
-
-        @keyframes floatAnim {
+        @keyframes popUp {
             0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-160px) scale(1.6); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.5); }
         }
 
-        .icon-btn { background: none; border: none; font-size: 1.7rem; cursor: pointer; }
+        .icon-btn { background: none; border: none; font-size: 1.6rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
+    <div class="glow-bg"></div>
 
-    <header class="top-header">
-        <button class="icon-btn" onclick="Core.openModal('modal-top'); Core.loadTop();">🏆</button>
-        <div class="header-center">
-            <h1 class="logo">INFINITY B</h1>
-            <div id="user-tag">CONNECTING...</div>
+    <header class="header">
+        <button class="icon-btn" onclick="Core.open('modal-top'); Core.loadTop();">🏆</button>
+        <div class="logo-area">
+            <h1 class="logo-text">INFINITY</h1>
+            <div id="user-info">СИНХРОНИЗАЦИЯ...</div>
         </div>
-        <button class="icon-btn" onclick="Core.openModal('modal-cfg')">⚙️</button>
+        <button class="icon-btn" onclick="Core.open('modal-cfg')">⚙️</button>
     </header>
 
-    <main class="main-game">
-        <div class="level-badge" id="lvl-ui">LEVEL 1</div>
-        <h1 id="balance">0</h1>
+    <main class="game-main">
+        <div class="lvl-tag" id="lvl-ui">LEVEL 1</div>
+        <h1 id="score-display">0</h1>
         
-        <div class="click-circle">
-            <div id="clicker-btn">
-                <img src="https://img.icons8.com/ios-filled/150/ffffff/touchscreen.png">
-            </div>
+        <div class="clicker-circle" id="tap-btn">
+            <img src="https://img.icons8.com/ios-filled/150/ffffff/mouse-cursor.png">
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-item">
-                <label>POWER</label>
-                <b id="stat-p">1.0</b>
-            </div>
-            <div class="stat-item">
-                <label>MULTIPLIER</label>
-                <b id="stat-m">x1.0</b>
-            </div>
-            <div class="stat-item">
-                <label>AUTO-BOT</label>
-                <b id="stat-a">0</b>
-            </div>
+        <div class="stats-bar">
+            <div class="stat-unit"><small>СИЛА</small><span id="stat-p">1</span></div>
+            <div class="stat-unit"><small>МНОЖИТЕЛЬ</small><span id="stat-m">x1</span></div>
+            <div class="stat-unit"><small>АВТО</small><span id="stat-a">0</span></div>
         </div>
     </main>
 
-    <section class="shop-container">
-        <div class="shop-item" onclick="GameLogic.buy('p')">
-            <div class="item-info">
-                <b>Neural Strength</b>
-                <span>Сила клика +1</span>
-            </div>
-            <div class="item-price" id="c1">10</div>
+    <footer class="shop-list">
+        <div class="card" onclick="Game.buy('p')">
+            <div><b>Neural Click</b><span>+1 к силе клика</span></div>
+            <div class="price" id="c1">10</div>
         </div>
-
-        <div class="shop-item" onclick="GameLogic.buy('m')">
-            <div class="item-info">
-                <b>Binary Multiplier</b>
-                <span>Доход возрастает в x1.25</span>
-            </div>
-            <div class="item-price" id="c2">150</div>
+        <div class="card" onclick="Game.buy('m')">
+            <div><b>Core Multiplier</b><span>Доход x1.25</span></div>
+            <div class="price" id="c2">150</div>
         </div>
-
-        <div class="shop-item" onclick="GameLogic.buy('a')">
-            <div class="item-info">
-                <b>Auto-Miner v1.0</b>
-                <span>Добыча каждую секунду</span>
-            </div>
-            <div class="item-price" id="c3">500</div>
+        <div class="card" onclick="Game.buy('a')">
+            <div><b>Mining Bot</b><span>Добыча в сек.</span></div>
+            <div class="price" id="c3">500</div>
         </div>
-    </section>
+    </footer>
 
     <div class="modal" id="modal-top">
         <div class="modal-box">
-            <h2>🏆 RANKINGS</h2>
-            <div id="leaderboard" style="text-align: left; margin-bottom: 20px;"></div>
-            <button class="btn btn-dark" onclick="Core.closeModals()">CLOSE</button>
+            <h2>🏆 ТОП ПИЛОТОВ</h2>
+            <div id="top-list" style="margin-bottom: 20px; text-align: left;"></div>
+            <button class="btn btn-gray" onclick="Core.close()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <div class="modal" id="modal-cfg">
         <div class="modal-box">
-            <h2>SETTINGS</h2>
-            <input type="text" id="name-input" placeholder="Enter new callsign">
-            <button class="btn btn-green" onclick="GameLogic.updateName()">SAVE PROFILE</button>
-            <button id="admin-key" class="btn btn-yellow" style="display:none" onclick="Core.openModal('modal-admin')">👑 ADMIN CORE</button>
-            <button class="btn btn-red" style="margin-top: 15px;" onclick="GameLogic.exit()">DISCONNECT</button>
-            <button class="btn btn-dark" onclick="Core.closeModals()">BACK</button>
+            <h2>НАСТРОЙКИ</h2>
+            <input type="text" id="name-input" placeholder="Новый никнейм">
+            <button class="btn btn-green" onclick="Game.setName()">ОБНОВИТЬ</button>
+            <button id="admin-btn" class="btn btn-yellow" style="display:none" onclick="Core.open('modal-adm')">👑 АДМИН-ПАНЕЛЬ</button>
+            <button class="btn btn-red" onclick="Game.exit()">ВЫЙТИ</button>
+            <button class="btn btn-gray" onclick="Core.close()">НАЗАД</button>
         </div>
     </div>
 
-    <div class="modal" id="modal-admin">
+    <div class="modal" id="modal-adm">
         <div class="modal-box" style="border-color: var(--yellow);">
-            <h2 style="color: var(--yellow);">TERMINAL ACCESS</h2>
-            <input type="text" id="adm-id" placeholder="ID (#1234) or NAME">
-            <input type="number" id="adm-qty" placeholder="AMOUNT / MINS">
+            <h2 style="color: var(--yellow);">ADMIN PANEL</h2>
+            <p style="font-size: 0.7rem; color: #888;">Введите Имя (Pilot) или ID (#1234)</p>
+            <input type="text" id="adm-target" placeholder="Цель (Ник или ID)">
+            <input type="number" id="adm-val" placeholder="Количество / Время">
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button class="btn btn-green" onclick="AdminCmd.run('add')">GIVE</button>
-                <button class="btn btn-red" onclick="AdminCmd.run('fine')">FINE</button>
-                <button class="btn btn-red" onclick="AdminCmd.run('ban')" style="grid-column: span 2;">BAN USER</button>
-                <button class="btn btn-yellow" onclick="AdminCmd.run('wipe')" style="grid-column: span 2;">TOTAL RESET</button>
+                <button class="btn btn-green" onclick="Admin.run('give')">ВЫДАТЬ</button>
+                <button class="btn btn-red" onclick="Admin.run('fine')">ШТРАФ</button>
+                <button class="btn btn-red" onclick="Admin.run('ban')" style="grid-column: span 2;">БАН (МИНУТЫ)</button>
+                <button class="btn btn-yellow" onclick="Admin.run('reset')" style="grid-column: span 2;">СБРОСИТЬ АККАУНТ</button>
             </div>
-            <button class="btn btn-dark" style="margin-top: 15px;" onclick="Core.openModal('modal-cfg')">RETURN</button>
+            <button class="btn btn-gray" onclick="Core.open('modal-cfg')">НАЗАД</button>
         </div>
     </div>
 
@@ -383,165 +287,121 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const OWNER = "raimaslanov222@gmail.com";
-        let userState = {
-            score: 0, power: 1, mult: 1, auto: 0,
-            c1: 10, c2: 150, c3: 500,
-            name: "Pilot", id: 0, lvl: 1,
-            banUntil: 0
-        };
+        const ADMIN_EMAIL = "raimaslanov222@gmail.com";
+        let state = { score: 0, power: 1, mult: 1, auto: 0, c1: 10, c2: 150, c3: 500, name: "Pilot", id: 0, banUntil: 0 };
+        let ready = false;
 
-        let syncReady = false;
-
-        // CORE ENGINE
+        // --- CORE SYSTEM ---
         window.Core = {
-            init: function(user) {
-                if (user.email === OWNER) document.getElementById('admin-key').style.display = 'block';
-                this.sync(user.uid);
-                this.loops();
-            },
-
-            sync: async function(uid) {
-                const ref = doc(db, "leaders", uid);
-                const res = await getDoc(ref);
-
-                if (res.exists()) {
-                    userState = { ...userState, ...res.data() };
-                    if (userState.banUntil > Date.now()) {
-                        alert("BANNED UNTIL: " + new Date(userState.banUntil).toLocaleString());
-                        window.location.reload();
+            init: async (user) => {
+                if(user.email === ADMIN_EMAIL) document.getElementById('admin-btn').style.display = 'block';
+                const snap = await getDoc(doc(db, "leaders", user.uid));
+                if(snap.exists()) {
+                    state = { ...state, ...snap.data() };
+                    if(state.banUntil > Date.now()) {
+                        alert("ВЫ ЗАБАНЕНЫ ДО: " + new Date(state.banUntil).toLocaleString());
+                        location.reload(); return;
                     }
                 } else {
-                    userState.id = Math.floor(1000 + Math.random() * 8999);
-                    userState.name = auth.currentUser.email.split('@')[0];
-                    await setDoc(ref, userState);
+                    state.id = Math.floor(1000 + Math.random() * 8999);
+                    state.name = user.email.split('@')[0];
+                    await setDoc(doc(db, "leaders", user.uid), state);
                 }
-
-                syncReady = true;
-                this.updateUI();
+                ready = true;
+                Core.update();
+                setInterval(Core.save, 15000); // Авто-сейв
+                setInterval(() => { if(state.auto > 0) { state.score += state.auto/10; Core.update(); } }, 100);
             },
-
-            updateUI: function() {
-                if (!syncReady) return;
-                document.getElementById('balance').innerText = this.fmt(userState.score);
-                document.getElementById('user-tag').innerText = `${userState.name.toUpperCase()} | #${userState.id}`;
-                document.getElementById('stat-p').innerText = userState.power.toFixed(1);
-                document.getElementById('stat-m').innerText = `x${userState.mult.toFixed(1)}`;
-                document.getElementById('stat-a').innerText = userState.auto;
-                
-                document.getElementById('c1').innerText = this.fmt(userState.c1);
-                document.getElementById('c2').innerText = this.fmt(userState.c2);
-                document.getElementById('c3').innerText = this.fmt(userState.c3);
-                
-                userState.lvl = Math.floor(Math.sqrt(userState.score / 120)) + 1;
-                document.getElementById('lvl-ui').innerText = `LEVEL ${userState.lvl}`;
+            update: () => {
+                if(!ready) return;
+                document.getElementById('score-display').innerText = Core.fmt(state.score);
+                document.getElementById('user-info').innerText = `${state.name.toUpperCase()} | #${state.id}`;
+                document.getElementById('stat-p').innerText = state.power;
+                document.getElementById('stat-m').innerText = `x${state.mult.toFixed(1)}`;
+                document.getElementById('stat-a').innerText = state.auto;
+                document.getElementById('c1').innerText = Core.fmt(state.c1);
+                document.getElementById('c2').innerText = Core.fmt(state.c2);
+                document.getElementById('c3').innerText = Core.fmt(state.c3);
+                document.getElementById('lvl-ui').innerText = `LEVEL ${Math.floor(Math.sqrt(state.score/100))+1}`;
             },
-
-            fmt: function(v) {
-                if (v >= 1e9) return (v/1e9).toFixed(2) + "B";
-                if (v >= 1e6) return (v/1e6).toFixed(2) + "M";
-                if (v >= 1e3) return (v/1e3).toFixed(1) + "K";
-                return Math.floor(v).toLocaleString();
+            fmt: (n) => {
+                if(n >= 1e9) return (n/1e9).toFixed(2) + "B";
+                if(n >= 1e6) return (n/1e6).toFixed(2) + "M";
+                if(n >= 1e3) return (n/1e3).toFixed(1) + "K";
+                return Math.floor(n).toLocaleString();
             },
-
-            loops: function() {
-                setInterval(() => this.push(), 15000);
-                setInterval(() => {
-                    if (userState.auto > 0) {
-                        userState.score += (userState.auto / 10);
-                        this.updateUI();
-                    }
-                }, 100);
-            },
-
-            push: async function() {
-                if (auth.currentUser && syncReady) {
-                    await updateDoc(doc(db, "leaders", auth.currentUser.uid), userState);
-                }
-            },
-
-            loadTop: async function() {
+            save: () => auth.currentUser && updateDoc(doc(db, "leaders", auth.currentUser.uid), state),
+            open: (id) => { Core.close(); document.getElementById(id).style.display = 'flex'; },
+            close: () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'),
+            loadTop: async () => {
                 const q = query(collection(db, "leaders"), orderBy("score", "desc"), limit(10));
                 const snap = await getDocs(q);
-                const box = document.getElementById('leaderboard');
-                box.innerHTML = "";
-                
+                const list = document.getElementById('top-list');
+                list.innerHTML = "";
                 snap.forEach((d, i) => {
-                    const val = d.data();
-                    const isMe = val.id === userState.id;
-                    box.innerHTML += `
-                        <div style="display:flex; justify-content:space-between; padding:12px; background:${isMe ? 'rgba(255,204,0,0.1)' : 'rgba(255,255,255,0.03)'}; border-radius:12px; margin-bottom:6px; border:${isMe ? '1px solid var(--yellow)' : 'none'}">
-                            <span>#${i+1} ${val.name}</span>
-                            <b>${this.fmt(val.score)}</b>
-                        </div>`;
+                    const data = d.data();
+                    list.innerHTML += `<div style="padding:10px; margin-bottom:5px; background:rgba(255,255,255,0.03); border-radius:10px; display:flex; justify-content:space-between;">
+                        <span>#${i+1} ${data.name}</span><b>${Core.fmt(data.score)}</b>
+                    </div>`;
                 });
-            },
-
-            openModal: (id) => {
-                Core.closeModals();
-                document.getElementById(id).style.display = 'flex';
-            },
-
-            closeModals: () => {
-                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
             }
         };
 
-        // GAMEPLAY
-        window.GameLogic = {
-            click: function(e) {
-                if (!syncReady) return;
-                const val = userState.power * userState.mult;
-                userState.score += val;
-                
-                const t = document.createElement('div');
-                t.className = 'float-text';
-                t.innerText = `+${Core.fmt(val)}`;
-                t.style.left = `${e.clientX}px`;
-                t.style.top = `${e.clientY}px`;
-                t.style.color = `hsl(${Math.random() * 360}, 80%, 70%)`;
-                document.body.appendChild(t);
-                setTimeout(() => t.remove(), 800);
-                
-                Core.updateUI();
+        // --- GAME LOGIC ---
+        window.Game = {
+            tap: (e) => {
+                if(!ready) return;
+                const gain = state.power * state.mult;
+                state.score += gain;
+                const p = document.createElement('div');
+                p.className = 'pop'; p.innerText = `+${Core.fmt(gain)}`;
+                p.style.left = e.clientX + 'px'; p.style.top = e.clientY + 'px';
+                p.style.color = `hsl(${Math.random()*360}, 80%, 70%)`;
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 700);
+                Core.update();
             },
-
-            buy: function(t) {
-                if (t === 'p' && userState.score >= userState.c1) {
-                    userState.score -= userState.c1; userState.power++; userState.c1 *= 1.8;
-                } else if (t === 'm' && userState.score >= userState.c2) {
-                    userState.score -= userState.c2; userState.mult += 0.25; userState.c2 *= 2.5;
-                } else if (t === 'a' && userState.score >= userState.c3) {
-                    userState.score -= userState.c3; userState.auto++; userState.c3 *= 2.2;
-                }
-                Core.updateUI();
-                Core.push();
+            buy: (type) => {
+                if(type === 'p' && state.score >= state.c1) { state.score -= state.c1; state.power++; state.c1 *= 1.8; }
+                if(type === 'm' && state.score >= state.c2) { state.score -= state.c2; state.mult += 0.2; state.c2 *= 2.5; }
+                if(type === 'a' && state.score >= state.c3) { state.score -= state.c3; state.auto++; state.c3 *= 2.1; }
+                Core.update(); Core.save();
             },
-
-            updateName: async function() {
+            setName: async () => {
                 const n = document.getElementById('name-input').value;
-                if (n.length > 2 && n.length < 14) {
-                    userState.name = n;
-                    Core.updateUI();
-                    await Core.push();
-                    alert("PROFILE UPDATED");
-                }
+                if(n.length > 2) { state.name = n; Core.update(); await Core.save(); alert("НИК ИЗМЕНЕН"); }
             },
-
             exit: () => signOut(auth).then(() => location.reload())
         };
 
-        // ADMIN TERMINAL
-        window.AdminCmd = {
-            run: async function(type) {
-                const target = document.getElementById('adm-id').value;
-                const qty = parseFloat(document.getElementById('adm-qty').value) || 0;
+        // --- ADMIN SYSTEM (THE ONE YOU ASKED FOR) ---
+        window.Admin = {
+            run: async (cmd) => {
+                const target = document.getElementById('adm-target').value;
+                const val = parseFloat(document.getElementById('adm-val').value) || 0;
                 
+                // Умный поиск: по ID (если есть #) или по Имени
                 let q = target.startsWith('#') ? 
                     query(collection(db, "leaders"), where("id", "==", parseInt(target.replace('#','')))) :
                     query(collection(db, "leaders"), where("name", "==", target));
 
                 const snap = await getDocs(q);
-                if (snap.empty) return alert("TARGET NOT FOUND");
+                if(snap.empty) return alert("ПИЛОТ НЕ НАЙДЕН!");
 
-     
+                const userDoc = snap.docs[0];
+                const d = userDoc.data();
+
+                if(cmd === 'give') await updateDoc(userDoc.ref, { score: d.score + val });
+                if(cmd === 'fine') await updateDoc(userDoc.ref, { score: Math.max(0, d.score - val) });
+                if(cmd === 'ban') await updateDoc(userDoc.ref, { banUntil: Date.now() + (val * 60000) });
+                if(cmd === 'reset') await updateDoc(userDoc.ref, { score: 0, power: 1, mult: 1, auto: 0, c1: 10, c2: 150, c3: 500 });
+                
+                alert("КОМАНДА ВЫПОЛНЕНА!");
+            }
+        };
+
+        onAuthStateChanged(auth, (u) => { if(u) Core.init(u); });
+        document.getElementById('tap-btn').onclick = (e) => Game.tap(e);
+    </script>
+</body>
+</html>
