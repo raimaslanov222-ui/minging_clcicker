@@ -3,71 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Clicker Game</title>
+    <title>Infinity Clicker Fix</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { margin: 0; padding: 0; font-family: 'Arial Black', sans-serif; background: #0f0f1a; color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Окна входа и настроек */
-        #auth-screen, #modal-overlay { position: fixed; inset: 0; background: #0f0f1a; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        /* Окна */
+        #auth-screen, #modal-overlay { position: fixed; inset: 0; background: #0f0f1a; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         #modal-overlay { background: rgba(0,0,0,0.9); z-index: 2000; display: none; }
-        .box { width: 100%; max-width: 320px; background: #1a1a2e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #05050a; color: white; outline: none; text-align: center; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .box { width: 100%; max-width: 300px; background: #1a1a2e; padding: 20px; border-radius: 20px; border: 1px solid #333; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 8px 0; border-radius: 10px; border: 1px solid #444; background: #05050a; color: white; text-align: center; }
+        
+        .btn { width: 100%; padding: 10px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .btn-green { background: #4ecca3; color: white; }
-        .btn-admin { background: #ffcc00; color: black; margin-top: 15px; display: none; font-weight: 900; }
+        .btn-yellow { background: #ffcc00; color: black; font-weight: 900; }
 
-        /* Шапка с БАЛАНСОМ */
+        /* Шапка */
         #game-ui { display: none; flex-direction: column; height: 100%; }
         .header { 
             background: linear-gradient(180deg, #ff1a1a 0%, #b30000 100%); 
-            padding: 30px 20px; 
-            text-align: center; 
-            border-bottom-left-radius: 40px; 
-            border-bottom-right-radius: 40px; 
-            position: relative;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            padding: 25px 10px; text-align: center; 
+            border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; 
+            position: relative; min-height: 140px;
         }
-        #money { font-size: 4rem; font-weight: 900; margin: 0; color: white; text-shadow: 0 4px 10px rgba(0,0,0,0.3); letter-spacing: -1px; }
-        #user-tag { color: rgba(255,255,255,0.8); font-weight: bold; font-size: 0.8rem; margin-top: 5px; text-transform: uppercase; }
+        #money { font-size: 3.2rem; font-weight: 900; margin: 0; line-height: 1; text-shadow: 0 3px 10px rgba(0,0,0,0.4); }
+        #user-tag { color: rgba(255,255,255,0.8); font-size: 0.75rem; margin-top: 8px; font-family: sans-serif; }
 
+        /* Кнопки управления */
         .icon-btn { 
-            position: absolute; top: 20px; background: rgba(255,255,255,0.25); border: none; 
-            border-radius: 12px; width: 45px; height: 45px; color: white; font-size: 1.3rem;
+            position: absolute; top: 15px; background: rgba(255,255,255,0.2); border: none; 
+            border-radius: 10px; width: 38px; height: 38px; color: white; font-size: 1.1rem;
             display: flex; align-items: center; justify-content: center;
         }
-        #open-top-btn { left: 20px; }
-        #open-settings-btn { right: 20px; }
+        #open-top-btn { left: 15px; top: 15px; }
+        #open-settings-btn { right: 15px; top: 15px; }
+        #admin-main-btn { left: 15px; top: 60px; background: gold; color: black; display: none; border: 2px solid white; }
 
         /* Игровая зона */
-        .main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+        .main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #main-button { 
-            width: 190px; height: 190px; border-radius: 50%; 
-            background: url('button.png') center/cover; border: 6px solid white; 
-            box-shadow: 0 0 40px rgba(255, 25, 25, 0.5); transition: transform 0.05s;
+            width: 160px; height: 160px; border-radius: 50%; 
+            background: url('button.png') center/cover; border: 5px solid white; 
+            box-shadow: 0 0 30px rgba(255, 25, 25, 0.4); transition: 0.05s;
         }
         #main-button:active { transform: scale(0.9); }
-        .stats-row { font-size: 0.85rem; color: #aaa; text-align: center; margin: 5px 0; }
+        .stats-info { font-size: 0.8rem; color: #888; margin-top: 10px; text-align: center; font-family: sans-serif; }
 
-        /* Магазин */
-        .shop-panel { padding: 15px; background: #161625; border-radius: 30px 30px 0 0; }
+        /* Магазин (Компактный) */
+        .shop-panel { padding: 10px; background: #161625; border-radius: 25px 25px 0 0; }
         .shop-item { 
             display: flex; justify-content: space-between; align-items: center; 
-            background: #20203a; padding: 12px 18px; border-radius: 15px; margin-bottom: 8px;
+            background: #20203a; padding: 8px 15px; border-radius: 12px; margin-bottom: 6px;
         }
-        .shop-item button { background: #ffcc00; color: black; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
-        .leader-row { display: flex; justify-content: space-between; padding: 10px; background: #05050a; margin-bottom: 5px; border-radius: 10px; }
+        .shop-item b { font-size: 0.85rem; }
+        .shop-item small { font-size: 0.7rem; color: #aaa; }
+        .shop-item button { background: #ffcc00; color: black; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; font-size: 0.8rem; }
+        
+        .leader-row { display: flex; justify-content: space-between; padding: 8px; background: #05050a; margin-bottom: 4px; border-radius: 8px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="box">
-            <h2>ВХОД В ИГРУ</h2>
-            <input type="email" id="email" placeholder="Email">
+            <h2 style="margin:0 0 15px 0">INFINITY CLICKER</h2>
+            <input type="email" id="email" placeholder="Ваш Email">
             <input type="password" id="pass" placeholder="Пароль">
             <button class="btn btn-green" id="login-btn">ВОЙТИ</button>
-            <button class="btn" style="background:transparent; color:#4ecca3" id="reg-btn">РЕГИСТРАЦИЯ</button>
+            <button class="btn" style="background:transparent; color:#4ecca3; font-size: 0.8rem" id="reg-btn">СОЗДАТЬ АККАУНТ</button>
         </div>
     </div>
 
@@ -75,15 +78,17 @@
         <div class="header">
             <button id="open-top-btn" class="icon-btn">🏆</button>
             <button id="open-settings-btn" class="icon-btn">⚙️</button>
+            <button id="admin-main-btn" class="icon-btn">👑</button>
+            
             <div id="money">0</div>
             <div id="user-tag">Загрузка...</div>
         </div>
         
         <div class="main-area">
             <div id="main-button"></div>
-            <div class="stats-row">
+            <div class="stats-info">
                 Клик: <b id="st-p">+1</b> | Множ: <b id="st-m">x1</b><br>
-                <span style="color:#4ecca3">Авто-бот: <b id="st-b">0</b> /сек</span>
+                <span style="color:#4ecca3">Авто: <b id="st-b">0</b> /сек</span>
             </div>
         </div>
 
@@ -105,24 +110,24 @@
 
     <div id="modal-overlay">
         <div id="settings-box" class="box" style="display:none">
-            <h3>НАСТРОЙКИ</h3>
-            <input type="text" id="new-name-input" maxlength="12" placeholder="Новый ник">
+            <h3 style="margin-top:0">ИМЯ ИГРОКА</h3>
+            <input type="text" id="new-name-input" maxlength="10" placeholder="Новый ник">
             <button class="btn btn-green" id="save-name-btn">СОХРАНИТЬ</button>
-            <button class="btn btn-admin" id="admin-panel-btn">👑 АДМИН-ПАНЕЛЬ</button>
             <button class="btn" style="background:#333; color:white; margin-top:10px" onclick="closeModal()">ЗАКРЫТЬ</button>
         </div>
 
-        <div id="admin-box" class="box" style="display:none; border-color: gold">
-            <h3 style="color:gold">АДМИНКА</h3>
+        <div id="admin-box" class="box" style="display:none; border: 2px solid gold">
+            <h3 style="color:gold; margin-top:0">👑 АДМИН-ПАНЕЛЬ</h3>
+            <p style="font-size:0.7rem; color:#aaa">Введи ID и сумму для начисления</p>
             <input type="number" id="target-id" placeholder="ID игрока">
-            <input type="number" id="add-money-val" placeholder="Сумма">
-            <button class="btn btn-green" id="give-money-btn">ВЫДАТЬ</button>
-            <button class="btn" style="background:red; color:white" id="reset-player-btn">ОБНУЛИТЬ</button>
-            <button class="btn" onclick="openSettings()">НАЗАД</button>
+            <input type="number" id="add-money-val" placeholder="Сколько выдать?">
+            <button class="btn btn-yellow" id="give-money-btn">ВЫДАТЬ МОНЕТЫ</button>
+            <button class="btn" style="background:red; color:white; margin-top:5px" id="reset-player-btn">ОБНУЛИТЬ АККАУНТ</button>
+            <button class="btn" style="margin-top:15px; background:#444; color:white" onclick="closeModal()">ВЫЙТИ</button>
         </div>
 
         <div id="top-box" class="box" style="display:none; border-color: gold">
-            <h3 style="color:gold">🏆 ТОП-10</h3>
+            <h3 style="color:gold; margin-top:0">🏆 ТОП-10</h3>
             <div id="leader-list"></div>
             <button class="btn" style="background:#333; color:white; margin-top:10px" onclick="closeModal()">ЗАКРЫТЬ</button>
         </div>
@@ -150,15 +155,14 @@
         let user = null, money = 0, power = 1, mult = 1, bot = 0, myId = 0, myName = "";
         let cost1 = 10, cost2 = 100, cost3 = 500;
 
-        // Красивое сокращение чисел
         function nForm(n) {
-            if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
-            if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+            if (n >= 1e9) return (n / 1e9).toFixed(1) + "B";
+            if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
             if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
             return Math.floor(n);
         }
 
-        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка"));
+        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка входа"));
         document.getElementById('reg-btn').onclick = async () => {
             try {
                 const res = await createUserWithEmailAndPassword(auth, email.value, pass.value);
@@ -176,7 +180,12 @@
                 user = u;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('game-ui').style.display = 'flex';
-                if(user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) document.getElementById('admin-panel-btn').style.display = 'block';
+                
+                // Проверка на админа
+                if(user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                    document.getElementById('admin-main-btn').style.display = 'flex';
+                }
+
                 const s = await getDoc(doc(db, "leaders", user.uid));
                 if (s.exists()) {
                     const d = s.data();
@@ -193,7 +202,7 @@
 
         function updateUI() {
             document.getElementById('money').innerText = nForm(money);
-            document.getElementById('user-tag').innerText = `${myName} | ID: #${myId}`;
+            document.getElementById('user-tag').innerText = `${myName.toUpperCase()} | ID: #${myId}`;
             document.getElementById('st-p').innerText = `+${nForm(power)}`;
             document.getElementById('st-m').innerText = `x${mult}`;
             document.getElementById('st-b').innerText = nForm(bot);
@@ -216,28 +225,32 @@
         document.getElementById('buy3').onclick = () => buy(3);
 
         window.closeModal = () => document.getElementById('modal-overlay').style.display = 'none';
-        window.openSettings = () => {
+        
+        document.getElementById('open-settings-btn').onclick = () => {
             document.getElementById('modal-overlay').style.display = 'flex';
             document.getElementById('settings-box').style.display = 'block';
+            document.getElementById('top-box').style.display = 'none';
             document.getElementById('admin-box').style.display = 'none';
+        };
+
+        document.getElementById('admin-main-btn').onclick = () => {
+            document.getElementById('modal-overlay').style.display = 'flex';
+            document.getElementById('admin-box').style.display = 'block';
+            document.getElementById('settings-box').style.display = 'none';
             document.getElementById('top-box').style.display = 'none';
         };
-        document.getElementById('open-settings-btn').onclick = openSettings;
+
         document.getElementById('open-top-btn').onclick = () => {
             document.getElementById('modal-overlay').style.display = 'flex';
             document.getElementById('top-box').style.display = 'block';
             document.getElementById('settings-box').style.display = 'none';
+            document.getElementById('admin-box').style.display = 'none';
         };
 
         document.getElementById('save-name-btn').onclick = async () => {
             const val = document.getElementById('new-name-input').value.trim();
-            if(val.length < 2) return alert("Слишком коротко");
-            myName = val; updateUI(); await save(); alert("Ник изменен!");
-        };
-
-        document.getElementById('admin-panel-btn').onclick = () => {
-            document.getElementById('settings-box').style.display = 'none';
-            document.getElementById('admin-box').style.display = 'block';
+            if(val.length < 2) return alert("Минимум 2 буквы");
+            myName = val; updateUI(); await save(); closeModal();
         };
 
         const adminOp = async (type) => {
@@ -245,7 +258,7 @@
             const val = parseInt(document.getElementById('add-money-val').value) || 0;
             const q = query(collection(db, "leaders"), where("gameId", "==", tid));
             const snap = await getDocs(q);
-            if(snap.empty) return alert("Игрок не найден");
+            if(snap.empty) return alert("ID не найден");
             const pDoc = snap.docs[0];
             if(type === 'give') await setDoc(pDoc.ref, { score: (pDoc.data().score + val) }, { merge: true });
             else await setDoc(pDoc.ref, { score: 0 }, { merge: true });
