@@ -1,0 +1,55 @@
+:root {
+    --p: #ff1a1a; --s: #4ecca3; --bg: #050508; --card: #11111b;
+}
+
+body, html {
+    margin: 0; padding: 0; background: var(--bg); color: #fff;
+    font-family: 'Roboto', sans-serif; height: 100vh; overflow: hidden;
+}
+
+/* Auth Styles */
+#auth-screen {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle, #1a1a2e, #000); z-index: 100;
+}
+
+.auth-card {
+    background: var(--card); padding: 40px; border-radius: 25px;
+    border: 1px solid rgba(255,255,255,0.1); text-align: center; width: 85%; max-width: 350px;
+}
+
+.auth-card h1 { font-family: 'Montserrat'; font-size: 2rem; margin-bottom: 30px; }
+.red { color: var(--p); }
+
+.input-group input {
+    width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 12px;
+    border: 1px solid #333; background: #000; color: #fff; box-sizing: border-box;
+}
+
+#login-btn {
+    width: 100%; padding: 18px; border-radius: 12px; border: none;
+    background: var(--p); color: #fff; font-weight: 900; cursor: pointer;
+}
+
+/* Game Styles */
+.top-nav { padding: 50px 20px 20px; text-align: center; border-bottom: 1px solid #222; }
+#money-display { font-family: 'Montserrat'; font-size: 3.5rem; margin: 10px 0; }
+
+.click-zone { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 40px;}
+
+#main-target {
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, var(--p), #400);
+    border: 8px solid #fff; box-shadow: 0 0 40px rgba(255,26,26,0.4);
+    cursor: pointer; transition: 0.05s;
+}
+
+#main-target:active { transform: scale(0.92); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 90%; margin-top: 40px; }
+.stat-item { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #222; }
+.stat-item b { display: block; font-size: 1.2rem; color: var(--s); }
+
+.bottom-menu { position: fixed; bottom: 0; width: 100%; display: flex; background: #000; padding: 15px 0; }
+.menu-btn { flex: 1; background: none; border: none; color: #555; font-weight: 900; cursor: pointer; }
+.menu-btn.active { color: var(--p); }
