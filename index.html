@@ -3,345 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity Clicker Engine V5.0</title>
+    <title>Infinity Clicker Engine v7.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- СЕКЦИЯ 1: ЦВЕТОВАЯ ПАЛИТРА И ПЕРЕМЕННЫЕ (Строки 15-45) --- 
+        /* [CSS MODULE 1: ГЛОБАЛЬНЫЕ СТИЛИ] 
+           Здесь мы определяем переменные и базовый UI
         */
         :root {
-            --primary: #ff1a1a;
-            --secondary: #4ecca3;
-            --accent: #ffcc00;
-            --bg-dark: #0a0a12;
-            --panel-bg: #161625;
-            --glass: rgba(255, 255, 255, 0.05);
-            --shadow: 0 10px 30px rgba(0,0,0,0.5);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --p: #ff1a1a;        /* Primary Color */
+            --s: #4ecca3;        /* Success Color */
+            --a: #ffcc00;        /* Accent Gold */
+            --bg: #0a0a12;       /* Deep Background */
+            --card: #161625;     /* Panel Color */
+            --glass: rgba(255, 255, 255, 0.02);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* --- СЕКЦИЯ 2: ОБЩИЕ СТИЛИ И СБРОС (Строки 46-80) --- 
-        */
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            outline: none;
-            -webkit-font-smoothing: antialiased;
+            margin: 0; padding: 0;
         }
 
         body {
-            margin: 0;
-            padding: 0;
             font-family: 'Roboto', sans-serif;
-            background: var(--bg-dark);
-            color: #ffffff;
+            background: var(--bg);
+            color: #fff;
             height: 100vh;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
         }
 
-        /* --- СЕКЦИЯ 3: АНИМАЦИИ (Строки 81-120) --- 
+        /* [CSS MODULE 2: АНИМАЦИИ] 
+           Сложные ключевые кадры для сочности картинки
         */
-        @keyframes floatText {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.95); }
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
         }
 
         @keyframes slideDown {
-            from { transform: translate(-50%, -100%); opacity: 0; }
-            to { transform: translate(-50%, 0); opacity: 1; }
+            from { transform: translate(-50%, -100%); }
+            to { transform: translate(-50%, 0); }
         }
 
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 20px rgba(255, 26, 26, 0.2); }
-            50% { box-shadow: 0 0 50px rgba(255, 26, 26, 0.5); }
-            100% { box-shadow: 0 0 20px rgba(255, 26, 26, 0.2); }
+        @keyframes levelUpPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        /* --- СЕКЦИЯ 4: УВЕДОМЛЕНИЯ АДМИНА (Строки 121-150) --- 
+        /* [CSS MODULE 3: GUI УВЕДОМЛЕНИЙ] 
         */
-        #admin-notify {
-            position: fixed;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 85%;
-            max-width: 350px;
-            background: var(--panel-bg);
-            border: 2px solid var(--secondary);
-            border-radius: 15px;
-            padding: 15px;
-            z-index: 10000;
-            display: none;
-            box-shadow: var(--shadow);
-            animation: slideDown 0.4s ease;
+        #admin-gui-alert {
+            position: fixed; top: 15px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 380px; background: var(--card);
+            border: 2px solid var(--s); border-radius: 20px;
+            padding: 20px; z-index: 10000; display: none;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.8);
+            animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             text-align: center;
         }
 
-        #admin-notify h4 { margin: 0 0 5px 0; color: var(--secondary); font-family: 'Montserrat'; }
-        #admin-notify p { margin: 0; font-size: 0.85rem; color: #bbb; }
+        #admin-gui-alert h3 { font-family: 'Montserrat'; color: var(--s); margin-bottom: 5px; }
+        #admin-gui-alert p { font-size: 0.9rem; color: #ccc; }
 
-        /* --- СЕКЦИЯ 5: ЭКРАН ВХОДА (Строки 151-200) --- 
+        /* [CSS MODULE 4: ЭКРАН ВХОДА] 
         */
-        .auth-container {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at center, #1c1c3c 0%, #05050a 100%);
-            z-index: 9000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        #auth-layer {
+            position: fixed; inset: 0; z-index: 9000;
+            background: radial-gradient(circle, #1e1e3f, #05050a);
+            display: flex; align-items: center; justify-content: center;
         }
 
-        .auth-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 40px;
-            border-radius: 35px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-            box-shadow: var(--shadow);
+        .auth-box {
+            background: var(--glass); backdrop-filter: blur(20px);
+            padding: 40px; border-radius: 40px; width: 85%;
+            max-width: 400px; border: 1px solid var(--border);
+            text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
         }
 
-        .auth-card h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 2.2rem;
-            background: linear-gradient(45deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 30px;
+        .auth-box h1 { font-family: 'Montserrat'; font-size: 2.2rem; margin-bottom: 30px; color: var(--p); }
+
+        .form-input {
+            width: 100%; padding: 15px; margin-bottom: 12px; border-radius: 15px;
+            border: 1px solid #333; background: #000; color: #fff; text-align: center;
         }
 
-        .main-input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        /* --- СЕКЦИЯ 6: ИГРОВОЙ ИНТЕРФЕЙС GUI (Строки 201-280) --- 
+        /* [CSS MODULE 5: ГЛАВНЫЙ ИНТЕРФЕЙС] 
         */
-        #game-view { display: none; flex-direction: column; height: 100%; }
+        #game-layer { display: none; flex-direction: column; height: 100%; }
 
-        .top-bar {
-            background: linear-gradient(180deg, var(--primary) 0%, #a00000 100%);
-            padding: 50px 20px 30px 20px;
-            text-align: center;
-            border-bottom-left-radius: 45px;
-            border-bottom-right-radius: 45px;
-            position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        .header-panel {
+            background: linear-gradient(180deg, var(--p), #900);
+            padding: 60px 20px 30px; border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px; text-align: center;
+            position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        #balance-display {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 3.8rem;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            margin: 0;
-        }
+        #money-text { font-family: 'Montserrat'; font-size: 4rem; margin: 0; }
 
-        .player-info {
-            background: rgba(0,0,0,0.25);
-            padding: 8px 18px;
-            border-radius: 25px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--secondary);
-            display: inline-block;
-            margin-top: 15px;
-            letter-spacing: 1px;
+        .xp-container {
+            width: 200px; height: 6px; background: rgba(0,0,0,0.3);
+            margin: 10px auto; border-radius: 5px; overflow: hidden;
         }
+        #xp-bar { height: 100%; background: var(--s); width: 0%; transition: 0.4s; }
 
-        .btn-circle {
-            position: absolute;
-            top: 25px;
-            width: 46px;
-            height: 46px;
-            background: rgba(255,255,255,0.15);
-            border: none;
-            border-radius: 15px;
-            color: white;
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
+        .nav-icon {
+            position: absolute; top: 30px; width: 50px; height: 50px;
+            background: rgba(255,255,255,0.1); border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            border: none; color: white; font-size: 1.4rem;
         }
-        #btn-leaderboard { left: 20px; }
-        #btn-settings { right: 20px; }
+        #nav-l { left: 20px; }
+        #nav-r { right: 20px; }
 
-        /* --- СЕКЦИЯ 7: КЛИКЕР ЗОНА (Строки 281-340) --- 
+        /* [CSS MODULE 6: КЛИКЕР] 
         */
-        .click-engine {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+        .click-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+
+        #click-btn {
+            width: 240px; height: 240px; border-radius: 50%;
+            background: url('button.png') center/cover, var(--p);
+            border: 10px solid #fff; box-shadow: 0 0 40px rgba(255,26,26,0.3);
+            transition: 0.1s; cursor: pointer;
         }
+        #click-btn:active { transform: scale(0.9); }
 
-        #the-button {
-            width: 210px;
-            height: 210px;
-            border-radius: 50%;
-            background: url('button.png') center/cover, var(--primary);
-            border: 8px solid #ffffff;
-            cursor: pointer;
-            transition: transform 0.05s ease;
-            animation: pulseGlow 3s infinite;
-            z-index: 5;
-        }
+        .stats-grid { display: flex; gap: 10px; width: 90%; margin-top: 25px; }
+        .stat-item { flex: 1; background: var(--card); padding: 12px; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
+        .stat-item span { font-size: 0.65rem; color: #888; display: block; }
+        .stat-item b { font-size: 1rem; color: #fff; }
 
-        #the-button:active { transform: scale(0.88); }
-
-        .particle-text {
-            position: absolute;
-            font-family: 'Montserrat';
-            font-weight: 900;
-            color: var(--secondary);
-            pointer-events: none;
-            animation: floatText 0.7s ease-out forwards;
-            z-index: 100;
-        }
-
-        .dashboard {
-            margin-top: 25px;
-            display: flex;
-            gap: 15px;
-            width: 90%;
-        }
-
-        .stat-box {
-            flex: 1;
-            background: var(--glass);
-            padding: 12px;
-            border-radius: 20px;
-            text-align: center;
-            font-size: 0.75rem;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        /* --- СЕКЦИЯ 8: МАГАЗИН И ПАНЕЛИ (Строки 341-400) --- 
+        /* [CSS MODULE 7: МАГАЗИН] 
         */
-        .shop-container {
-            background: var(--panel-bg);
-            padding: 20px 25px 40px 25px;
-            border-top-left-radius: 45px;
-            border-top-right-radius: 45px;
+        .shop-panel {
+            background: var(--card); padding: 25px 25px 45px;
+            border-top-left-radius: 50px; border-top-right-radius: 50px;
         }
 
-        .shop-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255,255,255,0.03);
-            padding: 14px 20px;
-            border-radius: 22px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
+        .item-row {
+            display: flex; align-items: center; justify-content: space-between;
+            background: rgba(255,255,255,0.03); padding: 15px 20px;
+            border-radius: 20px; margin-bottom: 10px; border: 1px solid var(--border);
         }
 
-        .action-btn {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 10px 22px;
-            border-radius: 14px;
-            font-weight: 900;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 0 #b38f00;
+        .buy-btn {
+            background: var(--a); color: #000; border: none; padding: 12px 20px;
+            border-radius: 15px; font-weight: 900; box-shadow: 0 4px 0 #b38f00;
         }
 
-        /* --- СЕКЦИЯ 9: МОДАЛЬНЫЕ ОКНА (Строки 401-450) --- 
+        /* [CSS MODULE 8: МОДАЛКИ] 
         */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-            z-index: 9500; display: none; align-items: center; justify-content: center;
-            backdrop-filter: blur(8px); padding: 20px;
+        .modal-bg {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 10001; display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px); padding: 20px;
+        }
+        .modal-inner {
+            width: 100%; max-width: 380px; background: var(--card);
+            border-radius: 40px; padding: 35px; border: 1px solid #333;
+            text-align: center; animation: levelUpPop 0.4s ease;
         }
 
-        .modal-content {
-            width: 100%; max-width: 340px; background: var(--panel-bg);
-            border-radius: 35px; padding: 30px; border: 2px solid #222;
-            text-align: center; animation: fadeIn 0.3s ease;
-        }
-
-        .leader-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 14px; background: rgba(0,0,0,0.2); margin-bottom: 8px;
-            border-radius: 18px; border-left: 4px solid var(--accent);
+        /* [CSS MODULE 9: ПАРТИКЛЫ] 
+        */
+        .particle {
+            position: absolute; pointer-events: none;
+            font-family: 'Montserrat'; font-weight: 900;
+            color: var(--s); font-size: 2rem;
+            animation: floatUp 0.7s ease-out forwards;
         }
     </style>
 </head>
 <body>
 
-    <div id="admin-notify">
-        <h4 id="notify-title">СИСТЕМА</h4>
-        <p id="notify-msg">Операция выполнена</p>
+    <div id="admin-gui-alert">
+        <h3 id="gui-alert-title">СИСТЕМА</h3>
+        <p id="gui-alert-text">Действие выполнено успешно.</p>
     </div>
 
-    <section class="auth-container" id="auth-layer">
-        <div class="auth-card">
+    <section id="auth-layer">
+        <div class="auth-box">
             <h1>INFINITY<br>CLICKER</h1>
-            <input type="email" id="inp-email" class="main-input" placeholder="Ваш Email">
-            <input type="password" id="inp-pass" class="main-input" placeholder="Пароль">
-            <button class="action-btn" id="btn-login" style="width:100%; padding:18px;">ВОЙТИ</button>
-            <p id="btn-switch-reg" style="color:var(--secondary); font-size:0.8rem; margin-top:20px; cursor:pointer">Создать новый аккаунт</p>
+            <input type="email" id="email-in" class="form-input" placeholder="Ваша Почта">
+            <input type="password" id="pass-in" class="form-input" placeholder="Пароль">
+            <button class="buy-btn" id="btn-login" style="width:100%; padding:20px; font-size:1rem">ВОЙТИ В ИГРУ</button>
+            <p id="btn-reg" style="color:var(--s); margin-top:20px; font-size:0.8rem; cursor:pointer; font-weight:bold">Создать новый аккаунт</p>
         </div>
     </section>
 
-    <main id="game-view">
-        <header class="top-bar">
-            <button id="btn-leaderboard" class="btn-circle">🏆</button>
-            <button id="btn-settings" class="btn-circle">⚙️</button>
-            <h2 id="balance-display">0</h2>
-            <div id="player-tag" class="player-info">ЗАГРУЗКА ДАННЫХ...</div>
+    <main id="game-layer">
+        <header class="header-panel">
+            <button class="nav-icon" id="nav-l">🏆</button>
+            <button class="nav-icon" id="nav-r">⚙️</button>
+            <div style="font-size:0.7rem; opacity:0.6; letter-spacing:2px">ВАШИ МОНЕТЫ</div>
+            <h2 id="money-text">0</h2>
+            <div class="xp-container"><div id="xp-bar"></div></div>
+            <div id="user-tag" style="font-size:0.75rem; color:var(--s); font-weight:900">ID: #000 | LVL: 1</div>
         </header>
 
-        <section class="click-engine" id="click-box">
-            <div id="the-button"></div>
-            <div class="dashboard">
-                <div class="stat-box">КЛИК<br><b id="gui-power" style="color:var(--secondary)">+1</b></div>
-                <div class="stat-box">БОНУС<br><b id="gui-mult" style="color:var(--accent)">x1</b></div>
-                <div class="stat-box">АВТО<br><b id="gui-bot" style="color:var(--primary)">0</b></div>
+        <section class="click-area">
+            <div id="click-btn"></div>
+            <div class="stats-grid">
+                <div class="stat-item"><span>КЛИК</span><b id="val-p">+1</b></div>
+                <div class="stat-item"><span>МНОЖ</span><b id="val-m">x1</b></div>
+                <div class="stat-item"><span>АВТО</span><b id="val-b">0</b></div>
             </div>
         </section>
 
-        <footer class="shop-container">
-            <div class="shop-card">
-                <div><b>Урон</b><br><small id="price1">Цена: 10</small></div>
-                <button class="action-btn" id="buy-power">КУПИТЬ</button>
+        <footer class="shop-panel">
+            <div class="item-row">
+                <div><b>Сила Кликера</b><br><small id="c1">Цена: 10</small></div>
+                <button class="buy-btn" id="buy1">КУПИТЬ</button>
             </div>
-            <div class="shop-card">
-                <div><b>Множитель</b><br><small id="price2">Цена: 100</small></div>
-                <button class="action-btn" id="buy-mult">КУПИТЬ</button>
+            <div class="item-row">
+                <div><b>Множитель X2</b><br><small id="c2">Цена: 100</small></div>
+                <button class="buy-btn" id="buy2">КУПИТЬ</button>
             </div>
-            <div class="shop-card">
-                <div><b>Майнер</b><br><small id="price3">Цена: 500</small></div>
-                <button class="action-btn" id="buy-bot">КУПИТЬ</button>
+            <div class="item-row">
+                <div><b>Авто-Ферма</b><br><small id="c3">Цена: 500</small></div>
+                <button class="buy-btn" id="buy3">КУПИТЬ</button>
             </div>
         </footer>
     </main>
 
-    <div id="modal-layer" class="modal-overlay">
-        <div id="modal-inner" class="modal-content"></div>
+    <div id="modal-box" class="modal-bg">
+        <div id="modal-content" class="modal-inner"></div>
     </div>
 
     <script type="module">
@@ -349,7 +246,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, orderBy, limit, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // КОНФИГ ФАЙРБЕЙЗ
+        // 1. ИНИЦИАЛИЗАЦИЯ (ЛИНИИ 270-300)
         const firebaseConfig = {
             apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBt9o",
             authDomain: "mindingclicker.firebaseapp.com",
@@ -362,142 +259,180 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const MASTER_ADMIN = "raimaslanov222@gmail.com";
+        const ADMIN_EMAIL = "raimaslanov222@gmail.com";
 
-        // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
-        let state = {
+        // 2. ГЛОБАЛЬНЫЙ STATE (ЛИНИИ 301-330)
+        let player = {
             money: 0, power: 1, mult: 1, bot: 0,
-            c1: 10, c2: 100, c3: 500,
-            id: 0, name: ""
+            cost1: 10, cost2: 100, cost3: 500,
+            xp: 0, lvl: 1, id: 0, name: "Gamer"
         };
 
-        // ФОРМАТИРОВАНИЕ ЧИСЕЛ
-        const fNum = (n) => {
-            if (n >= 1e12) return (n / 1e12).toFixed(2) + "T";
-            if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
-            if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
-            if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
+        const format = (n) => {
+            if (n >= 1e12) return (n/1e12).toFixed(2) + "T";
+            if (n >= 1e9) return (n/1e9).toFixed(2) + "B";
+            if (n >= 1e6) return (n/1e6).toFixed(2) + "M";
+            if (n >= 1e3) return (n/1e3).toFixed(1) + "K";
             return Math.floor(n);
         };
 
-        // GUI УВЕДОМЛЕНИЯ ДЛЯ АДМИНА
-        window.sendNotice = (title, msg, err = false) => {
-            const box = document.getElementById('admin-notify');
-            document.getElementById('notify-title').innerText = title;
-            document.getElementById('notify-msg').innerText = msg;
-            box.style.borderColor = err ? "#ff1a1a" : "#4ecca3";
-            box.style.display = "block";
-            setTimeout(() => { box.style.display = "none"; }, 4500);
+        // 3. GUI УВЕДОМЛЕНИЯ АДМИНА (ЛИНИИ 331-360)
+        window.showAdminAlert = (title, text, isError = false) => {
+            const el = document.getElementById('admin-gui-alert');
+            document.getElementById('gui-alert-title').innerText = title;
+            document.getElementById('gui-alert-text').innerText = text;
+            el.style.borderColor = isError ? "#ff1a1a" : "#4ecca3";
+            el.style.display = "block";
+            setTimeout(() => { el.style.display = "none"; }, 4500);
         };
 
-        // АВТОРИЗАЦИЯ
+        // 4. ЛОГИКА ВХОДА И РЕГИСТРАЦИИ (ЛИНИИ 361-450)
+        document.getElementById('btn-login').onclick = async () => {
+            const e = document.getElementById('email-in').value.trim();
+            const p = document.getElementById('pass-in').value.trim();
+            if(!e || !p) return showAdminAlert("ОШИБКА", "Введите почту и пароль!", true);
+            try {
+                await signInWithEmailAndPassword(auth, e, p);
+                showAdminAlert("СИСТЕМА", "Вход выполнен успешно!");
+            } catch(err) {
+                showAdminAlert("ОТКАЗ", "Неверные данные аккаунта", true);
+            }
+        };
+
+        document.getElementById('btn-reg').onclick = async () => {
+            const e = document.getElementById('email-in').value.trim();
+            const p = document.getElementById('pass-in').value.trim();
+            if(p.length < 6) return showAdminAlert("СИСТЕМА", "Пароль должен быть от 6 знаков", true);
+            try {
+                const res = await createUserWithEmailAndPassword(auth, e, p);
+                await runTransaction(db, async (t) => {
+                    const c = await t.get(doc(db, "system", "users_count"));
+                    let nid = c.exists() ? c.data().val + 1 : 1;
+                    t.set(doc(db, "system", "users_count"), { val: nid });
+                    t.set(doc(db, "leaders", res.user.uid), { 
+                        name: e.split('@')[0], score: 0, power: 1, mult: 1, bot: 0, 
+                        cost1: 10, cost2: 100, cost3: 500, gameId: nid, xp: 0, lvl: 1 
+                    });
+                });
+                showAdminAlert("УСПЕХ", "Аккаунт зарегистрирован!");
+            } catch(err) { showAdminAlert("ОШИБКА", "Почта уже используется", true); }
+        };
+
+        // 5. ЯДРО ОБНОВЛЕНИЯ (ЛИНИИ 451-500)
         onAuthStateChanged(auth, async (u) => {
             if (u) {
                 document.getElementById('auth-layer').style.display = 'none';
-                document.getElementById('game-view').style.display = 'flex';
-                const docSnap = await getDoc(doc(db, "leaders", u.uid));
-                if (docSnap.exists()) {
-                    const d = docSnap.data();
-                    state = { ...state, money: d.score||0, power: d.power||1, mult: d.mult||1, bot: d.bot||0, c1: d.cost1||10, c2: d.cost2||100, c3: d.cost3||500, name: d.name, id: d.gameId };
+                document.getElementById('game-layer').style.display = 'flex';
+                const s = await getDoc(doc(db, "leaders", u.uid));
+                if (s.exists()) {
+                    const d = s.data();
+                    player = { 
+                        money: d.score, power: d.power, mult: d.mult, bot: d.bot, 
+                        cost1: d.cost1, cost2: d.cost2, cost3: d.cost3,
+                        name: d.name, id: d.gameId, xp: d.xp||0, lvl: d.lvl||1 
+                    };
                 }
                 syncUI();
             }
         });
 
-        // ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
         function syncUI() {
-            document.getElementById('balance-display').innerText = fNum(state.money);
-            document.getElementById('player-tag').innerText = `${state.name.toUpperCase()} | ID: #${state.id}`;
-            document.getElementById('gui-power').innerText = `+${fNum(state.power * state.mult)}`;
-            document.getElementById('gui-mult').innerText = `x${state.mult}`;
-            document.getElementById('gui-bot').innerText = fNum(state.bot);
-            document.getElementById('price1').innerText = `Цена: ${fNum(state.c1)}`;
-            document.getElementById('price2').innerText = `Цена: ${fNum(state.c2)}`;
-            document.getElementById('price3').innerText = `Цена: ${fNum(state.c3)}`;
+            document.getElementById('money-text').innerText = format(player.money);
+            document.getElementById('user-tag').innerText = `ID: #${player.id} | LVL: ${player.lvl}`;
+            document.getElementById('val-p').innerText = `+${format(player.power * player.mult)}`;
+            document.getElementById('val-m').innerText = `x${player.mult}`;
+            document.getElementById('val-b').innerText = format(player.bot);
+            document.getElementById('c1').innerText = `Цена: ${format(player.cost1)}`;
+            document.getElementById('c2').innerText = `Цена: ${format(player.cost2)}`;
+            document.getElementById('c3').innerText = `Цена: ${format(player.cost3)}`;
+            
+            let targetXP = player.lvl * 150;
+            document.getElementById('xp-bar').style.width = `${(player.xp / targetXP) * 100}%`;
+            
+            if(player.xp >= targetXP) {
+                player.lvl++; player.xp = 0;
+                showAdminAlert("УРОВЕНЬ!", `Поздравляем! Вы достигли ${player.lvl} уровня!`);
+            }
         }
 
-        // КЛИК И ЭФФЕКТЫ
-        document.getElementById('the-button').onclick = (e) => {
-            const earn = state.power * state.mult;
-            state.money += earn;
+        // 6. ОБРАБОТЧИК КЛИКА (ЛИНИИ 501-540)
+        document.getElementById('click-btn').onclick = (e) => {
+            const gain = player.power * player.mult;
+            player.money += gain;
+            player.xp += 1;
             syncUI();
 
             const p = document.createElement('div');
-            p.className = 'particle-text';
-            p.innerText = `+${fNum(earn)}`;
+            p.className = 'particle';
+            p.innerText = `+${format(gain)}`;
             p.style.left = `${e.clientX}px`;
             p.style.top = `${e.clientY - 40}px`;
             document.body.appendChild(p);
             setTimeout(() => p.remove(), 700);
         };
 
-        // АВТО-КЛИКЕР (10 раз в секунду)
-        setInterval(() => { if(state.bot > 0) { state.money += (state.bot / 10); syncUI(); } }, 100);
+        // 7. АВТО-ГЕНЕРАЦИЯ (ЛИНИИ 541-560)
+        setInterval(() => { if(player.bot > 0) { player.money += (player.bot / 10); syncUI(); } }, 100);
 
-        // СОХРАНЕНИЕ В ОБЛАКО (раз в 10 сек)
+        // 8. СИСТЕМА СОХРАНЕНИЯ (ЛИНИИ 561-580)
         async function cloudSave() {
             if(!auth.currentUser) return;
             await setDoc(doc(db, "leaders", auth.currentUser.uid), {
-                name: state.name, score: state.money, power: state.power, mult: state.mult, bot: state.bot,
-                cost1: state.c1, cost2: state.c2, cost3: state.c3, gameId: state.id
+                name: player.name, score: player.money, power: player.power, mult: player.mult, 
+                bot: player.bot, cost1: player.cost1, cost2: player.cost2, cost3: player.cost3,
+                gameId: player.id, xp: player.xp, lvl: player.lvl
             }, { merge: true });
         }
-        setInterval(cloudSave, 10000);
+        setInterval(cloudSave, 12000);
 
-        // МАГАЗИН
-        document.getElementById('buy-power').onclick = () => { if(state.money >= state.c1){ state.money -= state.c1; state.power++; state.c1 *= 4; syncUI(); cloudSave(); } };
-        document.getElementById('buy-mult').onclick = () => { if(state.money >= state.c2){ state.money -= state.c2; state.mult *= 2; state.c2 *= 10; syncUI(); cloudSave(); } };
-        document.getElementById('buy-bot').onclick = () => { if(state.money >= state.c3){ state.money -= state.c3; state.bot += (5 * state.mult); state.c3 *= 5; syncUI(); cloudSave(); } };
+        // 9. МАГАЗИННЫЕ ОПЕРАЦИИ (ЛИНИИ 581-620)
+        document.getElementById('buy1').onclick = () => { if(player.money>=player.cost1){ player.money-=player.cost1; player.power++; player.cost1*=5; syncUI(); cloudSave(); } };
+        document.getElementById('buy2').onclick = () => { if(player.money>=player.cost2){ player.money-=player.cost2; player.mult*=2; player.cost2*=15; syncUI(); cloudSave(); } };
+        document.getElementById('buy3').onclick = () => { if(player.money>=player.cost3){ player.money-=player.cost3; player.bot+=(5*player.mult); player.cost3*=6; syncUI(); cloudSave(); } };
 
-        // МОДАЛЬНЫЕ ОКНА ЛОГИКА
-        const modal = document.getElementById('modal-layer');
-        const inner = document.getElementById('modal-inner');
-        window.closeModal = () => modal.style.display = 'none';
+        // 10. АДМИН-ПАНЕЛЬ И МОДАЛКИ (ЛИНИИ 621-750)
+        const modal = document.getElementById('modal-box');
+        const mContent = document.getElementById('modal-content');
+        window.closeM = () => modal.style.display = 'none';
 
-        // НАСТРОЙКИ И АДМИНКА
-        document.getElementById('btn-settings').onclick = () => {
+        document.getElementById('nav-r').onclick = () => {
             modal.style.display = 'flex';
-            let admUI = auth.currentUser.email === MASTER_ADMIN ? `<button class="action-btn" style="width:100%; margin-top:10px" onclick="window.runAdmin()">👑 ПАНЕЛЬ УПРАВЛЕНИЯ</button>` : '';
-            inner.innerHTML = `
-                <h3>НАСТРОЙКИ ПРОФИЛЯ</h3>
-                <input type="text" id="new-nick" class="main-input" placeholder="Никнейм" value="${state.name}">
-                <button class="action-btn" style="width:100%; background:var(--secondary)" onclick="window.saveNick()">ОБНОВИТЬ</button>
-                ${admUI}
-                <button class="action-btn" style="width:100%; background:#333; margin-top:15px" onclick="window.closeModal()">ЗАКРЫТЬ</button>
+            let adm = auth.currentUser.email === ADMIN_EMAIL ? `<button class="buy-btn" style="width:100%; margin-top:15px" onclick="window.goAdm()">👑 ПАНЕЛЬ АДМИНИСТРАТОРА</button>` : '';
+            mContent.innerHTML = `
+                <h3 style="margin-bottom:15px">ПРОФИЛЬ</h3>
+                <input type="text" id="nn" class="form-input" placeholder="Никнейм" value="${player.name}">
+                <button class="buy-btn" style="width:100%; background:var(--s)" onclick="window.applyN()">ОБНОВИТЬ</button>
+                ${adm}
+                <button class="buy-btn" style="width:100%; background:#333; margin-top:10px" onclick="window.closeM()">ВЫЙТИ</button>
             `;
         };
 
-        window.saveNick = async () => {
-            const n = document.getElementById('new-nick').value.trim();
-            if(n.length > 1) { state.name = n; syncUI(); await cloudSave(); window.closeModal(); }
+        window.applyN = () => {
+            const v = document.getElementById('nn').value.trim();
+            if(v.length > 1) { player.name = v; syncUI(); cloudSave(); closeM(); }
         };
 
-        // ФУНКЦИИ АДМИНИСТРАТОРА (GUI + LOGIC)
-        window.runAdmin = () => {
-            inner.innerHTML = `
-                <h3 style="color:var(--accent)">АДМИН-ЦЕНТР</h3>
-                <input type="text" id="adm-target" class="main-input" placeholder="ID или НИК игрока">
-                <input type="number" id="adm-val" class="main-input" placeholder="Количество монет">
-                <button class="action-btn" style="width:100%; background:var(--secondary)" onclick="window.admExec('give')">ВЫДАТЬ СРЕДСТВА</button>
-                <button class="action-btn" style="width:100%; background:var(--primary); margin-top:8px" onclick="window.admExec('reset')">ОБНУЛИТЬ ИГРОКА</button>
-                <button class="action-btn" style="width:100%; background:#222; margin-top:20px" onclick="window.closeModal()">НАЗАД</button>
+        window.goAdm = () => {
+            mContent.innerHTML = `
+                <h3 style="color:var(--a); margin-bottom:15px">ADMIN PANEL</h3>
+                <input type="text" id="at" class="form-input" placeholder="ID или НИК игрока">
+                <input type="number" id="av" class="form-input" placeholder="Сумма монет">
+                <button class="buy-btn" style="width:100%; background:var(--s)" onclick="window.admExec('give')">ВЫДАТЬ СРЕДСТВА</button>
+                <button class="buy-btn" style="width:100%; background:var(--p); margin-top:8px" onclick="window.admExec('reset')">ОБНУЛИТЬ ИГРОКА</button>
+                <button class="buy-btn" style="width:100%; background:#222; margin-top:20px" onclick="window.closeM()">ЗАКРЫТЬ ПАНЕЛЬ</button>
             `;
         };
 
-        window.admExec = async (mode) => {
-            const target = document.getElementById('adm-target').value;
-            const amount = parseFloat(document.getElementById('adm-val').value) || 0;
-            if(!target) return window.sendNotice("ОШИБКА", "Укажите цель!", true);
+        window.admExec = async (type) => {
+            const t = document.getElementById('at').value;
+            const v = parseFloat(document.getElementById('av').value) || 0;
+            if(!t) return showAdminAlert("ОШИБКА", "Введите цель!", true);
 
-            let q = !isNaN(target) ? query(collection(db, "leaders"), where("gameId", "==", parseInt(target))) : query(collection(db, "leaders"), where("name", "==", target));
+            let q = !isNaN(t) ? query(collection(db, "leaders"), where("gameId", "==", parseInt(t))) : query(collection(db, "leaders"), where("name", "==", t));
             const snap = await getDocs(q);
-            if(snap.empty) return window.sendNotice("ОШИБКА", "Игрок не найден!", true);
+            if(snap.empty) return showAdminAlert("ОШИБКА", "Игрок не найден!", true);
 
-            const userRef = snap.docs[0].ref;
-            const userData = snap.docs[0].data();
+            const ref = snap.docs[0].ref;
+            const data = snap.docs[0].data();
 
-            if(mode === 'give') {
-                await setDoc(userRef, { score: userData.score + amount }, { merge: true });
-                window.sendNotice("УСПЕХ!", `Выдано ${fNum(amount)} монет игроку ${userData.name} (ID: #${userData.gameId})`);
-            } else {
-                await setDoc(userRef, { score: 0, power: 1, mult: 1, bot: 0 }
+            if(type === 'give'
