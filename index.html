@@ -3,153 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity Clicker v12.0</title>
+    <title>Infinity B/T: Omega</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
     
     <style>
-        /* [CSS SECTION: 1-150 LINES] */
+        /* [0-200 LINES: CSS CORE & ANIMATIONS] */
         :root {
-            --p: #ff1a1a; --s: #4ecca3; --a: #ffcc00;
-            --bg: #0a0a12; --card: #161625; --border: rgba(255,255,255,0.08);
-            --glow: 0 0 25px rgba(255, 26, 26, 0.5);
+            --p: #ff1a1a; --s: #4ecca3; --a: #ffcc00; --b: #3b82f6; --v: #a855f7;
+            --bg: #030305; --card: #0d0d16; --border: rgba(255,255,255,0.05);
+            --glow-p: 0 0 25px rgba(255, 26, 26, 0.4);
+            --glow-s: 0 0 20px rgba(78, 204, 163, 0.3);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
         
         body {
             font-family: 'Roboto', sans-serif; background: var(--bg); color: #fff;
             height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- Экраны --- */
-        #auth-layer { position: fixed; inset: 0; z-index: 10000; background: radial-gradient(circle, #1a1a2e, #05050a); display: flex; align-items: center; justify-content: center; }
-        #game-layer { display: none; flex-direction: column; height: 100%; }
+        /* --- Screens --- */
+        #layer-auth { position: fixed; inset: 0; z-index: 99999; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #layer-game { display: none; flex-direction: column; height: 100%; opacity: 0; transition: opacity 0.8s ease; }
 
-        /* --- Интерфейс --- */
-        .header {
-            background: linear-gradient(180deg, var(--p), #700);
-            padding: 60px 20px 35px; text-align: center;
-            border-bottom-left-radius: 45px; border-bottom-right-radius: 45px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6); position: relative;
+        /* --- UI Elements --- */
+        .header-box {
+            background: linear-gradient(180deg, #111 0%, #000 100%);
+            padding: 50px 20px 25px; text-align: center;
+            border-bottom: 2px solid var(--p); position: relative;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.9);
         }
 
-        #balance { font-family: 'Montserrat'; font-size: 3.8rem; letter-spacing: -2px; text-shadow: var(--glow); }
+        .prestige-badge {
+            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+            background: var(--v); color: #000; padding: 2px 12px; border-radius: 10px;
+            font-size: 0.6rem; font-weight: 900; letter-spacing: 1px;
+        }
+
+        #val-balance { 
+            font-family: 'Montserrat'; font-size: 3.5rem; letter-spacing: -2px; 
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(var(--glow-p));
+        }
+
+        .bar-wrap { width: 80%; height: 6px; background: rgba(255,255,255,0.05); margin: 12px auto; border-radius: 10px; position: relative; }
+        #bar-xp { height: 100%; width: 0%; background: var(--s); box-shadow: var(--glow-s); transition: 0.4s cubic-bezier(0.1, 0.7, 1, 0.1); }
         
-        .xp-wrap { width: 220px; height: 12px; background: rgba(0,0,0,0.4); margin: 15px auto; border-radius: 30px; border: 1px solid var(--border); overflow: hidden; }
-        #xp-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #4ecca3, #00ff88); transition: 0.4s; }
-
-        /* --- Центральный Клик --- */
-        .click-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        /* --- Central Button --- */
+        .click-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         
-        /* Замена button.png на мощный CSS-дизайн */
-        #click-target {
-            width: 250px; height: 250px; border-radius: 50%;
-            background: radial-gradient(circle, var(--p) 0%, #400 100%);
-            border: 12px solid #fff; box-shadow: var(--glow), inset 0 0 20px rgba(0,0,0,0.5);
-            cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center;
-            transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        .main-btn-container { position: relative; }
+        #core-tap {
+            width: 220px; height: 220px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, var(--p), #400);
+            border: 8px solid #fff; cursor: pointer;
+            box-shadow: var(--glow-p), inset 0 0 40px #000;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.04s ease;
         }
-        #click-target::after { content: "TAP"; font-family: 'Montserrat'; font-size: 2rem; opacity: 0.2; }
-        #click-target:active { transform: scale(0.9); }
+        #core-tap:active { transform: scale(0.92) rotate(2deg); }
+        #core-tap::after { content: "OMEGA"; font-family: 'Montserrat'; font-size: 1.2rem; font-weight: 900; opacity: 0.2; letter-spacing: 4px; }
 
-        /* --- Статистика --- */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 92%; margin-top: 30px; }
-        .stat-card { background: var(--card); padding: 15px 5px; border-radius: 20px; text-align: center; border: 1px solid var(--border); }
-        .stat-card span { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-card b { display: block; font-size: 1rem; margin-top: 5px; color: #fff; }
+        .dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 92%; margin-top: 30px; }
+        .dash-card { 
+            background: var(--card); padding: 12px; border-radius: 18px; 
+            border: 1px solid var(--border); text-align: center;
+            background: linear-gradient(145deg, #11111d, #090912);
+        }
+        .dash-card label { display: block; font-size: 0.55rem; color: #666; text-transform: uppercase; margin-bottom: 5px; font-weight: 900; }
+        .dash-card span { font-family: 'Roboto Mono'; font-size: 1rem; color: #efefef; }
 
-        /* --- Магазин --- */
-        .shop {
-            background: var(--card); padding: 30px 25px 50px;
-            border-top-left-radius: 50px; border-top-right-radius: 50px;
-            max-height: 40%; overflow-y: auto;
+        /* --- Footer Shop & Tabs --- */
+        .nav-tabs { display: flex; background: #000; border-top: 1px solid var(--border); padding: 10px 0; }
+        .tab-btn { flex: 1; background: none; border: none; color: #555; font-size: 0.7rem; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        .tab-btn.active { color: var(--p); transform: translateY(-3px); }
+
+        .content-panel { 
+            background: var(--card); flex: 0.8; 
+            border-top-left-radius: 40px; border-top-right-radius: 40px; 
+            padding: 25px; overflow-y: auto; border-top: 1px solid var(--border);
         }
 
-        .item {
+        .shop-item {
             display: flex; align-items: center; justify-content: space-between;
-            background: rgba(255,255,255,0.02); padding: 18px;
-            border-radius: 22px; margin-bottom: 12px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.02); padding: 15px 20px;
+            border-radius: 20px; margin-bottom: 10px; border: 1px solid var(--border);
+        }
+        .item-info b { font-size: 0.95rem; color: #ddd; }
+        .item-info p { font-size: 0.7rem; color: #666; }
+
+        .btn-buy {
+            background: var(--a); color: #000; border: none; padding: 10px 16px;
+            border-radius: 12px; font-weight: 900; font-size: 0.75rem; cursor: pointer;
+            box-shadow: 0 4px 0 #997a00;
+        }
+        .btn-buy:active { transform: translateY(2px); box-shadow: none; }
+        .btn-buy:disabled { background: #333; color: #666; box-shadow: none; }
+
+        /* --- Modals & Popups --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-window { width: 90%; max-width: 450px; background: #0a0a12; border-radius: 35px; border: 1px solid #222; padding: 35px; text-align: center; max-height: 85vh; overflow-y: auto; }
+        
+        .input-box { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 14px; background: #000; border: 1px solid #333; color: #fff; font-size: 1rem; }
+        
+        /* --- Particle FX --- */
+        .click-fx { position: fixed; pointer-events: none; color: var(--s); font-family: 'Montserrat'; font-weight: 900; font-size: 1.8rem; z-index: 10000; animation: clickRise 0.8s ease-out forwards; }
+        @keyframes clickRise {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.4); }
         }
 
-        .buy-btn {
-            background: var(--a); color: #000; border: none; padding: 12px 18px;
-            border-radius: 14px; font-weight: 900; cursor: pointer; font-size: 0.8rem;
-            box-shadow: 0 4px 0 #b38f00; transition: 0.1s;
-        }
-        .buy-btn:active { transform: translateY(3px); box-shadow: none; }
-
-        /* --- Модалки --- */
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 20000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .modal-box { width: 85%; max-width: 400px; background: #1a1a2e; padding: 40px; border-radius: 40px; border: 1px solid #333; text-align: center; }
-
-        /* --- Анимация всплывающих цифр --- */
-        .float-text {
-            position: fixed; pointer-events: none; color: var(--s);
-            font-weight: 900; font-size: 2.2rem; font-family: 'Montserrat';
-            text-shadow: 0 0 10px rgba(0,0,0,1);
-            animation: floatUp 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-150px) scale(1.5); opacity: 0; }
-        }
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--p); border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="toast" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--card); padding:18px 30px; border-radius:20px; display:none; z-index:30000; border:2px solid var(--s); box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-        <b id="t-title">SYSTEM</b><br><small id="t-msg"></small>
+    <div id="sys-msg" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--card); border-left:4px solid var(--s); padding:15px 25px; border-radius:12px; display:none; z-index:999999; box-shadow: 0 10px 30px #000;">
+        <small id="sys-title" style="color:var(--s); font-weight:900; text-transform:uppercase;"></small><br>
+        <span id="sys-text" style="font-size:0.85rem;"></span>
     </div>
 
-    <section id="auth-layer">
-        <div class="modal-box">
-            <h1 style="font-family:Montserrat; color:var(--p); margin-bottom:30px; font-size:2.5rem; line-height:1">INFINITY<br>B/T</h1>
-            <input type="email" id="email" class="input-f" placeholder="Email" style="width:100%; padding:18px; margin-bottom:12px; border-radius:15px; border:1px solid #444; background:#000; color:#fff">
-            <input type="password" id="pass" class="input-f" placeholder="Пароль" style="width:100%; padding:18px; margin-bottom:12px; border-radius:15px; border:1px solid #444; background:#000; color:#fff">
-            <button id="btn-login" class="buy-btn" style="width:100%; padding:20px; font-size:1.1rem; margin-top:10px">ВОЙТИ В СИСТЕМУ</button>
-            <p id="btn-reg" style="margin-top:25px; color:var(--s); cursor:pointer; font-weight:bold; font-size:0.8rem; text-decoration:underline">СОЗДАТЬ НОВЫЙ АККАУНТ</p>
+    <section id="layer-auth">
+        <div class="modal-window">
+            <h1 style="font-family:Montserrat; font-size:3rem; line-height:0.8; margin-bottom:10px;">OMEGA<br><span style="color:var(--p); font-size:1.5rem">PROTOCOL</span></h1>
+            <p style="font-size:0.7rem; color:#444; letter-spacing:3px; margin-bottom:30px;">AUTHORIZATION REQUIRED</p>
+            <input type="email" id="auth-email" class="input-box" placeholder="Access Email">
+            <input type="password" id="auth-pass" class="input-box" placeholder="Security Key">
+            <button id="auth-btn-login" class="btn-buy" style="width:100%; padding:18px; font-size:1rem;">INITIALIZE</button>
+            <p id="auth-btn-reg" style="margin-top:20px; color:var(--s); cursor:pointer; font-size:0.8rem; font-weight:900;">GENERATE NEW CORE</p>
         </div>
     </section>
 
-    <main id="game-layer">
-        <header class="header">
-            <button id="nav-top" style="position:absolute; left:25px; top:35px; background:none; border:none; font-size:1.8rem">🏆</button>
-            <button id="nav-set" style="position:absolute; right:25px; top:35px; background:none; border:none; font-size:1.8rem">⚙️</button>
-            <div style="font-size:0.75rem; opacity:0.7; letter-spacing:3px">TOTAL BALANCE</div>
-            <h2 id="balance">0</h2>
-            <div class="xp-wrap"><div id="xp-bar"></div></div>
-            <div id="p-info" style="font-size:0.85rem; font-weight:900; color:var(--s)">SYNCING...</div>
+    <main id="layer-game">
+        <header class="header-box">
+            <div id="rebirth-badge" class="prestige-badge" style="display:none">PRESTIGE X0</div>
+            <button id="nav-leaderboard" style="position:absolute; left:20px; top:35px; background:none; border:none; font-size:1.8rem">🏆</button>
+            <button id="nav-settings" style="position:absolute; right:20px; top:35px; background:none; border:none; font-size:1.8rem">⚙️</button>
+            
+            <div style="font-size:0.6rem; color:#555; letter-spacing:3px; font-weight:900;">NET WORTH</div>
+            <h2 id="val-balance">0</h2>
+            
+            <div class="bar-wrap"><div id="bar-xp"></div></div>
+            <div id="ui-level-tag" style="font-size:0.75rem; font-family:'Roboto Mono'; color:var(--s); font-weight:bold;">LEVEL: 1 [0%]</div>
         </header>
 
-        <section class="click-container">
-            <div id="click-target"></div>
-            <div class="stats-grid">
-                <div class="stat-card"><span>Power</span><b id="v-pow">+1</b></div>
-                <div class="stat-card"><span>Mult</span><b id="v-mult">x1</b></div>
-                <div class="stat-card"><span>Bots</span><b id="v-bot">0</b></div>
+        <section class="click-area">
+            <div id="core-tap"></div>
+            
+            <div class="dashboard">
+                <div class="dash-card"><label>Power</label><span id="ui-pow">+1</span></div>
+                <div class="dash-card"><label>Multiplier</label><span id="ui-mul">x1</span></div>
+                <div class="dash-card"><label>Auto-Rate</label><span id="ui-aut">0/s</span></div>
             </div>
         </section>
 
-        <footer class="shop">
-            <div class="item">
-                <div><b>Power Upgrade</b><br><small id="c1">Cost: 10</small></div>
-                <button class="buy-btn" id="b-pow">BUY</button>
+        <div class="nav-tabs">
+            <button class="tab-btn active" data-tab="shop">UPGRADES</button>
+            <button class="tab-btn" data-tab="skills">SKILLS</button>
+            <button class="tab-btn" data-tab="rebirth">PRESTIGE</button>
+        </div>
+
+        <section class="content-panel" id="main-panel">
+            <div id="tab-shop">
+                <div class="shop-item">
+                    <div class="item-info"><b>Digital Mining</b><p>Increase base tap power</p></div>
+                    <button class="btn-buy" id="buy-pow">BUY <span id="cost-pow">10</span></button>
+                </div>
+                <div class="shop-item">
+                    <div class="item-info"><b>Logic Buffer</b><p>Multiply all income x2</p></div>
+                    <button class="btn-buy" id="buy-mul">BUY <span id="cost-mul">250</span></button>
+                </div>
+                <div class="shop-item">
+                    <div class="item-info"><b>Neural Drone</b><p>Passive income +5/s</p></div>
+                    <button class="btn-buy" id="buy-aut">BUY <span id="cost-aut">1000</span></button>
+                </div>
             </div>
-            <div class="item">
-                <div><b>Multiplier X2</b><br><small id="c2">Cost: 100</small></div>
-                <button class="buy-btn" id="b-mult">BUY</button>
-            </div>
-            <div class="item">
-                <div><b>Auto-Miner</b><br><small id="c3">Cost: 500</small></div>
-                <button class="buy-btn" id="b-bot">BUY</button>
-            </div>
-        </footer>
+        </section>
     </main>
 
-    <div id="modal-ui" class="modal">
-        <div id="modal-body" class="modal-box"></div>
+    <div id="modal-layer" class="modal-overlay">
+        <div id="modal-container" class="modal-window"></div>
     </div>
 
     <script type="module">
@@ -157,7 +194,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, orderBy, limit, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 1. Конфигурация
+        // 1. DATABASE INIT
         const firebaseConfig = {
             apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBt9o",
             authDomain: "mindingclicker.firebaseapp.com",
@@ -170,182 +207,233 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const ADMIN = "raimaslanov222@gmail.com";
+        const ADMIN_EMAIL = "raimaslanov222@gmail.com";
 
-        // 2. State
-        let p = {
-            money: 0, power: 1, mult: 1, bots: 0,
-            c1: 10, c2: 100, c3: 500,
-            xp: 0, lvl: 1, name: "User", id: 0
+        // 2. ENGINE STATE
+        let state = {
+            money: 0,
+            power: 1,
+            mult: 1,
+            auto: 0,
+            xp: 0,
+            lvl: 1,
+            sp: 0, // Skill Points
+            rebirths: 0,
+            totalClicks: 0,
+            gameId: 0,
+            name: "Pilot",
+            costs: { p: 10, m: 250, a: 1000 },
+            skills: { critChance: 0, xpBoost: 1, luck: 1 },
+            isBanned: false
         };
 
-        const fmt = (n) => {
+        // 3. UTILS
+        const $ = (id) => document.getElementById(id);
+        const fNum = (n) => {
+            if (n >= 1e15) return (n/1e15).toFixed(2) + "Q";
+            if (n >= 1e12) return (n/1e12).toFixed(2) + "T";
             if (n >= 1e9) return (n/1e9).toFixed(2) + "B";
             if (n >= 1e6) return (n/1e6).toFixed(2) + "M";
             if (n >= 1e3) return (n/1e3).toFixed(1) + "K";
             return Math.floor(n);
         };
 
-        const msg = (t, m, e = false) => {
-            const el = document.getElementById('toast');
-            document.getElementById('t-title').innerText = t;
-            document.getElementById('t-msg').innerText = m;
-            el.style.borderColor = e ? "#ff1a1a" : "#4ecca3";
+        const toast = (title, text, isErr = false) => {
+            const el = $('sys-msg');
+            $('sys-title').innerText = title;
+            $('sys-text').innerText = text;
+            el.style.borderLeftColor = isErr ? "#ff1a1a" : "#4ecca3";
             el.style.display = "block";
             setTimeout(() => el.style.display = "none", 4000);
         };
 
-        // 3. Авторизация (Исправленная)
-        document.getElementById('btn-login').onclick = async () => {
-            console.log("Attempting login...");
-            const e = document.getElementById('email').value.trim();
-            const pass = document.getElementById('pass').value.trim();
-            if(!e || !pass) return msg("ERROR", "Fill all fields", true);
+        // 4. AUTH MODULE
+        $('auth-btn-login').onclick = async () => {
+            const e = $('auth-email').value.trim();
+            const p = $('auth-pass').value.trim();
+            if(!e || !p) return toast("SYSTEM", "Credentials missing", true);
             try {
-                await signInWithEmailAndPassword(auth, e, pass);
-                msg("SUCCESS", "Identity Verified");
-            } catch(err) { msg("FAILED", "Invalid credentials", true); }
+                await signInWithEmailAndPassword(auth, e, p);
+            } catch(err) { toast("AUTH", "Access Denied", true); }
         };
 
-        document.getElementById('btn-reg').onclick = async () => {
-            const e = document.getElementById('email').value.trim();
-            const pass = document.getElementById('pass').value.trim();
-            if(pass.length < 6) return msg("ERROR", "Password too short", true);
+        $('auth-btn-reg').onclick = async () => {
+            const e = $('auth-email').value.trim();
+            const p = $('auth-pass').value.trim();
+            if(p.length < 6) return toast("AUTH", "Security key too weak", true);
             try {
-                const res = await createUserWithEmailAndPassword(auth, e, pass);
+                const res = await createUserWithEmailAndPassword(auth, e, p);
                 await runTransaction(db, async (t) => {
-                    const cRef = doc(db, "system", "users_count");
-                    const snap = await t.get(cRef);
+                    const ref = doc(db, "system", "users_count");
+                    const snap = await t.get(ref);
                     let nid = snap.exists() ? snap.data().val + 1 : 1;
-                    t.set(cRef, { val: nid });
+                    t.set(ref, { val: nid });
                     t.set(doc(db, "leaders", res.user.uid), {
-                        name: e.split('@')[0], score: 0, power: 1, mult: 1, 
-                        bots: 0, c1: 10, c2: 100, c3: 500, xp: 0, lvl: 1, gameId: nid
+                        ...state, name: e.split('@')[0], gameId: nid
                     });
                 });
-                msg("WELCOME", "Account Created!");
-            } catch(err) { msg("ERROR", "Email already exists", true); }
+                toast("AUTH", "Core Generated!");
+            } catch(err) { toast("AUTH", "Email collision", true); }
         };
 
-        // 4. Ядро
+        // 5. DATA SYNC
         onAuthStateChanged(auth, async (u) => {
             if (u) {
-                document.getElementById('auth-layer').style.display = 'none';
-                document.getElementById('game-layer').style.display = 'flex';
-                const d = await getDoc(doc(db, "leaders", u.uid));
-                if (d.exists()) {
-                    const data = d.data();
-                    p = { 
-                        money: data.score, power: data.power, mult: data.mult, bots: data.bots,
-                        c1: data.c1, c2: data.c2, c3: data.c3,
-                        xp: data.xp, lvl: data.lvl, name: data.name, id: data.gameId
-                    };
+                const docSnap = await getDoc(doc(db, "leaders", u.uid));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if(data.isBanned) {
+                        alert("YOUR ACCOUNT IS PERMANENTLY SUSPENDED");
+                        auth.signOut();
+                        return;
+                    }
+                    state = { ...state, ...data };
                 }
+                $('layer-auth').style.display = 'none';
+                const gl = $('layer-game');
+                gl.style.display = 'flex';
+                setTimeout(() => gl.style.opacity = "1", 100);
                 updateUI();
+                startLoop();
             }
         });
 
-        function updateUI() {
-            document.getElementById('balance').innerText = fmt(p.money);
-            document.getElementById('p-info').innerText = `[${p.name.toUpperCase()}] LVL:${p.lvl} ID:#${p.id}`;
-            document.getElementById('v-pow').innerText = `+${fmt(p.power * p.mult)}`;
-            document.getElementById('v-mult').innerText = `x${p.mult}`;
-            document.getElementById('v-bot').innerText = fmt(p.bots);
-            document.getElementById('c1').innerText = `Cost: ${fmt(p.c1)}`;
-            document.getElementById('c2').innerText = `Cost: ${fmt(p.c2)}`;
-            document.getElementById('c3').innerText = `Cost: ${fmt(p.c3)}`;
-            
-            let target = p.lvl * 200;
-            document.getElementById('xp-bar').style.width = `${(p.xp / target) * 100}%`;
-            
-            if(p.xp >= target) {
-                p.lvl++; p.xp = 0;
-                msg("LEVEL UP!", `You reached level ${p.lvl}!`);
-            }
-        }
-
-        // 5. Геймплей
-        document.getElementById('click-target').addEventListener('pointerdown', (e) => {
-            const gain = p.power * p.mult;
-            p.money += gain;
-            p.xp += 1;
-            updateUI();
-
-            const f = document.createElement('div');
-            f.className = 'float-text';
-            f.innerText = `+${fmt(gain)}`;
-            f.style.left = `${e.clientX}px`;
-            f.style.top = `${e.clientY - 40}px`;
-            document.body.appendChild(f);
-            setTimeout(() => f.remove(), 700);
-        });
-
-        // Магазин
-        document.getElementById('b-pow').onclick = () => {
-            if(p.money >= p.c1) { p.money -= p.c1; p.power++; p.c1 *= 3; updateUI(); save(); }
-        };
-        document.getElementById('b-mult').onclick = () => {
-            if(p.money >= p.c2) { p.money -= p.c2; p.mult *= 2; p.c2 *= 10; updateUI(); save(); }
-        };
-        document.getElementById('b-bot').onclick = () => {
-            if(p.money >= p.c3) { p.money -= p.c3; p.bots += 5; p.c3 *= 4; updateUI(); save(); }
-        };
-
-        // Авто-боты
-        setInterval(() => { if(p.bots > 0) { p.money += (p.bots / 10); updateUI(); } }, 100);
-
-        // 6. Сохранение
-        const save = async () => {
+        async function saveToCloud() {
             if(!auth.currentUser) return;
-            await setDoc(doc(db, "leaders", auth.currentUser.uid), {
-                score: p.money, power: p.power, mult: p.mult, bots: p.bots,
-                c1: p.c1, c2: p.c2, c3: p.c3, xp: p.xp, lvl: p.lvl, name: p.name, gameId: p.id
-            }, { merge: true });
-        };
-        setInterval(save, 20000);
-
-        // 7. Доп. Окна
-        const modal = document.getElementById('modal-ui');
-        const mBody = document.getElementById('modal-body');
-        const close = () => modal.style.display = 'none';
-
-        document.getElementById('nav-top').onclick = () => {
-            modal.style.display = 'flex';
-            mBody.innerHTML = `<h3>🏆 TOP PLAYERS</h3><div id="top-l" style="margin:20px 0">Loading...</div><button class="buy-btn" id="m-close" style="width:100%">CLOSE</button>`;
-            document.getElementById('m-close').onclick = close;
-            onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(8)), (s) => {
-                const l = document.getElementById('top-l'); if(!l) return;
-                l.innerHTML = "";
-                s.forEach(d => {
-                    const i = d.data();
-                    l.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; background:rgba(0,0,0,0.2); margin-bottom:5px; border-radius:12px">
-                        <span>#${i.gameId} <b>${i.name}</b></span><b>${fmt(i.score)}</b></div>`;
-                });
-            });
-        };
-
-        document.getElementById('nav-set').onclick = () => {
-            modal.style.display = 'flex';
-            let adm = auth.currentUser.email === ADMIN ? `<button id="m-adm" class="buy-btn" style="width:100%; margin-top:10px; background:var(--p)">ADMIN PANEL</button>` : '';
-            mBody.innerHTML = `<h3>⚙️ SETTINGS</h3><input type="text" id="nn" class="input-f" style="width:100%; margin-top:20px; background:#000; color:#fff; padding:15px; border-radius:10px; border:1px solid #444" placeholder="Nickname" value="${p.name}"><button id="m-save" class="buy-btn" style="width:100%; margin-top:10px; background:var(--s)">SAVE</button>${adm}<button id="m-close" class="buy-btn" style="width:100%; margin-top:10px; background:#333">BACK</button>`;
-            document.getElementById('m-close').onclick = close;
-            document.getElementById('m-save').onclick = () => { const v = document.getElementById('nn').value.trim(); if(v) { p.name = v; updateUI(); save(); close(); } };
-            if(document.getElementById('m-adm')) document.getElementById('m-adm').onclick = openAdmin;
-        };
-
-        function openAdmin() {
-            mBody.innerHTML = `<h3>👑 ADMIN</h3><input type="text" id="at" class="input-f" style="width:100%; margin-top:15px; background:#000; color:#fff; padding:10px; border-radius:10px" placeholder="User ID"><input type="number" id="av" class="input-f" style="width:100%; margin-top:5px; background:#000; color:#fff; padding:10px; border-radius:10px" placeholder="Amount"><button id="a-give" class="buy-btn" style="width:100%; margin-top:10px; background:var(--s)">GIVE COINS</button><button id="a-back" class="buy-btn" style="width:100%; margin-top:10px; background:#222">BACK</button>`;
-            document.getElementById('a-back').onclick = () => document.getElementById('nav-set').click();
-            document.getElementById('a-give').onclick = async () => {
-                const id = parseInt(document.getElementById('at').value);
-                const v = parseFloat(document.getElementById('av').value);
-                const q = query(collection(db, "leaders"), where("gameId", "==", id));
-                const s = await getDocs(q);
-                if(s.empty) return msg("ADMIN", "Not found", true);
-                await setDoc(s.docs[0].ref, { score: (s.docs[0].data().score || 0) + v }, { merge: true });
-                msg("ADMIN", "Coins Added!");
-            };
+            try {
+                await setDoc(doc(db, "leaders", auth.currentUser.uid), state, { merge: true });
+                console.log("[SYNC]: Cloud saved.");
+            } catch(e) { console.error("Sync error", e); }
         }
-    </script>
-</body>
-</html>
+
+        // 6. UI ENGINE
+        function updateUI() {
+            $('val-balance').innerText = fNum(state.money);
+            $('ui-pow').innerText = `+${fNum(state.power * state.mult * (1 + state.rebirths))}`;
+            $('ui-mul').innerText = `x${state.mult}`;
+            $('ui-aut').innerText = `${fNum(state.auto)}/s`;
+            
+            $('cost-pow').innerText = fNum(state.costs.p);
+            $('cost-mul').innerText = fNum(state.costs.m);
+            $('cost-aut').innerText = fNum(state.costs.a);
+
+            // Leveling
+            let xpNext = state.lvl * 250;
+            let progress = (state.xp / xpNext) * 100;
+            $('bar-xp').style.width = `${progress}%`;
+            $('ui-level-tag').innerText = `LEVEL: ${state.lvl} [${Math.floor(progress)}%] SP: ${state.sp}`;
+
+            if(state.xp >= xpNext) {
+                state.lvl++;
+                state.xp = 0;
+                state.sp += 2;
+                toast("LEVEL UP", `Reached level ${state.lvl}! +2 Skill Points`);
+            }
+
+            // Prestige
+            if(state.rebirths > 0) {
+                $('rebirth-badge').style.display = 'block';
+                $('rebirth-badge').innerText = `PRESTIGE X${state.rebirths}`;
+            }
+
+            checkShopAvailability();
+        }
+
+        function checkShopAvailability() {
+            $('buy-pow').disabled = state.money < state.costs.p;
+            $('buy-mul').disabled = state.money < state.costs.m;
+            $('buy-aut').disabled = state.money < state.costs.a;
+        }
+
+        // 7. GAMEPLAY LOGIC
+        $('core-tap').addEventListener('pointerdown', (e) => {
+            let baseGain = state.power * state.mult * (1 + state.rebirths);
+            
+            // Crit Check
+            let isCrit = Math.random() < (state.skills.critChance / 100);
+            let finalGain = isCrit ? baseGain * 5 : baseGain;
+
+            state.money += finalGain;
+            state.xp += (1 * state.skills.xpBoost);
+            state.totalClicks++;
+
+            createParticle(e.clientX, e.clientY, finalGain, isCrit);
+            updateUI();
+            
+            if(state.totalClicks % 50 === 0) saveToCloud();
+        });
+
+        function createParticle(x, y, val, crit) {
+            const p = document.createElement('div');
+            p.className = 'click-fx';
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+            if(crit) {
+                p.style.color = 'var(--a)';
+                p.style.fontSize = '2.5rem';
+                p.innerText = `CRIT +${fNum(val)}`;
+            } else {
+                p.innerText = `+${fNum(val)}`;
+            }
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 800);
+        }
+
+        // Shop Buttons
+        $('buy-pow').onclick = () => {
+            if(state.money >= state.costs.p) {
+                state.money -= state.costs.p;
+                state.power++;
+                state.costs.p = Math.floor(state.costs.p * 2.2);
+                updateUI();
+                saveToCloud();
+            }
+        };
+
+        $('buy-mul').onclick = () => {
+            if(state.money >= state.costs.m) {
+                state.money -= state.costs.m;
+                state.mult *= 2;
+                state.costs.m = Math.floor(state.costs.m * 10);
+                updateUI();
+                saveToCloud();
+            }
+        };
+
+        $('buy-aut').onclick = () => {
+            if(state.money >= state.costs.a) {
+                state.money -= state.costs.a;
+                state.auto += 5;
+                state.costs.a = Math.floor(state.costs.a * 3.5);
+                updateUI();
+                saveToCloud();
+            }
+        };
+
+        function startLoop() {
+            setInterval(() => {
+                if(state.auto > 0) {
+                    state.money += (state.auto / 10);
+                    updateUI();
+                }
+            }, 100);
+        }
+
+        // 8. TAB SYSTEM (Skills, Prestige, Rank)
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(t => {
+            t.onclick = () => {
+                tabs.forEach(x => x.classList.remove('active'));
+                t.classList.add('active');
+                renderTab(t.dataset.tab);
+            }
+        });
+
+        function renderTab(type) {
+            const panel = $('main-panel');
+            panel.innerHTML = "";
+
+            if(type === 'shop') {
+                panel.innerHTML = `
+                    <div class="shop-item">
+                        <div class="item-i
