@@ -11,7 +11,7 @@
         #money { font-size: 3.5rem; margin: 0; font-weight: 900; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
         .info { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; }
         .game-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 15px; margin-top: -20px; }
-        #main-button { width: 200px; height: 200px; border-radius: 50%; background: #ff4d4d; border: 6px solid white; background-image: url('button.png'); background-size: cover; background-position: center; box-shadow: 0 10px 30px rgba(255, 77, 77, 0.5); cursor: pointer; transition: transform 0.05s; }
+        #main-button { width: 180px; height: 180px; border-radius: 50%; background: #ff4d4d; border: 6px solid white; background-image: url('button.png'); background-size: cover; background-position: center; box-shadow: 0 10px 30px rgba(255, 77, 77, 0.5); cursor: pointer; transition: transform 0.05s; }
         #main-button:active { transform: scale(0.92); }
         .panel { width: 100%; max-width: 400px; background: #1a1a2e; padding: 15px; border-radius: 20px; border: 1px solid #333; }
         .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -36,19 +36,19 @@
                 <div class="upgrade-btn" id="btn-click">💪 СИЛА (+1)<br><span id="c-price">10</span> 💰</div>
                 <div class="upgrade-btn" id="btn-auto">🤖 АВТО (+1)<br><span id="a-price">50</span> 💰</div>
             </div>
-            <button id="save-btn">🏆 ОПУБЛИКОВАТЬ РЕКОРД</button>
+            <button id="save-btn">🏆 ОБНОВИТЬ МОЙ РЕКОРД</button>
         </div>
         <div class="panel">
             <div class="leaderboard">
                 <h3>📊 МИРОВОЙ ТОП-5</h3>
-                <div id="leader-list">Загрузка рекордов...</div>
+                <div id="leader-list">Загрузка...</div>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, updateDoc, addDoc, orderBy, limit, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBtX0",
@@ -61,88 +61,67 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const leadersCol = collection(db, "leaders");
+        const colRef = collection(db, "leaders");
 
-        // ПЕРЕМЕННЫЕ ИГРЫ
         let money = parseFloat(localStorage.getItem('m_money')) || 0;
         let power = parseInt(localStorage.getItem('m_power')) || 1;
         let auto = parseInt(localStorage.getItem('m_auto')) || 0;
-        let priceClick = parseInt(localStorage.getItem('m_p_c')) || 10;
-        let priceAuto = parseInt(localStorage.getItem('m_p_a')) || 50;
+        let pC = parseInt(localStorage.getItem('m_p_c')) || 10;
+        let pA = parseInt(localStorage.getItem('m_p_a')) || 50;
 
         function updateUI() {
             document.getElementById('money').innerText = Math.floor(money);
             document.getElementById('power').innerText = power;
             document.getElementById('auto').innerText = auto;
-            document.getElementById('c-price').innerText = priceClick;
-            document.getElementById('a-price').innerText = priceAuto;
+            document.getElementById('c-price').innerText = pC;
+            document.getElementById('a-price').innerText = pA;
         }
 
-        // КЛИК
-        document.getElementById('main-button').addEventListener('click', () => {
-            money += power;
-            updateUI();
-        });
+        document.getElementById('main-button').onclick = () => { money += power; updateUI(); };
+        document.getElementById('btn-click').onclick = () => { if(money>=pC){ money-=pC; power++; pC=Math.round(pC*1.6); updateUI(); save(); } };
+        document.getElementById('btn-auto').onclick = () => { if(money>=pA){ money-=pA; auto++; pA=Math.round(pA*1.7); updateUI(); save(); } };
 
-        // МАГАЗИН
-        document.getElementById('btn-click').addEventListener('click', () => {
-            if (money >= priceClick) {
-                money -= priceClick; power++; priceClick = Math.round(priceClick * 1.6);
-                updateUI(); save();
-            }
-        });
-
-        document.getElementById('btn-auto').addEventListener('click', () => {
-            if (money >= priceAuto) {
-                money -= priceAuto; auto++; priceAuto = Math.round(priceAuto * 1.7);
-                updateUI(); save();
-            }
-        });
-
-        // СОХРАНЕНИЕ ЛОКАЛЬНО
         function save() {
-            localStorage.setItem('m_money', money);
-            localStorage.setItem('m_power', power);
-            localStorage.setItem('m_auto', auto);
-            localStorage.setItem('m_p_c', priceClick);
-            localStorage.setItem('m_p_a', priceAuto);
+            localStorage.setItem('m_money', money); localStorage.setItem('m_power', power);
+            localStorage.setItem('m_auto', auto); localStorage.setItem('m_p_c', pC); localStorage.setItem('m_p_a', pA);
         }
 
-        // ПУБЛИКАЦИЯ В FIREBASE
-        document.getElementById('save-btn').addEventListener('click', async () => {
-            let name = prompt("Введите ваше имя:");
-            if (name) {
-                try {
-                    await addDoc(leadersCol, { name: name, score: Math.floor(money), date: Date.now() });
-                    alert("Рекорд сохранен в облако!");
-                } catch (e) {
-                    alert("Ошибка базы! Проверь Rules в Firebase");
-                    console.error(e);
-                }
-            }
-        });
+        // ЛОГИКА ОБНОВЛЕНИЯ РЕКОРДА
+        document.getElementById('save-btn').onclick = async () => {
+            let name = prompt("Введите ваше имя (для обновления рекорда):");
+            if (!name) return;
 
-        // ОБНОВЛЕНИЕ РЕКОРДОВ (REALTIME)
-        const q = query(leadersCol, orderBy("score", "desc"), limit(5));
-        onSnapshot(q, (snapshot) => {
-            const listEl = document.getElementById('leader-list');
-            listEl.innerHTML = "";
-            if (snapshot.empty) { listEl.innerHTML = "Пока нет рекордов"; }
-            snapshot.forEach(doc => {
-                const d = doc.data();
-                listEl.innerHTML += `<div class="leader-entry"><span>${d.name}</span><b>${d.score} 💰</b></div>`;
+            const qSearch = query(colRef, where("name", "==", name));
+            const querySnapshot = await getDocs(qSearch);
+
+            if (!querySnapshot.empty) {
+                // Если имя есть — обновляем только если новый счет больше
+                let userDoc = querySnapshot.docs[0];
+                if (money > userDoc.data().score) {
+                    await updateDoc(doc(db, "leaders", userDoc.id), { score: Math.floor(money) });
+                    alert("Рекорд обновлен!");
+                } else {
+                    alert("Твой текущий рекорд в базе выше!");
+                }
+            } else {
+                // Если имени нет — создаем
+                await addDoc(colRef, { name: name, score: Math.floor(money) });
+                alert("Ты добавлен в таблицу!");
+            }
+        };
+
+        // ТАБЛИЦА ЛИДЕРОВ
+        const qTop = query(colRef, orderBy("score", "desc"), limit(5));
+        onSnapshot(qTop, (snap) => {
+            const list = document.getElementById('leader-list');
+            list.innerHTML = "";
+            snap.forEach(d => {
+                list.innerHTML += `<div class="leader-entry"><span>${d.data().name}</span><b>${d.data().score} 💰</b></div>`;
             });
         });
 
-        // АВТОКЛИКЕР
-        setInterval(() => {
-            money += auto;
-            updateUI();
-            if(auto > 0) save();
-        }, 1000);
-
+        setInterval(() => { money += auto; updateUI(); if(auto>0) save(); }, 1000);
         updateUI();
     </script>
 </body>
 </html>
-
