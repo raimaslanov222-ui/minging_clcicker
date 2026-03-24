@@ -3,113 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minding Clicker Ultra</title>
+    <title>My Clicker Game</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        body { margin: 0; padding: 0; font-family: 'Arial Black', sans-serif; background: #0f0f1a; color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* Экраны */
+        /* Окна входа и настроек */
         #auth-screen, #modal-overlay { position: fixed; inset: 0; background: #0f0f1a; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         #modal-overlay { background: rgba(0,0,0,0.9); z-index: 2000; display: none; }
-
-        .box { width: 100%; max-width: 320px; background: #1a1a2e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; position: relative; }
+        .box { width: 100%; max-width: 320px; background: #1a1a2e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #05050a; color: white; outline: none; text-align: center; }
-        
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; transition: 0.1s; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; }
         .btn-green { background: #4ecca3; color: white; }
-        .btn-admin { background: gold; color: black; margin-top: 15px; display: none; }
+        .btn-admin { background: #ffcc00; color: black; margin-top: 15px; display: none; font-weight: 900; }
 
-        /* Основной интерфейс */
-        #game-ui { display: none; flex-direction: column; height: 100%; width: 100%; }
-        
+        /* Шапка с БАЛАНСОМ */
+        #game-ui { display: none; flex-direction: column; height: 100%; }
         .header { 
-            background: linear-gradient(180deg, #ff3333 0%, #800000 100%); 
-            padding: 40px 20px 20px 20px; 
+            background: linear-gradient(180deg, #ff1a1a 0%, #b30000 100%); 
+            padding: 30px 20px; 
             text-align: center; 
-            border-bottom-left-radius: 30px; 
-            border-bottom-right-radius: 30px; 
+            border-bottom-left-radius: 40px; 
+            border-bottom-right-radius: 40px; 
             position: relative;
-            min-height: 160px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
         }
-
-        #money { font-size: 3.5rem; font-weight: 900; margin: 0; line-height: 1; }
-        #user-tag { color: #4ecca3; font-weight: bold; margin-top: 10px; font-size: 0.9rem; }
+        #money { font-size: 4rem; font-weight: 900; margin: 0; color: white; text-shadow: 0 4px 10px rgba(0,0,0,0.3); letter-spacing: -1px; }
+        #user-tag { color: rgba(255,255,255,0.8); font-weight: bold; font-size: 0.8rem; margin-top: 5px; text-transform: uppercase; }
 
         .icon-btn { 
-            position: absolute; 
-            top: 15px; 
-            background: rgba(255,255,255,0.2); 
-            border: none; 
-            border-radius: 10px; 
-            width: 40px; 
-            height: 40px; 
-            color: white; 
-            font-size: 1.2rem; 
-            z-index: 10;
+            position: absolute; top: 20px; background: rgba(255,255,255,0.25); border: none; 
+            border-radius: 12px; width: 45px; height: 45px; color: white; font-size: 1.3rem;
+            display: flex; align-items: center; justify-content: center;
         }
-        #open-top-btn { left: 15px; }
-        #open-settings-btn { right: 15px; }
+        #open-top-btn { left: 20px; }
+        #open-settings-btn { right: 20px; }
 
-        .main-area { 
-            flex: 1; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-
+        /* Игровая зона */
+        .main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
         #main-button { 
-            width: 200px; 
-            height: 200px; 
-            border-radius: 50%; 
-            background-image: url('button.png'); 
-            background-size: cover; 
-            background-position: center;
-            border: 6px solid white; 
-            box-shadow: 0 0 30px rgba(255,77,77,0.5);
-            transition: transform 0.05s;
+            width: 190px; height: 190px; border-radius: 50%; 
+            background: url('button.png') center/cover; border: 6px solid white; 
+            box-shadow: 0 0 40px rgba(255, 25, 25, 0.5); transition: transform 0.05s;
         }
-        #main-button:active { transform: scale(0.92); }
+        #main-button:active { transform: scale(0.9); }
+        .stats-row { font-size: 0.85rem; color: #aaa; text-align: center; margin: 5px 0; }
 
-        .shop-panel { 
-            background: #1a1a2e; 
-            padding: 15px; 
-            border-top-left-radius: 25px; 
-            border-top-right-radius: 25px; 
-            border-top: 1px solid #333;
-        }
-
+        /* Магазин */
+        .shop-panel { padding: 15px; background: #161625; border-radius: 30px 30px 0 0; }
         .shop-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: #252545; 
-            padding: 10px 15px; 
-            border-radius: 15px; 
-            margin-bottom: 8px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #20203a; padding: 12px 18px; border-radius: 15px; margin-bottom: 8px;
         }
-        .shop-item b { font-size: 0.9rem; }
-        .shop-item button { 
-            background: #ffcc00; 
-            color: black; 
-            border: none; 
-            padding: 8px 12px; 
-            border-radius: 10px; 
-            font-weight: bold; 
-            min-width: 80px;
-        }
-
-        .leader-row { display: flex; justify-content: space-between; padding: 10px; background: #05050a; margin-bottom: 5px; border-radius: 8px; font-size: 0.85rem; }
+        .shop-item button { background: #ffcc00; color: black; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; }
+        .leader-row { display: flex; justify-content: space-between; padding: 10px; background: #05050a; margin-bottom: 5px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="box">
-            <h2 style="margin-top:0">Minding Clicker</h2>
+            <h2>ВХОД В ИГРУ</h2>
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="pass" placeholder="Пароль">
             <button class="btn btn-green" id="login-btn">ВОЙТИ</button>
-            <button class="btn" style="background:transparent; color:#4ecca3;" id="reg-btn">РЕГИСТРАЦИЯ</button>
+            <button class="btn" style="background:transparent; color:#4ecca3" id="reg-btn">РЕГИСТРАЦИЯ</button>
         </div>
     </div>
 
@@ -123,36 +81,49 @@
         
         <div class="main-area">
             <div id="main-button"></div>
+            <div class="stats-row">
+                Клик: <b id="st-p">+1</b> | Множ: <b id="st-m">x1</b><br>
+                <span style="color:#4ecca3">Авто-бот: <b id="st-b">0</b> /сек</span>
+            </div>
         </div>
 
         <div class="shop-panel">
-            <div class="shop-item"><div><b>Сила</b><br><small id="c1">10</small></div><button id="buy1">КУПИТЬ</button></div>
-            <div class="shop-item"><div><b>Множ</b><br><small id="c2">100</small></div><button id="buy2">КУПИТЬ</button></div>
-            <div class="shop-item"><div><b>Бот</b><br><small id="c3">500</small></div><button id="buy3">КУПИТЬ</button></div>
+            <div class="shop-item">
+                <div><b>Сила клика</b><br><small>Цена: <span id="c1">10</span></small></div>
+                <button id="buy1">КУПИТЬ</button>
+            </div>
+            <div class="shop-item">
+                <div><b>Множитель</b><br><small>Цена: <span id="c2">100</span></small></div>
+                <button id="buy2">КУПИТЬ</button>
+            </div>
+            <div class="shop-item">
+                <div><b>Авто-бот</b><br><small>Цена: <span id="c3">500</span></small></div>
+                <button id="buy3">КУПИТЬ</button>
+            </div>
         </div>
     </div>
 
     <div id="modal-overlay">
-        <div id="settings-box" class="box" style="display:none;">
-            <h3>⚙️ НАСТРОЙКИ</h3>
+        <div id="settings-box" class="box" style="display:none">
+            <h3>НАСТРОЙКИ</h3>
             <input type="text" id="new-name-input" maxlength="12" placeholder="Новый ник">
-            <button class="btn btn-green" id="save-name-btn">ИЗМЕНИТЬ НИК</button>
+            <button class="btn btn-green" id="save-name-btn">СОХРАНИТЬ</button>
             <button class="btn btn-admin" id="admin-panel-btn">👑 АДМИН-ПАНЕЛЬ</button>
             <button class="btn" style="background:#333; color:white; margin-top:10px" onclick="closeModal()">ЗАКРЫТЬ</button>
         </div>
 
-        <div id="admin-box" class="box" style="display:none; border-color: gold;">
-            <h3 style="color:gold">👑 АДМИНКА</h3>
+        <div id="admin-box" class="box" style="display:none; border-color: gold">
+            <h3 style="color:gold">АДМИНКА</h3>
             <input type="number" id="target-id" placeholder="ID игрока">
             <input type="number" id="add-money-val" placeholder="Сумма">
             <button class="btn btn-green" id="give-money-btn">ВЫДАТЬ</button>
-            <button class="btn" style="background:red; color:white;" id="reset-player-btn">ОБНУЛИТЬ</button>
+            <button class="btn" style="background:red; color:white" id="reset-player-btn">ОБНУЛИТЬ</button>
             <button class="btn" onclick="openSettings()">НАЗАД</button>
         </div>
 
-        <div id="top-box" class="box" style="display:none; border-color: gold;">
+        <div id="top-box" class="box" style="display:none; border-color: gold">
             <h3 style="color:gold">🏆 ТОП-10</h3>
-            <div id="leader-list" style="max-height: 200px; overflow-y: auto;"></div>
+            <div id="leader-list"></div>
             <button class="btn" style="background:#333; color:white; margin-top:10px" onclick="closeModal()">ЗАКРЫТЬ</button>
         </div>
     </div>
@@ -174,28 +145,28 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        const ADMIN_EMAIL = "Raimaslanov222@gmail.com";
-        setPersistence(auth, browserLocalPersistence);
+        const ADMIN_EMAIL = "raimaslanov222@gmail.com";
 
         let user = null, money = 0, power = 1, mult = 1, bot = 0, myId = 0, myName = "";
         let cost1 = 10, cost2 = 100, cost3 = 500;
 
-        document.getElementById('login-btn').onclick = () => {
-            const m = email.value, p = pass.value;
-            signInWithEmailAndPassword(auth, m, p).catch(e => alert("Ошибка входа"));
-        };
+        // Красивое сокращение чисел
+        function nForm(n) {
+            if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
+            if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
+            if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
+            return Math.floor(n);
+        }
 
+        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка"));
         document.getElementById('reg-btn').onclick = async () => {
-            const m = email.value, p = pass.value;
-            if(!m || !p) return alert("Заполни поля");
             try {
-                const res = await createUserWithEmailAndPassword(auth, m, p);
+                const res = await createUserWithEmailAndPassword(auth, email.value, pass.value);
                 await runTransaction(db, async (t) => {
                     const c = await t.get(doc(db, "system", "users_count"));
                     let nid = c.exists() ? c.data().val + 1 : 1;
                     t.set(doc(db, "system", "users_count"), { val: nid });
-                    t.set(doc(db, "leaders", res.user.uid), { name: m.split('@')[0], score: 0, power: 1, mult: 1, bot: 0, cost1: 10, cost2: 100, cost3: 500, gameId: nid });
+                    t.set(doc(db, "leaders", res.user.uid), { name: email.value.split('@')[0], score: 0, power: 1, mult: 1, bot: 0, cost1: 10, cost2: 100, cost3: 500, gameId: nid });
                 });
             } catch(e) { alert("Ошибка регистрации"); }
         };
@@ -205,7 +176,7 @@
                 user = u;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('game-ui').style.display = 'flex';
-                if(user.email === ADMIN_EMAIL) document.getElementById('admin-panel-btn').style.display = 'block';
+                if(user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) document.getElementById('admin-panel-btn').style.display = 'block';
                 const s = await getDoc(doc(db, "leaders", user.uid));
                 if (s.exists()) {
                     const d = s.data();
@@ -221,13 +192,18 @@
         setInterval(() => { if(bot > 0) { money += (bot / 10); updateUI(); } }, 100);
 
         function updateUI() {
-            document.getElementById('money').innerText = Math.floor(money);
-            document.getElementById('user-tag').innerText = `${myName.toUpperCase()} | ID: #${myId}`;
-            document.getElementById('c1').innerText = cost1; document.getElementById('c2').innerText = cost2; document.getElementById('c3').innerText = cost3;
+            document.getElementById('money').innerText = nForm(money);
+            document.getElementById('user-tag').innerText = `${myName} | ID: #${myId}`;
+            document.getElementById('st-p').innerText = `+${nForm(power)}`;
+            document.getElementById('st-m').innerText = `x${mult}`;
+            document.getElementById('st-b').innerText = nForm(bot);
+            document.getElementById('c1').innerText = nForm(cost1); 
+            document.getElementById('c2').innerText = nForm(cost2); 
+            document.getElementById('c3').innerText = nForm(cost3);
         }
 
         async function save() { if(user) await setDoc(doc(db,"leaders",user.uid),{name:myName,score:money,power:power,mult:mult,bot:bot,cost1:cost1,cost2:cost2,cost3:cost3,gameId:myId},{merge:true}); }
-        setInterval(save, 15000);
+        setInterval(save, 10000);
 
         const buy = (n) => {
             if(n==1 && money>=cost1){ money-=cost1; power++; cost1*=4; }
@@ -255,8 +231,8 @@
 
         document.getElementById('save-name-btn').onclick = async () => {
             const val = document.getElementById('new-name-input').value.trim();
-            if(val.length < 2) return alert("Короткое имя");
-            myName = val; updateUI(); await save(); closeModal();
+            if(val.length < 2) return alert("Слишком коротко");
+            myName = val; updateUI(); await save(); alert("Ник изменен!");
         };
 
         document.getElementById('admin-panel-btn').onclick = () => {
@@ -264,25 +240,25 @@
             document.getElementById('admin-box').style.display = 'block';
         };
 
-        const modifyPlayer = async (type) => {
+        const adminOp = async (type) => {
             const tid = parseInt(document.getElementById('target-id').value);
             const val = parseInt(document.getElementById('add-money-val').value) || 0;
             const q = query(collection(db, "leaders"), where("gameId", "==", tid));
             const snap = await getDocs(q);
-            if(snap.empty) return alert("Не найден");
+            if(snap.empty) return alert("Игрок не найден");
             const pDoc = snap.docs[0];
             if(type === 'give') await setDoc(pDoc.ref, { score: (pDoc.data().score + val) }, { merge: true });
             else await setDoc(pDoc.ref, { score: 0 }, { merge: true });
-            alert("Готово");
+            alert("Готово!");
         };
-        document.getElementById('give-money-btn').onclick = () => modifyPlayer('give');
-        document.getElementById('reset-player-btn').onclick = () => modifyPlayer('reset');
+        document.getElementById('give-money-btn').onclick = () => adminOp('give');
+        document.getElementById('reset-player-btn').onclick = () => adminOp('reset');
 
         onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(10)), (snap) => {
             const list = document.getElementById('leader-list');
             list.innerHTML = "";
             snap.forEach(d => {
-                list.innerHTML += `<div class="leader-row"><span>#${d.data().gameId} <b>${d.data().name}</b></span><b>${Math.floor(d.data().score)}</b></div>`;
+                list.innerHTML += `<div class="leader-row"><span>#${d.data().gameId} <b>${d.data().name}</b></span><b>${nForm(d.data().score)}</b></div>`;
             });
         });
     </script>
