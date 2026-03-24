@@ -1,116 +1,103 @@
 :root {
-    --primary: #ff1a1a;
-    --secondary: #4ecca3;
-    --background: #030305;
-    --surface: #11111d;
-    --text: #ffffff;
-    --text-dim: #666;
-    --border: rgba(255, 255, 255, 0.08);
+    --red-bg: linear-gradient(180deg, #ff1a1a 0%, #a30000 100%);
+    --dark-bg: #050508;
+    --card-bg: #14141f;
+    --yellow: #ffcc00;
+    --green: #4ecca3;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-    background-color: var(--background);
-    color: var(--text);
-    font-family: 'Roboto', sans-serif;
-    height: 100vh;
-    overflow: hidden;
+body, html {
+    margin: 0; padding: 0; background-color: var(--dark-bg);
+    color: #fff; font-family: 'Montserrat', sans-serif;
+    height: 100vh; overflow: hidden;
 }
 
-/* Auth UI */
-#auth-screen {
-    height: 100%;
+/* Шапка */
+.top-header {
+    background: var(--red-bg);
+    height: 120px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    background: radial-gradient(circle at center, #161625 0%, #000 100%);
+    padding: 0 20px;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
 }
 
-.auth-container {
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
+.header-center { text-align: center; }
+.logo { font-size: 2.2rem; font-weight: 900; margin: 0; }
+#user-tag { font-size: 0.7rem; opacity: 0.8; margin-top: 5px; text-transform: uppercase; }
+
+/* Кнопка клика */
+.main-area {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; height: calc(100vh - 350px);
 }
 
-.logo { font-family: 'Montserrat'; font-size: 2.5rem; margin-bottom: 40px; }
-.accent { color: var(--primary); }
-
-.input-field { margin-bottom: 20px; text-align: left; }
-.input-field label { font-size: 0.7rem; font-weight: 700; color: var(--text-dim); letter-spacing: 1px; }
-
-.input-field input {
-    width: 100%;
-    padding: 15px;
-    background: #000;
-    border: 1px solid #333;
-    border-radius: 12px;
-    color: #fff;
-    margin-top: 5px;
+#main-clicker {
+    width: 200px; height: 200px; border-radius: 50%;
+    border: 4px solid #fff; display: flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 30px rgba(255, 26, 26, 0.3);
+    cursor: pointer; transition: 0.1s;
 }
 
-.primary-btn {
-    width: 100%;
-    padding: 18px;
-    background: var(--primary);
-    border: none;
-    border-radius: 12px;
-    color: #fff;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: 0 10px 20px rgba(255, 26, 26, 0.2);
-}
+#main-clicker:active { transform: scale(0.92); }
 
-.secondary-btn {
-    background: transparent;
-    border: none;
-    color: var(--secondary);
-    margin-top: 15px;
-    cursor: pointer;
-    font-weight: 700;
-}
+.stats-text { text-align: center; margin-top: 20px; font-size: 0.9rem; line-height: 1.5; }
+.auto-text { color: var(--green); font-weight: bold; }
 
-/* Game UI */
-#game-screen { height: 100%; display: flex; flex-direction: column; }
-
-.game-header { padding: 40px 20px 20px; text-align: center; background: #000; }
-#balance { font-family: 'Montserrat'; font-size: 3.5rem; }
-
-/* Анимация кнопки */
-#click-target {
-    width: 220px;
-    height: 220px;
-    background: var(--primary);
-    border-radius: 50%;
-    margin: 40px auto;
-    border: 10px solid #fff;
-    cursor: pointer;
-    position: relative;
-    box-shadow: 0 0 50px rgba(255, 26, 26, 0.4);
-    transition: transform 0.05s;
-}
-
-#click-target:active { transform: scale(0.9); }
-
-/* Вкладки */
-.tab-pane { display: none; padding: 20px; overflow-y: auto; flex: 1; }
-.tab-pane.active { display: block; }
-
-.bottom-nav {
+/* Магазин */
+.shop-area { padding: 20px; }
+.shop-item {
+    background: var(--card-bg);
+    padding: 12px 20px;
+    border-radius: 15px;
     display: flex;
-    background: #0a0a0a;
-    padding: 10px;
-    border-top: 1px solid var(--border);
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-.nav-item {
-    flex: 1;
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 0.7rem;
-    font-weight: 900;
-    cursor: pointer;
+.item-info b { font-size: 0.9rem; }
+.item-info p { font-size: 0.7rem; color: #888; margin: 3px 0 0; }
+
+.buy-btn {
+    background: var(--yellow);
+    color: #000; font-weight: 900;
+    border: none; padding: 10px 20px;
+    border-radius: 10px; cursor: pointer;
 }
 
-.nav-item.active { color: var(--primary); }
+/* Модальные окна */
+.modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+    display: none; align-items: center; justify-content: center; z-index: 100;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    width: 85%; max-width: 350px;
+    padding: 30px; border-radius: 25px;
+    text-align: center; border: 1px solid rgba(255,255,255,0.1);
+}
+
+.modal h2 { font-size: 1.2rem; margin-bottom: 20px; }
+
+input {
+    width: 100%; padding: 15px; background: #000;
+    border: 1px solid #333; border-radius: 12px;
+    color: #fff; margin-bottom: 15px; box-sizing: border-box;
+}
+
+.action-btn {
+    width: 100%; padding: 15px; border-radius: 12px;
+    border: none; font-weight: 900; margin-bottom: 10px; cursor: pointer;
+}
+
+.action-btn.save { background: var(--green); color: #fff; }
+.action-btn.admin { background: var(--yellow); color: #000; }
+.action-btn.reset { background: #ff1a1a; color: #fff; }
+.action-btn.close-modal { background: #333; color: #fff; }
+
+.icon-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
