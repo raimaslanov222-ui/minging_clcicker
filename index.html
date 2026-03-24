@@ -3,44 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minding Clicker Online</title>
+    <title>Minding Clicker ID</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #0f0f1a; color: white; min-height: 100vh; display: flex; flex-direction: column; }
-        .red-hill { height: 25vh; background: linear-gradient(180deg, #ff3333 0%, #800000 100%); border-bottom-left-radius: 50% 15%; border-bottom-right-radius: 50% 15%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 5px 25px rgba(255, 0, 0, 0.5); }
-        #money { font-size: 3.5rem; margin: 0; font-weight: 900; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
-        .info { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; }
-        .game-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 15px; margin-top: -20px; }
-        #main-button { width: 180px; height: 180px; border-radius: 50%; background: #ff4d4d; border: 6px solid white; background-image: url('button.png'); background-size: cover; background-position: center; box-shadow: 0 10px 30px rgba(255, 77, 77, 0.5); cursor: pointer; transition: transform 0.05s; }
-        #main-button:active { transform: scale(0.92); }
+        
+        /* Экран входа */
+        #auth-screen { position: fixed; inset: 0; background: #0f0f1a; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-box { width: 100%; max-width: 320px; background: #1a1a2e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #0f0f1a; color: white; outline: none; }
+        .auth-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        #login-btn { background: #4ecca3; color: white; }
+        #reg-btn { background: transparent; color: #4ecca3; border: 1px solid #4ecca3; margin-top: 10px; }
+
+        /* Игра */
+        #game-ui { display: none; flex: 1; }
+        .red-hill { height: 20vh; background: linear-gradient(180deg, #ff3333 0%, #800000 100%); border-bottom-left-radius: 50% 15%; border-bottom-right-radius: 50% 15%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        #money { font-size: 3rem; margin: 0; font-weight: 900; }
+        .game-content { display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 15px; }
+        #main-button { width: 160px; height: 160px; border-radius: 50%; background: #ff4d4d; border: 5px solid white; background-image: url('button.png'); background-size: cover; box-shadow: 0 10px 30px rgba(255, 77, 77, 0.5); cursor: pointer; }
+        #main-button:active { transform: scale(0.95); }
         .panel { width: 100%; max-width: 400px; background: #1a1a2e; padding: 15px; border-radius: 20px; border: 1px solid #333; }
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .upgrade-btn { background: #252545; border: 1px solid #ff3333; color: white; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.75rem; text-align: center; }
-        .leaderboard h3 { margin: 0 0 10px 0; text-align: center; color: #ffcc00; font-size: 1rem; }
-        .leader-entry { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #222; font-size: 0.9rem; }
-        .leader-entry b { color: #4ecca3; }
-        #save-btn { width: 100%; margin-top: 10px; background: #ffcc00; color: black; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; }
+        .leader-entry { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; }
     </style>
 </head>
 <body>
 
-    <div class="red-hill">
-        <div id="money">0</div>
-        <div class="info">Клик: +<span id="power">1</span> | Авто: +<span id="auto">0</span>/с</div>
+    <div id="auth-screen">
+        <div class="auth-box">
+            <h2 style="margin: 0 0 15px 0">Minding ID</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="pass" placeholder="Пароль">
+            <button class="auth-btn" id="login-btn">ВОЙТИ</button>
+            <button class="auth-btn" id="reg-btn">СОЗДАТЬ АККАУНТ</button>
+        </div>
     </div>
 
-    <div class="game-content">
-        <div id="main-button"></div>
-        <div class="panel">
-            <div class="shop-grid">
-                <div class="upgrade-btn" id="btn-click">💪 СИЛА (+1)<br><span id="c-price">10</span> 💰</div>
-                <div class="upgrade-btn" id="btn-auto">🤖 АВТО (+1)<br><span id="a-price">50</span> 💰</div>
-            </div>
-            <button id="save-btn">🏆 ОБНОВИТЬ МОЙ РЕКОРД</button>
+    <div id="game-ui">
+        <div class="red-hill">
+            <div id="money">0</div>
+            <div style="font-size:0.8rem; opacity:0.8">Ваш счет</div>
         </div>
-        <div class="panel">
-            <div class="leaderboard">
-                <h3>📊 МИРОВОЙ ТОП-5</h3>
+        <div class="game-content">
+            <div id="main-button"></div>
+            <div class="panel">
+                <button id="save-btn" style="width:100%; background:#ffcc00; border:none; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer">🏆 СОХРАНИТЬ РЕКОРД</button>
+                <button onclick="auth.signOut().then(()=>location.reload())" style="width:100%; background:none; border:none; color:gray; margin-top:15px; cursor:pointer">Выйти</button>
+            </div>
+            <div class="panel">
+                <h3 style="text-align:center; margin:0 0 10px 0; color:#ffcc00">📊 МИРОВОЙ ТОП-5</h3>
                 <div id="leader-list">Загрузка...</div>
             </div>
         </div>
@@ -48,8 +59,10 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, where, getDocs, updateDoc, addDoc, orderBy, limit, onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // Твои настройки из скриншотов
         const firebaseConfig = {
             apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBtX0",
             authDomain: "mindingclicker.firebaseapp.com",
@@ -60,68 +73,47 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
-        const colRef = collection(db, "leaders");
+        let user = null, money = 0;
 
-        let money = parseFloat(localStorage.getItem('m_money')) || 0;
-        let power = parseInt(localStorage.getItem('m_power')) || 1;
-        let auto = parseInt(localStorage.getItem('m_auto')) || 0;
-        let pC = parseInt(localStorage.getItem('m_p_c')) || 10;
-        let pA = parseInt(localStorage.getItem('m_p_a')) || 50;
+        // Вход и регистрация
+        document.getElementById('reg-btn').onclick = () => createUserWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
+        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
 
-        function updateUI() {
-            document.getElementById('money').innerText = Math.floor(money);
-            document.getElementById('power').innerText = power;
-            document.getElementById('auto').innerText = auto;
-            document.getElementById('c-price').innerText = pC;
-            document.getElementById('a-price').innerText = pA;
-        }
-
-        document.getElementById('main-button').onclick = () => { money += power; updateUI(); };
-        document.getElementById('btn-click').onclick = () => { if(money>=pC){ money-=pC; power++; pC=Math.round(pC*1.6); updateUI(); save(); } };
-        document.getElementById('btn-auto').onclick = () => { if(money>=pA){ money-=pA; auto++; pA=Math.round(pA*1.7); updateUI(); save(); } };
-
-        function save() {
-            localStorage.setItem('m_money', money); localStorage.setItem('m_power', power);
-            localStorage.setItem('m_auto', auto); localStorage.setItem('m_p_c', pC); localStorage.setItem('m_p_a', pA);
-        }
-
-        // ЛОГИКА ОБНОВЛЕНИЯ РЕКОРДА
-        document.getElementById('save-btn').onclick = async () => {
-            let name = prompt("Введите ваше имя (для обновления рекорда):");
-            if (!name) return;
-
-            const qSearch = query(colRef, where("name", "==", name));
-            const querySnapshot = await getDocs(qSearch);
-
-            if (!querySnapshot.empty) {
-                // Если имя есть — обновляем только если новый счет больше
-                let userDoc = querySnapshot.docs[0];
-                if (money > userDoc.data().score) {
-                    await updateDoc(doc(db, "leaders", userDoc.id), { score: Math.floor(money) });
-                    alert("Рекорд обновлен!");
-                } else {
-                    alert("Твой текущий рекорд в базе выше!");
-                }
-            } else {
-                // Если имени нет — создаем
-                await addDoc(colRef, { name: name, score: Math.floor(money) });
-                alert("Ты добавлен в таблицу!");
+        onAuthStateChanged(auth, (u) => {
+            if (u) {
+                user = u;
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('game-ui').style.display = 'flex';
             }
+        });
+
+        // Клик
+        document.getElementById('main-button').onclick = () => {
+            money++;
+            document.getElementById('money').innerText = money;
         };
 
-        // ТАБЛИЦА ЛИДЕРОВ
-        const qTop = query(colRef, orderBy("score", "desc"), limit(5));
-        onSnapshot(qTop, (snap) => {
+        // Сохранение рекорда по уникальному UID игрока
+        document.getElementById('save-btn').onclick = async () => {
+            if (!user) return;
+            // Использование user.uid вместо имени гарантирует ОДНУ строку в топе для одного игрока
+            await setDoc(doc(db, "leaders", user.uid), {
+                name: user.email.split('@')[0], 
+                score: money
+            });
+            alert("Твой результат обновлен!");
+        };
+
+        // Загрузка топа в реальном времени
+        onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(5)), (snap) => {
             const list = document.getElementById('leader-list');
             list.innerHTML = "";
             snap.forEach(d => {
                 list.innerHTML += `<div class="leader-entry"><span>${d.data().name}</span><b>${d.data().score} 💰</b></div>`;
             });
         });
-
-        setInterval(() => { money += auto; updateUI(); if(auto>0) save(); }, 1000);
-        updateUI();
     </script>
 </body>
 </html>
