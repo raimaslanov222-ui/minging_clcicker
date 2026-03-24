@@ -2,215 +2,441 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>InfinityB - Final Fixed</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minding Clicker Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --red: #ff1a1a; --dark-red: #8b0000; --bg: #050508; --card: #11111b; --yellow: #ffcc00; --green: #00ff88; --blue: #00d4ff; --border: rgba(255, 255, 255, 0.1); }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body, html { margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        
-        .header { background: linear-gradient(180deg, var(--red) 0%, var(--dark-red) 100%); height: 120px; display: flex; justify-content: space-between; align-items: center; padding: 30px 20px 0; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 100; }
-        .logo-text { font-family: 'Orbitron', sans-serif; font-size: 1.6rem; font-weight: 900; margin: 0; letter-spacing: 2px; }
-        #user-info { font-size: 0.6rem; background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 10px; margin-top: 5px; display: inline-block; }
+        :root {
+            --bg-dark: #050508;
+            --glass: rgba(17, 17, 27, 0.8);
+            --neon-red: #ff1a1a;
+            --dark-red: #8b0000;
+            --text: #ffffff;
+            --accent: #ff4d4d;
+        }
 
-        .game-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #score-display { font-family: 'Orbitron', sans-serif; font-size: 3.2rem; margin: 10px 0; font-weight: 900; }
-        
-        .click-zone { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, #222, #000); border: 6px solid #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.05s; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .click-zone:active { transform: scale(0.9); }
-        .click-zone img { width: 80px; filter: invert(1); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .shop { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-        .card { background: var(--card); border: 1px solid var(--border); padding: 12px 18px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .price { color: var(--yellow); font-weight: 900; font-size: 0.9rem; }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
 
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-        .modal-box { background: var(--card); width: 100%; max-width: 380px; border-radius: 25px; padding: 25px; border: 1px solid var(--red); text-align: center; }
-        
-        input { width: 100%; padding: 14px; background: #000; border: 1px solid #333; border-radius: 12px; color: #fff; margin-bottom: 10px; }
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 900; cursor: pointer; margin-bottom: 8px; text-transform: uppercase; }
-        .btn-green { background: var(--green); color: #000; }
-        .btn-yellow { background: var(--yellow); color: #000; }
-        .btn-red { background: var(--red); color: #fff; }
-        .btn-gray { background: #333; color: #fff; }
+        /* --- HEADER --- */
+        header {
+            background: linear-gradient(180deg, var(--neon-red) 0%, var(--dark-red) 100%);
+            height: 120px;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(255, 26, 26, 0.3);
+            position: relative;
+            z-index: 10;
+        }
 
-        .pop { position: fixed; pointer-events: none; font-weight: 900; font-family: 'Orbitron'; animation: popUp 0.6s forwards; z-index: 2000; }
-        @keyframes popUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
-        .icon-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #fff; }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; letter-spacing: 2px; }
+        #user-info { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; }
+
+        /* --- MAIN LAYOUT --- */
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .balance-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: -30px;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.2);
+        }
+
+        #score-display {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--neon-red);
+        }
+
+        #level-display { font-size: 1rem; color: #aaa; }
+
+        /* --- TAP AREA --- */
+        .click-area {
+            margin: 40px 0;
+            position: relative;
+        }
+
+        #tap-target {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, var(--neon-red) 0%, var(--dark-red) 100%);
+            border-radius: 50%;
+            margin: 0 auto;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 50px rgba(255, 26, 26, 0.4);
+            transition: transform 0.1s ease;
+            user-select: none;
+            animation: pulse 2s infinite;
+        }
+
+        #tap-target:active { transform: scale(0.92); }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 30px rgba(255, 26, 26, 0.4); }
+            50% { box-shadow: 0 0 60px rgba(255, 26, 26, 0.7); }
+            100% { box-shadow: 0 0 30px rgba(255, 26, 26, 0.4); }
+        }
+
+        /* --- SHOP & STATS --- */
+        .shop {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .upgrade-card {
+            background: var(--glass);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.3s;
+        }
+
+        .upgrade-card:hover { border-color: var(--accent); }
+
+        .upgrade-info { text-align: left; }
+        .upgrade-name { font-weight: bold; display: block; }
+        .upgrade-cost { font-size: 0.85rem; color: #ffbcbc; }
+
+        button.buy-btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+        }
+
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* --- FLOATING TEXT --- */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            z-index: 100;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+
+        /* --- ADMIN PANEL --- */
+        #admin-btn {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            display: none;
+            background: #333;
+            color: yellow;
+            border: 1px solid yellow;
+            padding: 5px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #111;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 400px;
+            margin: 50px auto;
+            border: 1px solid var(--accent);
+        }
+
+        input {
+            width: 100%; padding: 10px; margin: 10px 0;
+            background: #222; border: 1px solid #444; color: white;
+        }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <button class="icon-btn" onclick="UI.open('modal-top')">🏆</button>
-        <div style="text-align: center;">
-            <h1 class="logo-text">INFINITY</h1>
-            <div id="user-info">ЗАГРУЗКА...</div>
-        </div>
-        <button class="icon-btn" onclick="UI.open('modal-cfg')">⚙️</button>
+    <header>
+        <h1>MINDING CLICKER</h1>
+        <div id="user-info">Подключение...</div>
     </header>
 
-    <main class="game-main">
-        <h1 id="score-display">0</h1>
-        <div class="click-zone" id="tap-target">
-            <img src="https://img.icons8.com/ios-filled/100/ffffff/touchscreen.png">
+    <div class="container">
+        <div class="balance-card">
+            <div id="score-display">0</div>
+            <div id="level-display">Level: 1</div>
+            <div id="dps-display" style="font-size: 0.8rem; color: #00ff00;">DPS: 0</div>
         </div>
-    </main>
 
-    <footer class="shop">
-        <div class="card" onclick="Game.buy('p')">
-            <div><b>Neural Power</b><br><small>Сила клика +1</small></div>
-            <div class="price" id="c1">10</div>
+        <div class="click-area">
+            <div id="tap-target">
+                <span style="font-family: 'Orbitron'; font-weight: 900; font-size: 1.2rem;">TAP</span>
+            </div>
         </div>
-        <div class="card" onclick="Game.buy('m')">
-            <div><b>Multiplier</b><br><small>Доход x1.2</small></div>
-            <div class="price" id="c2">150</div>
-        </div>
-    </footer>
 
-    <div class="modal" id="modal-top">
-        <div class="modal-box">
-            <h2>🏆 ЛИДЕРЫ</h2>
-            <div id="top-list" style="text-align: left; margin-bottom: 15px;"></div>
-            <button class="btn btn-gray" onclick="UI.close()">ЗАКРЫТЬ</button>
+        <div class="shop">
+            <div class="upgrade-card">
+                <div class="upgrade-info">
+                    <span class="upgrade-name">Click Power</span>
+                    <span class="upgrade-cost" id="cost-0">Cost: 15</span>
+                </div>
+                <button class="buy-btn" id="buy-0">BUY</button>
+            </div>
+            <div class="upgrade-card">
+                <div class="upgrade-info">
+                    <span class="upgrade-name">Auto-Bot (DPS)</span>
+                    <span class="upgrade-cost" id="cost-1">Cost: 100</span>
+                </div>
+                <button class="buy-btn" id="buy-1">BUY</button>
+            </div>
+            <div class="upgrade-card">
+                <div class="upgrade-info">
+                    <span class="upgrade-name">Super Multiplier</span>
+                    <span class="upgrade-cost" id="cost-2">Cost: 1.0K</span>
+                </div>
+                <button class="buy-btn" id="buy-2">BUY</button>
+            </div>
         </div>
     </div>
 
-    <div class="modal" id="modal-cfg">
-        <div class="modal-box">
-            <h2>НАСТРОЙКИ</h2>
-            <input type="text" id="name-in" placeholder="Новый ник">
-            <button class="btn btn-green" onclick="Game.setName()">ОБНОВИТЬ</button>
-            <button id="adm-btn" class="btn btn-yellow" style="display:none" onclick="UI.open('modal-adm')">👑 АДМИНКА</button>
-            <button class="btn btn-gray" onclick="UI.close()">НАЗАД</button>
-        </div>
-    </div>
+    <button id="admin-btn">ADMIN PANEL</button>
 
-    <div class="modal" id="modal-adm">
-        <div class="modal-box">
-            <h2 style="color:var(--yellow)">ADMIN</h2>
-            <input type="text" id="a-target" placeholder="Ник или #ID">
-            <input type="number" id="a-val" placeholder="Сумма / Минуты">
-            <button class="btn btn-green" onclick="Admin.run('give')">ВЫДАТЬ</button>
-            <button class="btn btn-red" onclick="Admin.run('ban')">БАН (МИН)</button>
-            <button class="btn btn-gray" onclick="UI.open('modal-cfg')">НАЗАД</button>
+    <div id="admin-modal" class="modal">
+        <div class="modal-content">
+            <h3>Admin System</h3>
+            <input type="text" id="target-id" placeholder="User Nickname or ID">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <button class="buy-btn" id="admin-give">Give Credits</button>
+                <button class="buy-btn" id="admin-fine" style="background: orange;">Fine</button>
+                <button class="buy-btn" id="admin-ban" style="background: red;">Ban 24h</button>
+                <button class="buy-btn" id="admin-wipe" style="background: darkred;">WIPE</button>
+            </div>
+            <button onclick="window.Game.closeAdmin()" style="margin-top: 10px; background: none; color: white; border: none; cursor: pointer;">Close</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, orderBy, limit, getDocs, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const config = {
+        const firebaseConfig = {
             apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBt9o",
             authDomain: "mindingclicker.firebaseapp.com",
             projectId: "mindingclicker",
-            storageBucket: "mindingclicker.firebasestorage.app",
-            messagingSenderId: "484824275063",
-            appId: "1:484824275063:web:b98565344eea2760a34e72"
+            storageBucket: "mindingclicker.appspot.com",
+            messagingSenderId: "9563821010",
+            appId: "1:9563821010:web:8e360f08e70a1e0f6b4d2d"
         };
 
-        const app = initializeApp(config);
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const OWNER = "raimaslanov222@gmail.com";
 
-        let p = { score: 0, power: 1, mult: 1, auto: 0, c1: 10, c2: 150, name: "Pilot", id: 0, banUntil: 0 };
-        let isReady = false;
-
-        // ГЛОБАЛЬНЫЕ ОБЪЕКТЫ (теперь точно работают)
-        window.UI = {
-            open: (id) => { 
-                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
-                document.getElementById(id).style.display = 'flex';
-                if(id === 'modal-top') UI.refreshTop();
-            },
-            close: () => document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'),
-            refreshTop: async () => {
-                const q = query(collection(db, "leaders"), orderBy("score", "desc"), limit(10));
-                const s = await getDocs(q);
-                let h = "";
-                s.forEach((d, i) => {
-                    h += `<div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #222">
-                        <span>${i+1}. ${d.data().name}</span><b>${Math.floor(d.data().score)}</b>
-                    </div>`;
-                });
-                document.getElementById('top-list').innerHTML = h;
-            }
+        // --- GAME STATE ---
+        let state = {
+            score: 0,
+            clickPower: 1,
+            multiplier: 1,
+            dps: 0,
+            upgrades: [0, 0, 0], // counts
+            lastSave: Date.now(),
+            isBanned: false,
+            banUntil: 0
         };
 
-        window.Game = {
-            tap: (e) => {
-                if(!isReady) return;
-                const gain = p.power * p.mult;
-                p.score += gain;
-                
-                const el = document.createElement('div');
-                el.className = 'pop'; el.innerText = `+${Math.floor(gain)}`;
-                el.style.left = e.clientX + 'px'; el.style.top = e.clientY + 'px';
-                document.body.appendChild(el);
-                setTimeout(() => el.remove(), 600);
-                
-                document.getElementById('score-display').innerText = Math.floor(p.score).toLocaleString();
-            },
-            buy: (t) => {
-                if(t === 'p' && p.score >= p.c1) { p.score -= p.c1; p.power++; p.c1 *= 1.8; }
-                if(t === 'm' && p.score >= p.c2) { p.score -= p.c2; p.mult += 0.2; p.c2 *= 2.5; }
-                Game.save(); Game.syncUI();
-            },
-            setName: async () => {
-                const n = document.getElementById('name-in').value;
-                if(n.length > 2) { p.name = n; Game.syncUI(); await Game.save(); alert("OK"); }
-            },
-            syncUI: () => {
-                document.getElementById('score-display').innerText = Math.floor(p.score).toLocaleString();
-                document.getElementById('user-info').innerText = `${p.name.toUpperCase()} | #${p.id}`;
-                document.getElementById('c1').innerText = Math.floor(p.c1);
-                document.getElementById('c2').innerText = Math.floor(p.c2);
-            },
-            save: () => auth.currentUser && updateDoc(doc(db, "leaders", auth.currentUser.uid), p)
+        const OWNER_EMAIL = "raimaslanov222@gmail.com";
+        const UPGRADE_DATA = [
+            { baseCost: 15, scale: 1.8, type: 'click' },
+            { baseCost: 100, scale: 2.1, type: 'dps' },
+            { baseCost: 1000, scale: 2.5, type: 'multi' }
+        ];
+
+        // --- UTILS ---
+        const formatNumber = (num) => {
+            if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+            if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+            return Math.floor(num).toString();
         };
 
-        window.Admin = {
-            run: async (cmd) => {
-                const target = document.getElementById('a-target').value;
-                const val = parseFloat(document.getElementById('a-val').value) || 0;
-                let q = target.startsWith('#') ? 
-                    query(collection(db, "leaders"), where("id", "==", parseInt(target.replace('#','')))) :
-                    query(collection(db, "leaders"), where("name", "==", target));
-                const s = await getDocs(q);
-                if(s.empty) return alert("Не найден");
-                const ref = s.docs[0].ref;
-                const data = s.docs[0].data();
-                if(cmd === 'give') await updateDoc(ref, { score: data.score + val });
-                if(cmd === 'ban') await updateDoc(ref, { banUntil: Date.now() + (val * 60000) });
-                alert("Готово");
-            }
+        const getCost = (index) => {
+            const upg = UPGRADE_DATA[index];
+            return Math.floor(upg.baseCost * Math.pow(upg.scale, state.upgrades[index]));
         };
 
-        // Инициализация
-        onAuthStateChanged(auth, async (u) => {
-            if(u) {
-                if(u.email === OWNER) document.getElementById('adm-btn').style.display = 'block';
-                const s = await getDoc(doc(db, "leaders", u.uid));
-                if(s.exists()) {
-                    p = { ...p, ...s.data() };
-                    if(p.banUntil > Date.now()) { alert("BAN"); location.reload(); }
-                } else {
-                    p.id = Math.floor(1000 + Math.random()*8999);
-                    p.name = u.email.split('@')[0];
-                    await setDoc(doc(db, "leaders", u.uid), p);
+        // --- UI CORE ---
+        const updateUI = () => {
+            document.getElementById('score-display').innerText = formatNumber(state.score);
+            const level = Math.sqrt(state.score / 100) + 1;
+            document.getElementById('level-display').innerText = `Level: ${Math.floor(level)}`;
+            document.getElementById('dps-display').innerText = `DPS: ${formatNumber(state.dps * state.multiplier)}`;
+
+            UPGRADE_DATA.forEach((_, i) => {
+                const cost = getCost(i);
+                document.getElementById(`cost-${i}`).innerText = `Cost: ${formatNumber(cost)}`;
+                document.getElementById(`buy-${i}`).disabled = state.score < cost;
+            });
+        };
+
+        const createParticle = (x, y) => {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const val = state.clickPower * state.multiplier;
+            p.innerText = `+${formatNumber(val)}`;
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+            p.style.color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 800);
+        };
+
+        // --- DATABASE ---
+        async function saveToDB() {
+            if (!auth.currentUser) return;
+            const ref = doc(db, "users", auth.currentUser.uid);
+            await setDoc(ref, {
+                ...state,
+                uid: auth.currentUser.uid,
+                email: auth.currentUser.email || "anon",
+                updatedAt: Date.now()
+            }, { merge: true });
+            console.log("Progress Saved");
+        }
+
+        async function loadData(user) {
+            const ref = doc(db, "users", user.uid);
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                const data = snap.data();
+                if (data.banUntil && data.banUntil > Date.now()) {
+                    alert("YOUR ACCOUNT IS BANNED until " + new Date(data.banUntil).toLocaleString());
+                    state.isBanned = true;
+                    document.body.innerHTML = "<h1 style='color:red; text-align:center; margin-top:100px;'>BANNED</h1>";
+                    return;
                 }
-                isReady = true;
-                Game.syncUI();
-                setInterval(Game.save, 15000);
+                state = { ...state, ...data };
             }
+            if (user.email === OWNER_EMAIL) {
+                document.getElementById('admin-btn').style.display = 'block';
+            }
+            document.getElementById('user-info').innerText = user.email || `Guest#${user.uid.slice(0,4)}`;
+            updateUI();
+        }
+
+        // --- GAME ACTIONS ---
+        window.Game = {
+            click: (e) => {
+                if (state.isBanned) return;
+                const gain = state.clickPower * state.multiplier;
+                state.score += gain;
+                createParticle(e.pageX, e.pageY);
+                updateUI();
+            },
+            buy: (index) => {
+                const cost = getCost(index);
+                if (state.score >= cost) {
+                    state.score -= cost;
+                    state.upgrades[index]++;
+                    
+                    // Apply upgrade
+                    if (index === 0) state.clickPower += 2;
+                    if (index === 1) state.dps += 5;
+                    if (index === 2) state.multiplier += 0.5;
+                    
+                    updateUI();
+                    saveToDB();
+                }
+            },
+            openAdmin: () => {
+                document.getElementById('admin-modal').style.display = 'block';
+            },
+            closeAdmin: () => {
+                document.getElementById('admin-modal').style.display = 'none';
+            },
+            adminCommand: async (cmd) => {
+                const target = document.getElementById('target-id').value;
+                if (!target) return alert("Enter target ID/Email");
+                
+                // Search for user
+                const q = query(collection(db, "users"), where("email", "==", target));
+                const snap = await getDocs(q);
+                
+                if (snap.empty) return alert("User not found");
+                const userDoc = snap.docs[0];
+                const userRef = doc(db, "users", userDoc.id);
+
+                switch(cmd) {
+                    case 'give': await updateDoc(userRef, { score: userDoc.data().score + 1000000 }); break;
+                    case 'fine': await updateDoc(userRef, { score: 0 }); break;
+                    case 'ban': await updateDoc(userRef, { banUntil: Date.now() + 86400000 }); break;
+                    case 'wipe': await updateDoc(userRef, { score: 0, upgrades: [0,0,0], clickPower: 1, dps: 0, multiplier: 1 }); break;
+                }
+                alert("Command executed!");
+            }
+        };
+
+        // --- INITIALIZATION ---
+        document.getElementById('tap-target').onclick = (e) => window.Game.click(e);
+        document.getElementById('buy-0').onclick = () => window.Game.buy(0);
+        document.getElementById('buy-1').onclick = () => window.Game.buy(1);
+        document.getElementById('buy-2').onclick = () => window.Game.buy(2);
+        document.getElementById('admin-btn').onclick = () => window.Game.openAdmin();
+        
+        document.getElementById('admin-give').onclick = () => window.Game.adminCommand('give');
+        document.getElementById('admin-fine').onclick = () => window.Game.adminCommand('fine');
+        document.getElementById('admin-ban').onclick = () => window.Game.adminCommand('ban');
+        document.getElementById('admin-wipe').onclick = () => window.Game.adminCommand('wipe');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) loadData(user);
+            else signInAnonymously(auth);
         });
 
-        // Привязка клика через JS (самый надежный способ)
-        document.getElementById('tap-target').onclick = (e) => Game.tap(e);
+        // Loop: DPS & Auto-save
+        setInterval(() => {
+            if (state.dps > 0 && !state.isBanned) {
+                state.score += (state.dps * state.multiplier) / 10;
+                updateUI();
+            }
+        }, 100);
+
+        setInterval(() => saveToDB(), 15000);
     </script>
 </body>
 </html>
