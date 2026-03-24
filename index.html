@@ -3,81 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity Clicker Mobile</title>
+    <title>Infinity Clicker Pro Max</title>
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { margin: 0; padding: 0; font-family: 'Arial Black', sans-serif; background: #0f0f1a; color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-
-        /* Окна */
-        #auth-screen, #modal-overlay { position: fixed; inset: 0; background: #0f0f1a; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        #modal-overlay { background: rgba(0,0,0,0.9); z-index: 2000; display: none; }
-        .box { width: 100%; max-width: 310px; background: #1a1a2e; padding: 20px; border-radius: 20px; border: 2px solid #333; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 12px; border: 1px solid #444; background: #05050a; color: white; text-align: center; font-weight: bold; }
-        
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.1s; }
-        .btn-green { background: #4ecca3; color: white; margin-top: 10px; }
-        .btn-yellow { background: #ffcc00; color: black; font-weight: 900; }
-
-        /* Шапка как на фото */
-        #game-ui { display: none; flex-direction: column; height: 100%; }
-        .header { 
-            background: linear-gradient(180deg, #ff1a1a 0%, #b30000 100%); 
-            padding: 35px 15px 20px 15px; text-align: center; 
-            border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; 
-            position: relative; min-height: 150px; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        :root {
+            --bg: #0f0f1a;
+            --panel: #1a1a2e;
+            --accent: #4ecca3;
+            --red-grad: linear-gradient(180deg, #ff1a1a 0%, #b30000 100%);
+            --gold: #ffcc00;
         }
-        #money { font-size: 3.2rem; font-weight: 900; margin: 0; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-        #user-info { color: #4ecca3; font-size: 0.8rem; margin-top: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Кнопки в шапке */
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        
+        body { 
+            margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); color: white; height: 100vh; display: flex; 
+            flex-direction: column; overflow: hidden; 
+        }
+
+        /* Анимация вылетающих цифр */
+        .click-anim {
+            position: absolute; color: white; font-weight: 900; font-size: 1.5rem;
+            pointer-events: none; animation: floatUp 0.8s ease-out forwards; z-index: 5000;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) opacity(1); }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+
+        /* Окна входа и уведомлений */
+        #auth-screen, #modal-overlay { 
+            position: fixed; inset: 0; background: var(--bg); 
+            z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 20px; 
+        }
+        #modal-overlay { background: rgba(0,0,0,0.85); z-index: 2500; display: none; backdrop-filter: blur(5px); }
+
+        .box { 
+            width: 100%; max-width: 320px; background: var(--panel); 
+            padding: 25px; border-radius: 24px; border: 1px solid #333; 
+            text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        h2, h3 { margin: 0 0 15px 0; letter-spacing: 1px; }
+        input { 
+            width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; 
+            border: 1px solid #444; background: #05050a; color: white; 
+            text-align: center; font-size: 1rem; outline: none;
+        }
+        input:focus { border-color: var(--accent); }
+
+        .btn { 
+            width: 100%; padding: 14px; border: none; border-radius: 12px; 
+            font-weight: bold; cursor: pointer; font-size: 1rem; transition: 0.2s; 
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-green { background: var(--accent); color: #000; }
+        .btn-yellow { background: var(--gold); color: #000; margin-top: 10px; }
+        .btn-red { background: #ff4d4d; color: white; }
+
+        /* Игровой интерфейс */
+        #game-ui { display: none; flex-direction: column; height: 100%; }
+
+        .header { 
+            background: var(--red-grad); padding: 40px 20px 25px; 
+            text-align: center; border-bottom-left-radius: 40px; 
+            border-bottom-right-radius: 40px; position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        #money { font-size: 3.5rem; font-weight: 900; margin: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.4); }
+        #user-info { font-size: 0.85rem; opacity: 0.9; margin-top: 8px; font-weight: 600; }
+
         .icon-btn { 
-            position: absolute; top: 15px; background: rgba(255,255,255,0.25); border: none; 
-            border-radius: 12px; width: 42px; height: 42px; color: white; font-size: 1.2rem;
-            display: flex; align-items: center; justify-content: center;
+            position: absolute; top: 15px; background: rgba(255,255,255,0.2); 
+            border: none; border-radius: 12px; width: 44px; height: 44px; 
+            color: white; font-size: 1.2rem; cursor: pointer;
         }
         #open-top-btn { left: 15px; }
         #open-settings-btn { right: 15px; }
 
-        /* Игровая зона */
-        .main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #main-button { 
-            width: 170px; height: 170px; border-radius: 50%; 
-            background: url('button.png') center/cover; border: 6px solid white; 
-            box-shadow: 0 0 40px rgba(255, 25, 25, 0.5); transition: 0.05s;
-        }
-        #main-button:active { transform: scale(0.92); }
+        /* Центр */
+        .main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         
-        .stats-panel { margin-top: 15px; text-align: center; font-size: 0.85rem; color: #ccc; font-family: sans-serif; line-height: 1.6; }
-        .stats-panel b { color: white; }
+        #main-button { 
+            width: 180px; height: 180px; border-radius: 50%; 
+            background: radial-gradient(circle, #fff 0%, #ccc 100%); 
+            border: 8px solid white; box-shadow: 0 0 50px rgba(255,25,25,0.4);
+            transition: transform 0.05s; cursor: pointer; position: relative;
+        }
+        #main-button::after {
+            content: ''; position: absolute; inset: 0; border-radius: 50%;
+            background: url('button.png') center/cover;
+        }
+        #main-button:active { transform: scale(0.9); }
 
-        /* Магазин (Исправленный под скриншоты) */
-        .shop-panel { padding: 12px; background: #161625; border-radius: 25px 25px 0 0; }
+        .stats-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; 
+            margin-top: 20px; width: 80%; text-align: center; 
+        }
+        .stat-card { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 10px; font-size: 0.8rem; }
+        .stat-card b { display: block; font-size: 1rem; color: var(--accent); }
+
+        /* Магазин */
+        .shop-container { padding: 15px; background: #121221; border-radius: 30px 30px 0 0; }
         .shop-item { 
             display: flex; justify-content: space-between; align-items: center; 
-            background: #20203a; padding: 10px 15px; border-radius: 15px; margin-bottom: 8px;
-            border: 1px solid #2d2d4d;
+            background: #1e1e35; padding: 12px 15px; border-radius: 16px; 
+            margin-bottom: 10px; border: 1px solid #2d2d4d;
         }
-        .shop-item-info { text-align: left; }
-        .shop-item-info b { display: block; font-size: 0.9rem; margin-bottom: 2px; }
-        .shop-item-info small { color: #aaa; font-size: 0.75rem; }
-        .shop-item button { 
-            background: #ffcc00; color: black; border: none; padding: 10px 18px; 
-            border-radius: 10px; font-weight: 900; font-size: 0.8rem;
-        }
+        .item-text b { font-size: 1rem; color: #eee; }
+        .item-text span { font-size: 0.8rem; color: #888; display: block; }
         
-        /* Список лидеров */
-        .leader-row { display: flex; justify-content: space-between; padding: 10px; background: #0b0b15; margin-bottom: 5px; border-radius: 10px; font-size: 0.8rem; border-left: 3px solid gold; }
+        .buy-btn { 
+            background: var(--gold); border: none; padding: 10px 16px; 
+            border-radius: 10px; font-weight: 800; cursor: pointer; min-width: 90px;
+        }
+        .buy-btn:disabled { background: #444; color: #777; }
+
+        /* Лидеры */
+        #leader-list { max-height: 300px; overflow-y: auto; margin-top: 10px; }
+        .leader-row { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; background: #0b0b18; margin-bottom: 6px; 
+            border-radius: 12px; border-left: 4px solid var(--accent);
+        }
+        .leader-info { text-align: left; }
+        .leader-info div { font-size: 0.7rem; color: #666; }
+
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="box">
-            <h2 style="margin:0 0 15px 0">INFINITY CLICKER</h2>
-            <input type="email" id="email" placeholder="Email">
+            <h2 style="color: var(--accent)">INFINITY CLICKER</h2>
+            <p style="font-size: 0.8rem; color: #888">Вход в систему управления балансом</p>
+            <input type="email" id="email" placeholder="Email адрес">
             <input type="password" id="pass" placeholder="Пароль">
-            <button class="btn btn-green" id="login-btn">ВОЙТИ</button>
-            <button class="btn" style="background:transparent; color:#4ecca3; font-size: 0.8rem" id="reg-btn">РЕГИСТРАЦИЯ</button>
+            <button class="btn btn-green" id="login-btn">ВОЙТИ В ИГРУ</button>
+            <button class="btn" style="background:transparent; color: #aaa; font-size: 0.8rem" id="reg-btn">Нет аккаунта? Регистрация</button>
         </div>
     </div>
 
@@ -86,64 +151,66 @@
             <button id="open-top-btn" class="icon-btn">🏆</button>
             <button id="open-settings-btn" class="icon-btn">⚙️</button>
             <div id="money">0</div>
-            <div id="user-info">ЗАГРУЗКА...</div>
+            <div id="user-info">ID: #000 | ЗАГРУЗКА...</div>
         </div>
         
-        <div class="main-area">
+        <div class="main-area" id="click-zone">
             <div id="main-button"></div>
-            <div class="stats-panel">
-                Клик: <b id="st-p">+1</b> | Множитель: <b id="st-m">x1</b><br>
-                <span style="color:#4ecca3">Авто-бот: <b id="st-b">0</b> /сек</span>
+            <div class="stats-grid">
+                <div class="stat-card">КЛИК <b id="st-p">+1</b></div>
+                <div class="stat-card">МНОЖИТЕЛЬ <b id="st-m">x1</b></div>
+                <div class="stat-card" style="grid-column: span 2">АВТО-ДОХОД <b id="st-b">0 /сек</b></div>
             </div>
         </div>
 
-        <div class="shop-panel">
+        <div class="shop-container">
             <div class="shop-item">
-                <div class="shop-item-info"><b>Сила клика</b><small>Цена: <span id="c1">10</span></small></div>
-                <button id="buy1">КУПИТЬ</button>
+                <div class="item-text"><b>Сила клика</b><span id="c1-desc">Цена: 10</span></div>
+                <button class="buy-btn" id="buy1">КУПИТЬ</button>
             </div>
             <div class="shop-item">
-                <div class="shop-item-info"><b>Множитель</b><small>Цена: <span id="c2">100</span></small></div>
-                <button id="buy2">КУПИТЬ</button>
+                <div class="item-text"><b>Множитель</b><span id="c2-desc">Цена: 100</span></div>
+                <button class="buy-btn" id="buy2">КУПИТЬ</button>
             </div>
             <div class="shop-item">
-                <div class="shop-item-info"><b>Авто-бот</b><small>Цена: <span id="c3">500</span></small></div>
-                <button id="buy3">КУПИТЬ</button>
+                <div class="item-text"><b>Авто-бот</b><span id="c3-desc">Цена: 500</span></div>
+                <button class="buy-btn" id="buy3">КУПИТЬ</button>
             </div>
         </div>
     </div>
 
     <div id="modal-overlay">
         <div id="settings-box" class="box" style="display:none">
-            <h3 style="margin:0 0 15px 0">НАСТРОЙКИ</h3>
-            <input type="text" id="new-name-input" maxlength="12" placeholder="Новый ник">
-            <button class="btn btn-green" id="save-name-btn">СОХРАНИТЬ</button>
-            <button class="btn btn-yellow" id="admin-panel-btn" style="display:none; margin-top:10px">👑 АДМИН-ПАНЕЛЬ</button>
-            <button class="btn" style="background:#444; color:white; margin-top:10px" onclick="closeModal()">ЗАКРЫТЬ</button>
+            <h3>ПРОФИЛЬ</h3>
+            <input type="text" id="new-name-input" placeholder="Введите новый ник">
+            <button class="btn btn-green" id="save-name-btn">ОБНОВИТЬ ИМЯ</button>
+            <button class="btn btn-yellow" id="admin-panel-btn" style="display:none">👑 ПАНЕЛЬ РАЗРАБОТЧИКА</button>
+            <button class="btn btn-red" style="margin-top:20px" id="logout-btn">ВЫЙТИ ИЗ АККАУНТА</button>
+            <button class="btn" style="background:#333; color:white; margin-top:10px" onclick="closeModal()">ЗАКРЫТЬ</button>
         </div>
 
-        <div id="admin-box" class="box" style="display:none; border: 2px solid gold">
-            <h3 style="color:gold; margin:0">👑 АДМИНКА</h3>
-            <p style="font-size:0.7rem; color:#aaa">Можно вводить ID или НИК игрока</p>
-            <input type="text" id="admin-target" placeholder="ID или Ник игрока">
-            <input type="number" id="admin-amount" placeholder="Сумма монет">
-            <button class="btn btn-green" id="give-money-btn">ВЫДАТЬ МОНЕТЫ</button>
-            <button class="btn" style="background:red; color:white; margin-top:8px" id="reset-player-btn">ОБНУЛИТЬ ИГРОКА</button>
+        <div id="admin-box" class="box" style="display:none; border: 2px solid var(--gold)">
+            <h3 style="color:var(--gold)">DEVELOPER PANEL</h3>
+            <input type="text" id="admin-target" placeholder="ID или НИК игрока">
+            <input type="number" id="admin-amount" placeholder="Количество монет">
+            <button class="btn btn-green" id="give-money-btn">НАЧИСЛИТЬ БАЛАНС</button>
+            <button class="btn btn-red" style="margin-top:8px" id="reset-player-btn">СБРОСИТЬ ПРОГРЕСС</button>
             <button class="btn" style="margin-top:15px; background:#444; color:white" onclick="openSettings()">НАЗАД</button>
         </div>
 
-        <div id="top-box" class="box" style="display:none; border-color: gold">
-            <h3 style="color:gold; margin:0 0 15px 0">🏆 ТОП-10 ЛИДЕРОВ</h3>
-            <div id="leader-list" style="max-height: 250px; overflow-y: auto;"></div>
-            <button class="btn" style="background:#444; color:white; margin-top:15px" onclick="closeModal()">ЗАКРЫТЬ</button>
+        <div id="top-box" class="box" style="display:none; border-color: var(--gold)">
+            <h3 style="color:var(--gold)">ГЛОБАЛЬНЫЙ ТОП</h3>
+            <div id="leader-list"></div>
+            <button class="btn" style="background:#333; color:white; margin-top:15px" onclick="closeModal()">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, orderBy, limit, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBt9o",
             authDomain: "mindingclicker.firebaseapp.com",
@@ -158,74 +225,123 @@
         const db = getFirestore(app);
         const ADMIN_EMAIL = "raimaslanov222@gmail.com";
 
-        let user = null, money = 0, power = 1, mult = 1, bot = 0, myId = 0, myName = "";
-        let cost1 = 10, cost2 = 100, cost3 = 500;
+        // STATE
+        let uData = { money: 0, power: 1, mult: 1, bot: 0, id: 0, name: "", costs: [10, 100, 500] };
+        let isSaving = false;
 
-        function nForm(n) {
-            if (n >= 1e12) return (n / 1e12).toFixed(2) + "T";
-            if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
-            if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
-            if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
-            return Math.floor(n);
-        }
-
-        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка входа!"));
-        document.getElementById('reg-btn').onclick = async () => {
-            try {
-                const res = await createUserWithEmailAndPassword(auth, email.value, pass.value);
-                await runTransaction(db, async (t) => {
-                    const c = await t.get(doc(db, "system", "users_count"));
-                    let nid = c.exists() ? c.data().val + 1 : 1;
-                    t.set(doc(db, "system", "users_count"), { val: nid });
-                    t.set(doc(db, "leaders", res.user.uid), { name: email.value.split('@')[0], score: 0, power: 1, mult: 1, bot: 0, cost1: 10, cost2: 100, cost3: 500, gameId: nid });
-                });
-            } catch(e) { alert("Ошибка регистрации!"); }
+        // UI HELPERS
+        const nForm = (n) => {
+            if (n >= 1e15) return n.toExponential(2);
+            const s = ["", "K", "M", "B", "T", "Q"];
+            const e = Math.floor(Math.log10(n) / 3);
+            return e > 0 ? (n / Math.pow(10, e * 3)).toFixed(2) + s[e] : Math.floor(n);
         };
 
-        onAuthStateChanged(auth, async (u) => {
-            if (u) {
-                user = u;
+        const updateUI = () => {
+            document.getElementById('money').innerText = nForm(uData.money);
+            document.getElementById('user-info').innerText = `${uData.name.toUpperCase()} | ID: #${uData.id}`;
+            document.getElementById('st-p').innerText = `+${nForm(uData.power)}`;
+            document.getElementById('st-m').innerText = `x${uData.mult}`;
+            document.getElementById('st-b').innerText = `${nForm(uData.bot)} /сек`;
+            
+            document.getElementById('c1-desc').innerText = `Цена: ${nForm(uData.costs[0])}`;
+            document.getElementById('c2-desc').innerText = `Цена: ${nForm(uData.costs[1])}`;
+            document.getElementById('c3-desc').innerText = `Цена: ${nForm(uData.costs[2])}`;
+
+            document.getElementById('buy1').disabled = uData.money < uData.costs[0];
+            document.getElementById('buy2').disabled = uData.money < uData.costs[1];
+            document.getElementById('buy3').disabled = uData.money < uData.costs[2];
+        };
+
+        // CORE LOGIC
+        const createFloatingText = (e) => {
+            const txt = document.createElement('div');
+            txt.className = 'click-anim';
+            txt.innerText = `+${nForm(uData.power * uData.mult)}`;
+            txt.style.left = (e.clientX || e.touches[0].clientX) + 'px';
+            txt.style.top = (e.clientY || e.touches[0].clientY) + 'px';
+            document.body.appendChild(txt);
+            setTimeout(() => txt.remove(), 800);
+        };
+
+        document.getElementById('main-button').addEventListener('pointerdown', (e) => {
+            uData.money += (uData.power * uData.mult);
+            createFloatingText(e);
+            updateUI();
+        });
+
+        setInterval(() => {
+            if(uData.bot > 0) {
+                uData.money += (uData.bot / 10);
+                updateUI();
+            }
+        }, 100);
+
+        // SHOP
+        const processBuy = (idx, effect) => {
+            if(uData.money >= uData.costs[idx]) {
+                uData.money -= uData.costs[idx];
+                effect();
+                uData.costs[idx] = Math.ceil(uData.costs[idx] * (idx === 1 ? 10 : 3.5));
+                updateUI();
+                saveData();
+            }
+        };
+
+        document.getElementById('buy1').onclick = () => processBuy(0, () => uData.power++);
+        document.getElementById('buy2').onclick = () => processBuy(1, () => uData.mult *= 2);
+        document.getElementById('buy3').onclick = () => processBuy(2, () => uData.bot += (5 * uData.mult));
+
+        // AUTH & FIREBASE
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('game-ui').style.display = 'flex';
-                if(user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) document.getElementById('admin-panel-btn').style.display = 'block';
-                const s = await getDoc(doc(db, "leaders", user.uid));
-                if (s.exists()) {
-                    const d = s.data();
-                    money = d.score; power = d.power; mult = d.mult; bot = d.bot;
-                    cost1 = d.cost1; cost2 = d.cost2; cost3 = d.cost3;
-                    myId = d.gameId; myName = d.name;
+                if(user.email === ADMIN_EMAIL) document.getElementById('admin-panel-btn').style.display = 'block';
+
+                const docRef = doc(db, "leaders", user.uid);
+                const snap = await getDoc(docRef);
+
+                if (snap.exists()) {
+                    const d = snap.data();
+                    uData = {
+                        money: d.score || 0, power: d.power || 1, mult: d.mult || 1, bot: d.bot || 0,
+                        id: d.gameId || 0, name: d.name || "Player",
+                        costs: [d.cost1 || 10, d.cost2 || 100, d.cost3 || 500]
+                    };
+                    if(uData.id === 0) await syncID(user.uid);
                 }
                 updateUI();
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('game-ui').style.display = 'none';
             }
         });
 
-        document.getElementById('main-button').onclick = () => { money += (power * mult); updateUI(); };
-        setInterval(() => { if(bot > 0) { money += (bot / 10); updateUI(); } }, 100);
-
-        function updateUI() {
-            document.getElementById('money').innerText = nForm(money);
-            document.getElementById('user-info').innerText = `${myName} | ID: #${myId}`;
-            document.getElementById('st-p').innerText = `+${nForm(power)}`;
-            document.getElementById('st-m').innerText = `x${mult}`;
-            document.getElementById('st-b').innerText = nForm(bot);
-            document.getElementById('c1').innerText = nForm(cost1); 
-            document.getElementById('c2').innerText = nForm(cost2); 
-            document.getElementById('c3').innerText = nForm(cost3);
+        async function syncID(uid) {
+            await runTransaction(db, async (t) => {
+                const cDoc = await t.get(doc(db, "system", "users_count"));
+                const nextId = cDoc.exists() ? cDoc.data().val + 1 : 1;
+                t.set(doc(db, "system", "users_count"), { val: nextId });
+                t.update(doc(db, "leaders", uid), { gameId: nextId });
+                uData.id = nextId;
+            });
         }
 
-        async function save() { if(user) await setDoc(doc(db,"leaders",user.uid),{name:myName,score:money,power:power,mult:mult,bot:bot,cost1:cost1,cost2:cost2,cost3:cost3,gameId:myId},{merge:true}); }
-        setInterval(save, 10000);
+        async function saveData() {
+            if(!auth.currentUser || isSaving) return;
+            isSaving = true;
+            try {
+                await setDoc(doc(db, "leaders", auth.currentUser.uid), {
+                    score: uData.money, power: uData.power, mult: uData.mult, bot: uData.bot,
+                    cost1: uData.costs[0], cost2: uData.costs[1], cost3: uData.costs[2],
+                    name: uData.name, gameId: uData.id
+                }, { merge: true });
+            } finally { isSaving = false; }
+        }
+        setInterval(saveData, 15000);
 
-        const buy = (n) => {
-            if(n==1 && money>=cost1){ money-=cost1; power++; cost1*=4; }
-            if(n==2 && money>=cost2){ money-=cost2; mult*=2; cost2*=10; }
-            if(n==3 && money>=cost3){ money-=cost3; bot+=(5*mult); cost3*=5; }
-            updateUI(); save();
-        };
-        document.getElementById('buy1').onclick = () => buy(1);
-        document.getElementById('buy2').onclick = () => buy(2);
-        document.getElementById('buy3').onclick = () => buy(3);
-
+        // MODALS
         window.closeModal = () => document.getElementById('modal-overlay').style.display = 'none';
         window.openSettings = () => {
             document.getElementById('modal-overlay').style.display = 'flex';
@@ -238,59 +354,51 @@
             document.getElementById('modal-overlay').style.display = 'flex';
             document.getElementById('top-box').style.display = 'block';
             document.getElementById('settings-box').style.display = 'none';
-            document.getElementById('admin-box').style.display = 'none';
         };
 
-        document.getElementById('save-name-btn').onclick = async () => {
-            const val = document.getElementById('new-name-input').value.trim();
-            if(val.length < 2) return alert("Минимум 2 символа!");
-            myName = val; updateUI(); await save(); alert("Ник изменен!");
+        // ADMIN ACTIONS
+        const adminFunc = async (isReset) => {
+            const target = document.getElementById('admin-target').value;
+            const amt = parseFloat(document.getElementById('admin-amount').value) || 0;
+            const q = !isNaN(target) ? query(collection(db, "leaders"), where("gameId", "==", parseInt(target))) : query(collection(db, "leaders"), where("name", "==", target));
+            const snap = await getDocs(q);
+            if(snap.empty) return alert("Цель не найдена");
+            const ref = snap.docs[0].ref;
+            await setDoc(ref, isReset ? { score: 0, power: 1, mult: 1, bot: 0 } : { score: (snap.docs[0].data().score + amt) }, { merge: true });
+            alert("Операция выполнена");
         };
 
+        document.getElementById('give-money-btn').onclick = () => adminFunc(false);
+        document.getElementById('reset-player-btn').onclick = () => adminFunc(true);
         document.getElementById('admin-panel-btn').onclick = () => {
             document.getElementById('settings-box').style.display = 'none';
             document.getElementById('admin-box').style.display = 'block';
         };
 
-        // ФУНКЦИЯ АДМИНКИ: ВЫДАЧА ПО ID ИЛИ НИКУ
-        const adminAction = async (type) => {
-            const target = document.getElementById('admin-target').value.trim();
-            const amount = parseInt(document.getElementById('admin-amount').value) || 0;
-            if(!target) return alert("Введите ID или Ник!");
-
-            let q;
-            if (!isNaN(target)) {
-                // Если введено число - ищем по gameId
-                q = query(collection(db, "leaders"), where("gameId", "==", parseInt(target)));
-            } else {
-                // Иначе - ищем по Нику
-                q = query(collection(db, "leaders"), where("name", "==", target));
-            }
-
-            const snap = await getDocs(q);
-            if(snap.empty) return alert("Игрок не найден!");
-
-            const playerDoc = snap.docs[0];
-            if(type === 'give') {
-                await setDoc(playerDoc.ref, { score: (playerDoc.data().score + amount) }, { merge: true });
-                alert(`Успешно! Выдано ${amount} монет.`);
-            } else {
-                await setDoc(playerDoc.ref, { score: 0 }, { merge: true });
-                alert("Аккаунт игрока обнулен.");
-            }
-        };
-
-        document.getElementById('give-money-btn').onclick = () => adminAction('give');
-        document.getElementById('reset-player-btn').onclick = () => adminAction('reset');
-
+        // TOP SNAPSHOT
         onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(10)), (snap) => {
             const list = document.getElementById('leader-list');
             list.innerHTML = "";
             snap.forEach(d => {
                 const data = d.data();
-                list.innerHTML += `<div class="leader-row"><span>#${data.gameId} <b>${data.name}</b></span><b>${nForm(data.score)}</b></div>`;
+                list.innerHTML += `
+                    <div class="leader-row">
+                        <div class="leader-info">
+                            <b>${data.name}</b>
+                            <div>ID: #${data.gameId || '??'}</div>
+                        </div>
+                        <b style="color:var(--gold)">${nForm(data.score)}</b>
+                    </div>`;
             });
         });
+
+        // UI ACTIONS
+        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка входа"));
+        document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+        document.getElementById('save-name-btn').onclick = () => {
+            const n = document.getElementById('new-name-input').value.trim();
+            if(n.length > 2) { uData.name = n; updateUI(); saveData(); closeModal(); }
+        };
     </script>
 </body>
 </html>
