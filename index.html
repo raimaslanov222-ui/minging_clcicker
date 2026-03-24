@@ -3,437 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity B/T: Omega</title>
+    <title>Infinity B/T | Omega Edition</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     
-    <style>
-        /* [0-200 LINES: CSS CORE & ANIMATIONS] */
-        :root {
-            --p: #ff1a1a; --s: #4ecca3; --a: #ffcc00; --b: #3b82f6; --v: #a855f7;
-            --bg: #030305; --card: #0d0d16; --border: rgba(255,255,255,0.05);
-            --glow-p: 0 0 25px rgba(255, 26, 26, 0.4);
-            --glow-s: 0 0 20px rgba(78, 204, 163, 0.3);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
-        
-        body {
-            font-family: 'Roboto', sans-serif; background: var(--bg); color: #fff;
-            height: 100vh; overflow: hidden; display: flex; flex-direction: column;
-        }
-
-        /* --- Screens --- */
-        #layer-auth { position: fixed; inset: 0; z-index: 99999; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #layer-game { display: none; flex-direction: column; height: 100%; opacity: 0; transition: opacity 0.8s ease; }
-
-        /* --- UI Elements --- */
-        .header-box {
-            background: linear-gradient(180deg, #111 0%, #000 100%);
-            padding: 50px 20px 25px; text-align: center;
-            border-bottom: 2px solid var(--p); position: relative;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.9);
-        }
-
-        .prestige-badge {
-            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
-            background: var(--v); color: #000; padding: 2px 12px; border-radius: 10px;
-            font-size: 0.6rem; font-weight: 900; letter-spacing: 1px;
-        }
-
-        #val-balance { 
-            font-family: 'Montserrat'; font-size: 3.5rem; letter-spacing: -2px; 
-            background: linear-gradient(to bottom, #fff, #888);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(var(--glow-p));
-        }
-
-        .bar-wrap { width: 80%; height: 6px; background: rgba(255,255,255,0.05); margin: 12px auto; border-radius: 10px; position: relative; }
-        #bar-xp { height: 100%; width: 0%; background: var(--s); box-shadow: var(--glow-s); transition: 0.4s cubic-bezier(0.1, 0.7, 1, 0.1); }
-        
-        /* --- Central Button --- */
-        .click-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        
-        .main-btn-container { position: relative; }
-        #core-tap {
-            width: 220px; height: 220px; border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, var(--p), #400);
-            border: 8px solid #fff; cursor: pointer;
-            box-shadow: var(--glow-p), inset 0 0 40px #000;
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.04s ease;
-        }
-        #core-tap:active { transform: scale(0.92) rotate(2deg); }
-        #core-tap::after { content: "OMEGA"; font-family: 'Montserrat'; font-size: 1.2rem; font-weight: 900; opacity: 0.2; letter-spacing: 4px; }
-
-        .dashboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 92%; margin-top: 30px; }
-        .dash-card { 
-            background: var(--card); padding: 12px; border-radius: 18px; 
-            border: 1px solid var(--border); text-align: center;
-            background: linear-gradient(145deg, #11111d, #090912);
-        }
-        .dash-card label { display: block; font-size: 0.55rem; color: #666; text-transform: uppercase; margin-bottom: 5px; font-weight: 900; }
-        .dash-card span { font-family: 'Roboto Mono'; font-size: 1rem; color: #efefef; }
-
-        /* --- Footer Shop & Tabs --- */
-        .nav-tabs { display: flex; background: #000; border-top: 1px solid var(--border); padding: 10px 0; }
-        .tab-btn { flex: 1; background: none; border: none; color: #555; font-size: 0.7rem; font-weight: 900; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { color: var(--p); transform: translateY(-3px); }
-
-        .content-panel { 
-            background: var(--card); flex: 0.8; 
-            border-top-left-radius: 40px; border-top-right-radius: 40px; 
-            padding: 25px; overflow-y: auto; border-top: 1px solid var(--border);
-        }
-
-        .shop-item {
-            display: flex; align-items: center; justify-content: space-between;
-            background: rgba(255,255,255,0.02); padding: 15px 20px;
-            border-radius: 20px; margin-bottom: 10px; border: 1px solid var(--border);
-        }
-        .item-info b { font-size: 0.95rem; color: #ddd; }
-        .item-info p { font-size: 0.7rem; color: #666; }
-
-        .btn-buy {
-            background: var(--a); color: #000; border: none; padding: 10px 16px;
-            border-radius: 12px; font-weight: 900; font-size: 0.75rem; cursor: pointer;
-            box-shadow: 0 4px 0 #997a00;
-        }
-        .btn-buy:active { transform: translateY(2px); box-shadow: none; }
-        .btn-buy:disabled { background: #333; color: #666; box-shadow: none; }
-
-        /* --- Modals & Popups --- */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .modal-window { width: 90%; max-width: 450px; background: #0a0a12; border-radius: 35px; border: 1px solid #222; padding: 35px; text-align: center; max-height: 85vh; overflow-y: auto; }
-        
-        .input-box { width: 100%; padding: 16px; margin-bottom: 12px; border-radius: 14px; background: #000; border: 1px solid #333; color: #fff; font-size: 1rem; }
-        
-        /* --- Particle FX --- */
-        .click-fx { position: fixed; pointer-events: none; color: var(--s); font-family: 'Montserrat'; font-weight: 900; font-size: 1.8rem; z-index: 10000; animation: clickRise 0.8s ease-out forwards; }
-        @keyframes clickRise {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(-120px) scale(1.4); }
-        }
-
-        /* --- Custom Scrollbar --- */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--p); border-radius: 10px; }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="sys-msg" style="position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--card); border-left:4px solid var(--s); padding:15px 25px; border-radius:12px; display:none; z-index:999999; box-shadow: 0 10px 30px #000;">
-        <small id="sys-title" style="color:var(--s); font-weight:900; text-transform:uppercase;"></small><br>
-        <span id="sys-text" style="font-size:0.85rem;"></span>
-    </div>
+    <div id="notification-hub"></div>
 
-    <section id="layer-auth">
-        <div class="modal-window">
-            <h1 style="font-family:Montserrat; font-size:3rem; line-height:0.8; margin-bottom:10px;">OMEGA<br><span style="color:var(--p); font-size:1.5rem">PROTOCOL</span></h1>
-            <p style="font-size:0.7rem; color:#444; letter-spacing:3px; margin-bottom:30px;">AUTHORIZATION REQUIRED</p>
-            <input type="email" id="auth-email" class="input-box" placeholder="Access Email">
-            <input type="password" id="auth-pass" class="input-box" placeholder="Security Key">
-            <button id="auth-btn-login" class="btn-buy" style="width:100%; padding:18px; font-size:1rem;">INITIALIZE</button>
-            <p id="auth-btn-reg" style="margin-top:20px; color:var(--s); cursor:pointer; font-size:0.8rem; font-weight:900;">GENERATE NEW CORE</p>
+    <section id="auth-screen">
+        <div class="auth-container">
+            <h1 class="logo">INFINITY <span class="accent">CORE</span></h1>
+            <div class="auth-form">
+                <div class="input-field">
+                    <label>NEURAL IDENTIFIER</label>
+                    <input type="email" id="auth-email" placeholder="email@domain.com">
+                </div>
+                <div class="input-field">
+                    <label>SECURITY ACCESS KEY</label>
+                    <input type="password" id="auth-pass" placeholder="••••••••">
+                </div>
+                <button id="btn-login" class="primary-btn">INITIALIZE CONNECTION</button>
+                <button id="btn-register" class="secondary-btn">CREATE NEW UNIT</button>
+            </div>
+            <p class="version">v2.0.0 Global Stable</p>
         </div>
     </section>
 
-    <main id="layer-game">
-        <header class="header-box">
-            <div id="rebirth-badge" class="prestige-badge" style="display:none">PRESTIGE X0</div>
-            <button id="nav-leaderboard" style="position:absolute; left:20px; top:35px; background:none; border:none; font-size:1.8rem">🏆</button>
-            <button id="nav-settings" style="position:absolute; right:20px; top:35px; background:none; border:none; font-size:1.8rem">⚙️</button>
-            
-            <div style="font-size:0.6rem; color:#555; letter-spacing:3px; font-weight:900;">NET WORTH</div>
-            <h2 id="val-balance">0</h2>
-            
-            <div class="bar-wrap"><div id="bar-xp"></div></div>
-            <div id="ui-level-tag" style="font-size:0.75rem; font-family:'Roboto Mono'; color:var(--s); font-weight:bold;">LEVEL: 1 [0%]</div>
+    <main id="game-screen" style="display: none;">
+        <header class="game-header">
+            <div class="player-info">
+                <span id="display-name">Pilot</span>
+                <span id="display-id">#0000</span>
+            </div>
+            <div class="currency-container">
+                <h1 id="balance">0</h1>
+            </div>
+            <div class="progress-zone">
+                <div class="xp-bar"><div id="xp-fill"></div></div>
+                <small id="lvl-text">LEVEL 1</small>
+            </div>
         </header>
 
-        <section class="click-area">
-            <div id="core-tap"></div>
+        <section class="action-zone">
+            <div id="click-target">
+                <div class="inner-core"></div>
+            </div>
             
-            <div class="dashboard">
-                <div class="dash-card"><label>Power</label><span id="ui-pow">+1</span></div>
-                <div class="dash-card"><label>Multiplier</label><span id="ui-mul">x1</span></div>
-                <div class="dash-card"><label>Auto-Rate</label><span id="ui-aut">0/s</span></div>
+            <div class="live-stats">
+                <div class="stat-box">
+                    <label>POWER</label>
+                    <span id="stat-power">1</span>
+                </div>
+                <div class="stat-box">
+                    <label>MULT</label>
+                    <span id="stat-mult">x1</span>
+                </div>
+                <div class="stat-box">
+                    <label>AUTO</label>
+                    <span id="stat-auto">0</span>
+                </div>
             </div>
         </section>
 
-        <div class="nav-tabs">
-            <button class="tab-btn active" data-tab="shop">UPGRADES</button>
-            <button class="tab-btn" data-tab="skills">SKILLS</button>
-            <button class="tab-btn" data-tab="rebirth">PRESTIGE</button>
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-target="shop-tab">UPGRADES</button>
+            <button class="nav-item" data-target="leader-tab">RANKING</button>
+            <button class="nav-item" id="admin-nav" style="display: none;" data-target="admin-tab">ADMIN</button>
+            <button class="nav-item" id="btn-logout">EXIT</button>
+        </nav>
+
+        <div class="tab-content">
+            <div id="shop-tab" class="tab-pane active">
+                </div>
+            <div id="leader-tab" class="tab-pane">
+                <div id="leaderboard-list"></div>
+            </div>
+            <div id="admin-tab" class="tab-pane">
+                </div>
         </div>
-
-        <section class="content-panel" id="main-panel">
-            <div id="tab-shop">
-                <div class="shop-item">
-                    <div class="item-info"><b>Digital Mining</b><p>Increase base tap power</p></div>
-                    <button class="btn-buy" id="buy-pow">BUY <span id="cost-pow">10</span></button>
-                </div>
-                <div class="shop-item">
-                    <div class="item-info"><b>Logic Buffer</b><p>Multiply all income x2</p></div>
-                    <button class="btn-buy" id="buy-mul">BUY <span id="cost-mul">250</span></button>
-                </div>
-                <div class="shop-item">
-                    <div class="item-info"><b>Neural Drone</b><p>Passive income +5/s</p></div>
-                    <button class="btn-buy" id="buy-aut">BUY <span id="cost-aut">1000</span></button>
-                </div>
-            </div>
-        </section>
     </main>
 
-    <div id="modal-layer" class="modal-overlay">
-        <div id="modal-container" class="modal-window"></div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, orderBy, limit, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // 1. DATABASE INIT
-        const firebaseConfig = {
-            apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBt9o",
-            authDomain: "mindingclicker.firebaseapp.com",
-            projectId: "mindingclicker",
-            storageBucket: "mindingclicker.firebasestorage.app",
-            messagingSenderId: "484824275063",
-            appId: "1:484824275063:web:b98565344eea2760a34e72"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const ADMIN_EMAIL = "raimaslanov222@gmail.com";
-
-        // 2. ENGINE STATE
-        let state = {
-            money: 0,
-            power: 1,
-            mult: 1,
-            auto: 0,
-            xp: 0,
-            lvl: 1,
-            sp: 0, // Skill Points
-            rebirths: 0,
-            totalClicks: 0,
-            gameId: 0,
-            name: "Pilot",
-            costs: { p: 10, m: 250, a: 1000 },
-            skills: { critChance: 0, xpBoost: 1, luck: 1 },
-            isBanned: false
-        };
-
-        // 3. UTILS
-        const $ = (id) => document.getElementById(id);
-        const fNum = (n) => {
-            if (n >= 1e15) return (n/1e15).toFixed(2) + "Q";
-            if (n >= 1e12) return (n/1e12).toFixed(2) + "T";
-            if (n >= 1e9) return (n/1e9).toFixed(2) + "B";
-            if (n >= 1e6) return (n/1e6).toFixed(2) + "M";
-            if (n >= 1e3) return (n/1e3).toFixed(1) + "K";
-            return Math.floor(n);
-        };
-
-        const toast = (title, text, isErr = false) => {
-            const el = $('sys-msg');
-            $('sys-title').innerText = title;
-            $('sys-text').innerText = text;
-            el.style.borderLeftColor = isErr ? "#ff1a1a" : "#4ecca3";
-            el.style.display = "block";
-            setTimeout(() => el.style.display = "none", 4000);
-        };
-
-        // 4. AUTH MODULE
-        $('auth-btn-login').onclick = async () => {
-            const e = $('auth-email').value.trim();
-            const p = $('auth-pass').value.trim();
-            if(!e || !p) return toast("SYSTEM", "Credentials missing", true);
-            try {
-                await signInWithEmailAndPassword(auth, e, p);
-            } catch(err) { toast("AUTH", "Access Denied", true); }
-        };
-
-        $('auth-btn-reg').onclick = async () => {
-            const e = $('auth-email').value.trim();
-            const p = $('auth-pass').value.trim();
-            if(p.length < 6) return toast("AUTH", "Security key too weak", true);
-            try {
-                const res = await createUserWithEmailAndPassword(auth, e, p);
-                await runTransaction(db, async (t) => {
-                    const ref = doc(db, "system", "users_count");
-                    const snap = await t.get(ref);
-                    let nid = snap.exists() ? snap.data().val + 1 : 1;
-                    t.set(ref, { val: nid });
-                    t.set(doc(db, "leaders", res.user.uid), {
-                        ...state, name: e.split('@')[0], gameId: nid
-                    });
-                });
-                toast("AUTH", "Core Generated!");
-            } catch(err) { toast("AUTH", "Email collision", true); }
-        };
-
-        // 5. DATA SYNC
-        onAuthStateChanged(auth, async (u) => {
-            if (u) {
-                const docSnap = await getDoc(doc(db, "leaders", u.uid));
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    if(data.isBanned) {
-                        alert("YOUR ACCOUNT IS PERMANENTLY SUSPENDED");
-                        auth.signOut();
-                        return;
-                    }
-                    state = { ...state, ...data };
-                }
-                $('layer-auth').style.display = 'none';
-                const gl = $('layer-game');
-                gl.style.display = 'flex';
-                setTimeout(() => gl.style.opacity = "1", 100);
-                updateUI();
-                startLoop();
-            }
-        });
-
-        async function saveToCloud() {
-            if(!auth.currentUser) return;
-            try {
-                await setDoc(doc(db, "leaders", auth.currentUser.uid), state, { merge: true });
-                console.log("[SYNC]: Cloud saved.");
-            } catch(e) { console.error("Sync error", e); }
-        }
-
-        // 6. UI ENGINE
-        function updateUI() {
-            $('val-balance').innerText = fNum(state.money);
-            $('ui-pow').innerText = `+${fNum(state.power * state.mult * (1 + state.rebirths))}`;
-            $('ui-mul').innerText = `x${state.mult}`;
-            $('ui-aut').innerText = `${fNum(state.auto)}/s`;
-            
-            $('cost-pow').innerText = fNum(state.costs.p);
-            $('cost-mul').innerText = fNum(state.costs.m);
-            $('cost-aut').innerText = fNum(state.costs.a);
-
-            // Leveling
-            let xpNext = state.lvl * 250;
-            let progress = (state.xp / xpNext) * 100;
-            $('bar-xp').style.width = `${progress}%`;
-            $('ui-level-tag').innerText = `LEVEL: ${state.lvl} [${Math.floor(progress)}%] SP: ${state.sp}`;
-
-            if(state.xp >= xpNext) {
-                state.lvl++;
-                state.xp = 0;
-                state.sp += 2;
-                toast("LEVEL UP", `Reached level ${state.lvl}! +2 Skill Points`);
-            }
-
-            // Prestige
-            if(state.rebirths > 0) {
-                $('rebirth-badge').style.display = 'block';
-                $('rebirth-badge').innerText = `PRESTIGE X${state.rebirths}`;
-            }
-
-            checkShopAvailability();
-        }
-
-        function checkShopAvailability() {
-            $('buy-pow').disabled = state.money < state.costs.p;
-            $('buy-mul').disabled = state.money < state.costs.m;
-            $('buy-aut').disabled = state.money < state.costs.a;
-        }
-
-        // 7. GAMEPLAY LOGIC
-        $('core-tap').addEventListener('pointerdown', (e) => {
-            let baseGain = state.power * state.mult * (1 + state.rebirths);
-            
-            // Crit Check
-            let isCrit = Math.random() < (state.skills.critChance / 100);
-            let finalGain = isCrit ? baseGain * 5 : baseGain;
-
-            state.money += finalGain;
-            state.xp += (1 * state.skills.xpBoost);
-            state.totalClicks++;
-
-            createParticle(e.clientX, e.clientY, finalGain, isCrit);
-            updateUI();
-            
-            if(state.totalClicks % 50 === 0) saveToCloud();
-        });
-
-        function createParticle(x, y, val, crit) {
-            const p = document.createElement('div');
-            p.className = 'click-fx';
-            p.style.left = `${x}px`;
-            p.style.top = `${y}px`;
-            if(crit) {
-                p.style.color = 'var(--a)';
-                p.style.fontSize = '2.5rem';
-                p.innerText = `CRIT +${fNum(val)}`;
-            } else {
-                p.innerText = `+${fNum(val)}`;
-            }
-            document.body.appendChild(p);
-            setTimeout(() => p.remove(), 800);
-        }
-
-        // Shop Buttons
-        $('buy-pow').onclick = () => {
-            if(state.money >= state.costs.p) {
-                state.money -= state.costs.p;
-                state.power++;
-                state.costs.p = Math.floor(state.costs.p * 2.2);
-                updateUI();
-                saveToCloud();
-            }
-        };
-
-        $('buy-mul').onclick = () => {
-            if(state.money >= state.costs.m) {
-                state.money -= state.costs.m;
-                state.mult *= 2;
-                state.costs.m = Math.floor(state.costs.m * 10);
-                updateUI();
-                saveToCloud();
-            }
-        };
-
-        $('buy-aut').onclick = () => {
-            if(state.money >= state.costs.a) {
-                state.money -= state.costs.a;
-                state.auto += 5;
-                state.costs.a = Math.floor(state.costs.a * 3.5);
-                updateUI();
-                saveToCloud();
-            }
-        };
-
-        function startLoop() {
-            setInterval(() => {
-                if(state.auto > 0) {
-                    state.money += (state.auto / 10);
-                    updateUI();
-                }
-            }, 100);
-        }
-
-        // 8. TAB SYSTEM (Skills, Prestige, Rank)
-        const tabs = document.querySelectorAll('.tab-btn');
-        tabs.forEach(t => {
-            t.onclick = () => {
-                tabs.forEach(x => x.classList.remove('active'));
-                t.classList.add('active');
-                renderTab(t.dataset.tab);
-            }
-        });
-
-        function renderTab(type) {
-            const panel = $('main-panel');
-            panel.innerHTML = "";
-
-            if(type === 'shop') {
-                panel.innerHTML = `
-                    <div class="shop-item">
-                        <div class="item-i
+    <script type="module" src="app.js"></script>
+    </body>
+</html>
