@@ -1,34 +1,56 @@
-import { collection, query, where, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { collection, query, where, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 export function initAdmin(db) {
-    const giveBtn = document.getElementById('adm-give');
-    const resetBtn = document.getElementById('adm-reset');
-
-    giveBtn.onclick = async () => {
-        const id = parseInt(document.getElementById('adm-id').value);
-        const sum = parseFloat(document.getElementById('adm-sum').value);
-        
-        const q = query(collection(db, "leaders"), where("id", "==", id));
-        const snap = await getDocs(q);
-        
-        if (!snap.empty) {
-            const userRef = snap.docs[0].ref;
-            const currentScore = snap.docs[0].data().score || 0;
-            await updateDoc(userRef, { score: currentScore + sum });
-            alert("Выдано успешно!");
+    const getTarget = async () => {
+        const input = document.getElementById('adm-target').value;
+        let q;
+        if (input.startsWith('#')) {
+            q = query(collection(db, "leaders"), where("id", "==", parseInt(input.replace('#',''))));
         } else {
-            alert("Игрок не найден");
+            q = query(collection(db, "leaders"), where("name", "==", input));
+        }
+        const s = await getDocs(q);
+        return s.empty ? null : s.docs[0];
+    };
+
+    // ВЫДАТЬ
+    document.getElementById('adm-give').onclick = async () => {
+        const target = await getTarget();
+        const val = parseFloat(document.getElementById('adm-val').value);
+        if(target) {
+            await updateDoc(target.ref, { score: target.data().score + val });
+            alert("Успешно зачислено!");
+        } else alert("Игрок не найден");
+    };
+
+    // ШТРАФ
+    document.getElementById('adm-fine').onclick = async () => {
+        const target = await getTarget();
+        const val = parseFloat(document.getElementById('adm-val').value);
+        if(target) {
+            await updateDoc(target.ref, { score: Math.max(0, target.data().score - val) });
+            alert("Штраф применен");
         }
     };
 
-    resetBtn.onclick = async () => {
-        const id = parseInt(document.getElementById('adm-id').value);
-        const q = query(collection(db, "leaders"), where("id", "==", id));
-        const snap = await getDocs(q);
-        
-        if (!snap.empty) {
-            await updateDoc(snap.docs[0].ref, { score: 0, power: 1, mult: 1, auto: 0 });
-            alert("Игрок обнулен");
+    // ОБНУЛИТЬ
+    document.getElementById('adm-reset').onclick = async () => {
+        if(!confirm("Удалить весь прогресс?")) return;
+        const target = await getTarget();
+        if(target) {
+            await updateDoc(target.ref, { score: 0, power: 1, mult: 1, auto: 0, c1: 10, c2: 100, c3: 500 });
+            alert("Игрок сброшен до нуля");
+        }
+    };
+
+    // БАН (по времени)
+    document.getElementById('adm-ban').onclick = async () => {
+        const target = await getTarget();
+        const mins = parseInt(document.getElementById('adm-val').value);
+        if(target) {
+            const until = Date.now() + (mins * 60000);
+            await updateDoc(target.ref, { banUntil: until });
+            alert(`Игрок забанен на ${mins} мин.`);
         }
     };
 }
