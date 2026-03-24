@@ -3,294 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity Clicker Ultra Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Infinity Clicker Engine V5.0</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    
     <style>
-        /* --- 1. БАЗОВЫЕ СТИЛИ (Линии 14-60) --- */
+        /* --- СЕКЦИЯ 1: ЦВЕТОВАЯ ПАЛИТРА И ПЕРЕМЕННЫЕ (Строки 15-45) --- 
+        */
         :root {
             --primary: #ff1a1a;
             --secondary: #4ecca3;
-            --bg: #0f0f1a;
-            --panel: #1a1a2e;
-            --gold: #ffcc00;
+            --accent: #ffcc00;
+            --bg-dark: #0a0a12;
+            --panel-bg: #161625;
+            --glass: rgba(255, 255, 255, 0.05);
+            --shadow: 0 10px 30px rgba(0,0,0,0.5);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            user-select: none; 
+        /* --- СЕКЦИЯ 2: ОБЩИЕ СТИЛИ И СБРОС (Строки 46-80) --- 
+        */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
             outline: none;
+            -webkit-font-smoothing: antialiased;
         }
 
-        body { 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Roboto', sans-serif; 
-            background: var(--bg); 
-            color: white; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background: var(--bg-dark);
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
-        /* --- 2. АНИМАЦИИ (Линии 61-90) --- */
-        @keyframes clickPop {
-            0% { transform: scale(1); }
-            50% { transform: scale(0.9); }
-            100% { transform: scale(1); }
+        /* --- СЕКЦИЯ 3: АНИМАЦИИ (Строки 81-120) --- 
+        */
+        @keyframes floatText {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100px); opacity: 0; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(255, 26, 26, 0.4); }
-            70% { box-shadow: 0 0 0 20px rgba(255, 26, 26, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 26, 26, 0); }
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
         }
 
-        /* --- 3. ИНТЕРФЕЙС АВТОРИЗАЦИИ (Линии 91-120) --- */
-        #auth-screen {
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(255, 26, 26, 0.2); }
+            50% { box-shadow: 0 0 50px rgba(255, 26, 26, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(255, 26, 26, 0.2); }
+        }
+
+        /* --- СЕКЦИЯ 4: УВЕДОМЛЕНИЯ АДМИНА (Строки 121-150) --- 
+        */
+        #admin-notify {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 350px;
+            background: var(--panel-bg);
+            border: 2px solid var(--secondary);
+            border-radius: 15px;
+            padding: 15px;
+            z-index: 10000;
+            display: none;
+            box-shadow: var(--shadow);
+            animation: slideDown 0.4s ease;
+            text-align: center;
+        }
+
+        #admin-notify h4 { margin: 0 0 5px 0; color: var(--secondary); font-family: 'Montserrat'; }
+        #admin-notify p { margin: 0; font-size: 0.85rem; color: #bbb; }
+
+        /* --- СЕКЦИЯ 5: ЭКРАН ВХОДА (Строки 151-200) --- 
+        */
+        .auth-container {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle, #1a1a2e 0%, #05050a 100%);
-            z-index: 5000;
+            background: radial-gradient(circle at center, #1c1c3c 0%, #05050a 100%);
+            z-index: 9000;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
-        .auth-box {
-            width: 90%;
-            max-width: 350px;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            padding: 30px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .auth-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 35px;
+            width: 100%;
+            max-width: 380px;
             text-align: center;
+            box-shadow: var(--shadow);
         }
 
-        .auth-box h1 {
+        .auth-card h1 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2rem;
-            margin-bottom: 20px;
-            background: linear-gradient(to right, #ff1a1a, #ffcc00);
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
         }
 
-        /* --- 4. ШАПКА ИГРЫ (Линии 121-160) --- */
-        #game-ui { display: none; flex-direction: column; height: 100%; }
-
-        .header { 
-            background: linear-gradient(180deg, var(--primary) 0%, #800000 100%); 
-            padding: 40px 20px 25px 20px; 
-            text-align: center; 
-            border-bottom-left-radius: 40px; 
-            border-bottom-right-radius: 40px; 
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        #money { 
-            font-family: 'Montserrat', sans-serif;
-            font-size: 3.5rem; 
-            margin: 0; 
-            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .user-badge {
-            display: inline-block;
+        .main-input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
             background: rgba(0,0,0,0.3);
-            padding: 5px 15px;
-            border-radius: 20px;
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: var(--secondary);
+            color: white;
             font-weight: bold;
+            text-align: center;
         }
 
-        /* --- 5. КНОПКИ УПРАВЛЕНИЯ (Линии 161-190) --- */
-        .icon-btn { 
-            position: absolute; 
-            top: 20px; 
-            background: rgba(255,255,255,0.2); 
-            border: none; 
-            border-radius: 15px; 
-            width: 45px; 
-            height: 45px; 
-            color: white; 
-            font-size: 1.3rem;
+        /* --- СЕКЦИЯ 6: ИГРОВОЙ ИНТЕРФЕЙС GUI (Строки 201-280) --- 
+        */
+        #game-view { display: none; flex-direction: column; height: 100%; }
+
+        .top-bar {
+            background: linear-gradient(180deg, var(--primary) 0%, #a00000 100%);
+            padding: 50px 20px 30px 20px;
+            text-align: center;
+            border-bottom-left-radius: 45px;
+            border-bottom-right-radius: 45px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        }
+
+        #balance-display {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.8rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            margin: 0;
+        }
+
+        .player-info {
+            background: rgba(0,0,0,0.25);
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            display: inline-block;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+
+        .btn-circle {
+            position: absolute;
+            top: 25px;
+            width: 46px;
+            height: 46px;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.4rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.2s;
+            transition: var(--transition);
         }
-        .icon-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4); }
-        #top-btn { left: 20px; }
-        #set-btn { right: 20px; }
+        #btn-leaderboard { left: 20px; }
+        #btn-settings { right: 20px; }
 
-        /* --- 6. ИГРОВАЯ ЗОНА (Линии 191-230) --- */
-        .click-area { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
+        /* --- СЕКЦИЯ 7: КЛИКЕР ЗОНА (Строки 281-340) --- 
+        */
+        .click-engine {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             position: relative;
         }
 
-        #main-button { 
-            width: 200px; 
-            height: 200px; 
-            border-radius: 50%; 
-            background: url('button.png') center/cover, radial-gradient(#ff1a1a, #330000); 
-            border: 8px solid white; 
+        #the-button {
+            width: 210px;
+            height: 210px;
+            border-radius: 50%;
+            background: url('button.png') center/cover, var(--primary);
+            border: 8px solid #ffffff;
             cursor: pointer;
-            animation: pulse 2s infinite;
-            z-index: 10;
+            transition: transform 0.05s ease;
+            animation: pulseGlow 3s infinite;
+            z-index: 5;
         }
 
-        .floating-text {
+        #the-button:active { transform: scale(0.88); }
+
+        .particle-text {
             position: absolute;
-            color: var(--secondary);
+            font-family: 'Montserrat';
             font-weight: 900;
-            font-size: 1.5rem;
+            color: var(--secondary);
             pointer-events: none;
-            animation: floatUp 0.8s ease-out forwards;
-            z-index: 20;
+            animation: floatText 0.7s ease-out forwards;
+            z-index: 100;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 20px;
+        .dashboard {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
             width: 90%;
         }
 
-        .stat-card {
-            background: rgba(255,255,255,0.05);
-            padding: 10px;
-            border-radius: 15px;
-            text-align: center;
-            font-size: 0.8rem;
-        }
-
-        /* --- 7. МАГАЗИН (Линии 231-280) --- */
-        .shop { 
-            background: var(--panel); 
-            padding: 20px; 
-            border-top-left-radius: 40px; 
-            border-top-right-radius: 40px; 
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
-        }
-
-        .item { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            background: rgba(255,255,255,0.03); 
-            margin-bottom: 10px; 
-            padding: 12px 20px; 
+        .stat-box {
+            flex: 1;
+            background: var(--glass);
+            padding: 12px;
             border-radius: 20px;
+            text-align: center;
+            font-size: 0.75rem;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .item-info b { font-size: 1rem; display: block; }
-        .item-info span { color: #888; font-size: 0.8rem; }
-
-        .buy-btn { 
-            background: var(--gold); 
-            color: black; 
-            border: none; 
-            padding: 10px 20px; 
-            border-radius: 12px; 
-            font-weight: 900; 
-            box-shadow: 0 4px 0 #b89600;
+        /* --- СЕКЦИЯ 8: МАГАЗИН И ПАНЕЛИ (Строки 341-400) --- 
+        */
+        .shop-container {
+            background: var(--panel-bg);
+            padding: 20px 25px 40px 25px;
+            border-top-left-radius: 45px;
+            border-top-right-radius: 45px;
         }
-        .buy-btn:active { transform: translateY(2px); box-shadow: none; }
 
-        /* --- 8. МОДАЛЬНЫЕ ОКНА (Линии 281-320) --- */
-        .modal {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-            display: none; align-items: center; justify-content: center; z-index: 4000;
-            backdrop-filter: blur(5px);
+        .shop-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.03);
+            padding: 14px 20px;
+            border-radius: 22px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .action-btn {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 14px;
+            font-weight: 900;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 0 #b38f00;
+        }
+
+        /* --- СЕКЦИЯ 9: МОДАЛЬНЫЕ ОКНА (Строки 401-450) --- 
+        */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+            z-index: 9500; display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(8px); padding: 20px;
         }
 
         .modal-content {
-            width: 90%; max-width: 350px; background: var(--panel);
-            padding: 25px; border-radius: 30px; border: 2px solid #333;
+            width: 100%; max-width: 340px; background: var(--panel-bg);
+            border-radius: 35px; padding: 30px; border: 2px solid #222;
+            text-align: center; animation: fadeIn 0.3s ease;
         }
 
-        .input-style {
-            width: 100%; padding: 15px; border-radius: 15px; border: none;
-            background: #05050a; color: white; margin: 10px 0; text-align: center;
-            font-weight: bold;
-        }
-
-        /* --- 9. СПИСОК ЛИДЕРОВ (Линии 321-350) --- */
-        .leader-item {
+        .leader-row {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; background: rgba(255,255,255,0.05);
-            margin-bottom: 8px; border-radius: 15px;
+            padding: 14px; background: rgba(0,0,0,0.2); margin-bottom: 8px;
+            border-radius: 18px; border-left: 4px solid var(--accent);
         }
-        .leader-rank { color: var(--gold); font-weight: 900; margin-right: 10px; }
-
     </style>
 </head>
 <body>
 
-    <div id="auth-screen">
-        <div class="auth-box">
+    <div id="admin-notify">
+        <h4 id="notify-title">СИСТЕМА</h4>
+        <p id="notify-msg">Операция выполнена</p>
+    </div>
+
+    <section class="auth-container" id="auth-layer">
+        <div class="auth-card">
             <h1>INFINITY<br>CLICKER</h1>
-            <input type="email" id="email" class="input-style" placeholder="Электронная почта">
-            <input type="password" id="pass" class="input-style" placeholder="Пароль">
-            <button class="buy-btn" id="login-btn" style="width:100%; padding:15px; margin-top:10px">ВОЙТИ В ИГРУ</button>
-            <p id="reg-btn" style="color:var(--secondary); font-size:0.8rem; margin-top:15px; cursor:pointer">Нет аккаунта? Создать</p>
+            <input type="email" id="inp-email" class="main-input" placeholder="Ваш Email">
+            <input type="password" id="inp-pass" class="main-input" placeholder="Пароль">
+            <button class="action-btn" id="btn-login" style="width:100%; padding:18px;">ВОЙТИ</button>
+            <p id="btn-switch-reg" style="color:var(--secondary); font-size:0.8rem; margin-top:20px; cursor:pointer">Создать новый аккаунт</p>
         </div>
-    </div>
+    </section>
 
-    <div id="game-ui">
-        <div class="header">
-            <button id="top-btn" class="icon-btn">🏆</button>
-            <button id="set-btn" class="icon-btn">⚙️</button>
-            <div id="money">0</div>
-            <div id="user-info" class="user-badge">ЗАГРУЗКА...</div>
-        </div>
+    <main id="game-view">
+        <header class="top-bar">
+            <button id="btn-leaderboard" class="btn-circle">🏆</button>
+            <button id="btn-settings" class="btn-circle">⚙️</button>
+            <h2 id="balance-display">0</h2>
+            <div id="player-tag" class="player-info">ЗАГРУЗКА ДАННЫХ...</div>
+        </header>
 
-        <div class="click-area" id="click-zone">
-            <div id="main-button"></div>
-            <div class="stats-grid">
-                <div class="stat-card">Клик: <b id="st-p" style="color:var(--secondary)">+1</b></div>
-                <div class="stat-card">Множитель: <b id="st-m" style="color:var(--gold)">x1</b></div>
-                <div class="stat-card" style="grid-column: span 2;">Авто-доход: <b id="st-b" style="color:#ff4d4d">0</b> /сек</div>
+        <section class="click-engine" id="click-box">
+            <div id="the-button"></div>
+            <div class="dashboard">
+                <div class="stat-box">КЛИК<br><b id="gui-power" style="color:var(--secondary)">+1</b></div>
+                <div class="stat-box">БОНУС<br><b id="gui-mult" style="color:var(--accent)">x1</b></div>
+                <div class="stat-box">АВТО<br><b id="gui-bot" style="color:var(--primary)">0</b></div>
             </div>
-        </div>
+        </section>
 
-        <div class="shop">
-            <div class="item">
-                <div class="item-info"><b>Сила удара</b><span id="c1">Цена: 10</span></div>
-                <button class="buy-btn" id="buy1">КУПИТЬ</button>
+        <footer class="shop-container">
+            <div class="shop-card">
+                <div><b>Урон</b><br><small id="price1">Цена: 10</small></div>
+                <button class="action-btn" id="buy-power">КУПИТЬ</button>
             </div>
-            <div class="item">
-                <div class="item-info"><b>Множитель X2</b><span id="c2">Цена: 100</span></div>
-                <button class="buy-btn" id="buy2">КУПИТЬ</button>
+            <div class="shop-card">
+                <div><b>Множитель</b><br><small id="price2">Цена: 100</small></div>
+                <button class="action-btn" id="buy-mult">КУПИТЬ</button>
             </div>
-            <div class="item">
-                <div class="item-info"><b>Бот-майнер</b><span id="c3">Цена: 500</span></div>
-                <button class="buy-btn" id="buy3">КУПИТЬ</button>
+            <div class="shop-card">
+                <div><b>Майнер</b><br><small id="price3">Цена: 500</small></div>
+                <button class="action-btn" id="buy-bot">КУПИТЬ</button>
             </div>
-        </div>
-    </div>
+        </footer>
+    </main>
 
-    <div id="modal-overlay" class="modal">
-        <div id="modal-box" class="modal-content">
-            </div>
+    <div id="modal-layer" class="modal-overlay">
+        <div id="modal-inner" class="modal-content"></div>
     </div>
 
     <script type="module">
@@ -298,7 +349,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, orderBy, limit, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Конфигурация Firebase
+        // КОНФИГ ФАЙРБЕЙЗ
         const firebaseConfig = {
             apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBt9o",
             authDomain: "mindingclicker.firebaseapp.com",
@@ -311,177 +362,142 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const ADMIN_EMAIL = "raimaslanov222@gmail.com";
+        const MASTER_ADMIN = "raimaslanov222@gmail.com";
 
-        // Переменные состояния
-        let user = null, money = 0, power = 1, mult = 1, bot = 0, myId = 0, myName = "";
-        let cost1 = 10, cost2 = 100, cost3 = 500;
+        // ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+        let state = {
+            money: 0, power: 1, mult: 1, bot: 0,
+            c1: 10, c2: 100, c3: 500,
+            id: 0, name: ""
+        };
 
-        // Форматирование чисел
-        function nForm(n) {
-            if (n >= 1e15) return n.toExponential(2);
+        // ФОРМАТИРОВАНИЕ ЧИСЕЛ
+        const fNum = (n) => {
             if (n >= 1e12) return (n / 1e12).toFixed(2) + "T";
             if (n >= 1e9) return (n / 1e9).toFixed(2) + "B";
             if (n >= 1e6) return (n / 1e6).toFixed(2) + "M";
             if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
             return Math.floor(n);
-        }
-
-        // --- ЛОГИКА АВТОРИЗАЦИИ ---
-        document.getElementById('login-btn').onclick = () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('pass').value;
-            signInWithEmailAndPassword(auth, e, p).catch(() => alert("Ошибка! Проверьте данные."));
         };
 
-        document.getElementById('reg-btn').onclick = async () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('pass').value;
-            if(p.length < 6) return alert("Пароль должен быть от 6 символов!");
-            try {
-                const res = await createUserWithEmailAndPassword(auth, e, p);
-                await runTransaction(db, async (t) => {
-                    const c = await t.get(doc(db, "system", "users_count"));
-                    let nid = c.exists() ? c.data().val + 1 : 1;
-                    t.set(doc(db, "system", "users_count"), { val: nid });
-                    t.set(doc(db, "leaders", res.user.uid), { 
-                        name: e.split('@')[0], score: 0, power: 1, mult: 1, bot: 0, 
-                        cost1: 10, cost2: 100, cost3: 500, gameId: nid 
-                    });
-                });
-                alert("Аккаунт успешно создан!");
-            } catch(err) { alert("Ошибка при регистрации!"); }
+        // GUI УВЕДОМЛЕНИЯ ДЛЯ АДМИНА
+        window.sendNotice = (title, msg, err = false) => {
+            const box = document.getElementById('admin-notify');
+            document.getElementById('notify-title').innerText = title;
+            document.getElementById('notify-msg').innerText = msg;
+            box.style.borderColor = err ? "#ff1a1a" : "#4ecca3";
+            box.style.display = "block";
+            setTimeout(() => { box.style.display = "none"; }, 4500);
         };
 
-        // --- ОСНОВНОЙ ЦИКЛ ИГРЫ ---
+        // АВТОРИЗАЦИЯ
         onAuthStateChanged(auth, async (u) => {
             if (u) {
-                user = u;
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('game-ui').style.display = 'flex';
-                const s = await getDoc(doc(db, "leaders", user.uid));
-                if (s.exists()) {
-                    const d = s.data();
-                    money = d.score || 0; power = d.power || 1; mult = d.mult || 1;
-                    bot = d.bot || 0; cost1 = d.cost1 || 10; cost2 = d.cost2 || 100;
-                    cost3 = d.cost3 || 500; myName = d.name || "Игрок"; myId = d.gameId || 0;
+                document.getElementById('auth-layer').style.display = 'none';
+                document.getElementById('game-view').style.display = 'flex';
+                const docSnap = await getDoc(doc(db, "leaders", u.uid));
+                if (docSnap.exists()) {
+                    const d = docSnap.data();
+                    state = { ...state, money: d.score||0, power: d.power||1, mult: d.mult||1, bot: d.bot||0, c1: d.cost1||10, c2: d.cost2||100, c3: d.cost3||500, name: d.name, id: d.gameId };
                 }
-                updateUI();
+                syncUI();
             }
         });
 
-        // Клик с анимацией
-        document.getElementById('main-button').onclick = (e) => {
-            const add = power * mult;
-            money += add;
-            updateUI();
-            
-            // Создаем вылетающий текст
-            const txt = document.createElement('div');
-            txt.className = 'floating-text';
-            txt.innerText = `+${nForm(add)}`;
-            txt.style.left = `${e.clientX}px`;
-            txt.style.top = `${e.clientY - 50}px`;
-            document.body.appendChild(txt);
-            setTimeout(() => txt.remove(), 800);
-        };
-
-        // Авто-доход
-        setInterval(() => { if(bot > 0) { money += (bot / 10); updateUI(); } }, 100);
-
-        function updateUI() {
-            document.getElementById('money').innerText = nForm(money);
-            document.getElementById('user-info').innerText = `${myName.toUpperCase()} | ID: #${myId}`;
-            document.getElementById('st-p').innerText = `+${nForm(power)}`;
-            document.getElementById('st-m').innerText = `x${mult}`;
-            document.getElementById('st-b').innerText = nForm(bot);
-            document.getElementById('c1').innerText = `Цена: ${nForm(cost1)}`; 
-            document.getElementById('c2').innerText = `Цена: ${nForm(cost2)}`; 
-            document.getElementById('c3').innerText = `Цена: ${nForm(cost3)}`;
+        // ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+        function syncUI() {
+            document.getElementById('balance-display').innerText = fNum(state.money);
+            document.getElementById('player-tag').innerText = `${state.name.toUpperCase()} | ID: #${state.id}`;
+            document.getElementById('gui-power').innerText = `+${fNum(state.power * state.mult)}`;
+            document.getElementById('gui-mult').innerText = `x${state.mult}`;
+            document.getElementById('gui-bot').innerText = fNum(state.bot);
+            document.getElementById('price1').innerText = `Цена: ${fNum(state.c1)}`;
+            document.getElementById('price2').innerText = `Цена: ${fNum(state.c2)}`;
+            document.getElementById('price3').innerText = `Цена: ${fNum(state.c3)}`;
         }
 
-        // Сохранение
-        async function save() { if(user) await setDoc(doc(db,"leaders",user.uid),{name:myName,score:money,power:power,mult:mult,bot:bot,cost1:cost1,cost2:cost2,cost3:cost3,gameId:myId},{merge:true}); }
-        setInterval(save, 10000);
+        // КЛИК И ЭФФЕКТЫ
+        document.getElementById('the-button').onclick = (e) => {
+            const earn = state.power * state.mult;
+            state.money += earn;
+            syncUI();
 
-        // Покупки
-        document.getElementById('buy1').onclick = () => { if(money>=cost1){ money-=cost1; power++; cost1*=4; updateUI(); save(); } };
-        document.getElementById('buy2').onclick = () => { if(money>=cost2){ money-=cost2; mult*=2; cost2*=10; updateUI(); save(); } };
-        document.getElementById('buy3').onclick = () => { if(money>=cost3){ money-=cost3; bot+=(5*mult); cost3*=5; updateUI(); save(); } };
+            const p = document.createElement('div');
+            p.className = 'particle-text';
+            p.innerText = `+${fNum(earn)}`;
+            p.style.left = `${e.clientX}px`;
+            p.style.top = `${e.clientY - 40}px`;
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 700);
+        };
 
-        // --- МОДАЛЬНЫЕ ОКНА (ЛОГИКА) ---
-        const overlay = document.getElementById('modal-overlay');
-        const mBox = document.getElementById('modal-box');
+        // АВТО-КЛИКЕР (10 раз в секунду)
+        setInterval(() => { if(state.bot > 0) { state.money += (state.bot / 10); syncUI(); } }, 100);
 
-        window.closeM = () => overlay.style.display = 'none';
+        // СОХРАНЕНИЕ В ОБЛАКО (раз в 10 сек)
+        async function cloudSave() {
+            if(!auth.currentUser) return;
+            await setDoc(doc(db, "leaders", auth.currentUser.uid), {
+                name: state.name, score: state.money, power: state.power, mult: state.mult, bot: state.bot,
+                cost1: state.c1, cost2: state.c2, cost3: state.c3, gameId: state.id
+            }, { merge: true });
+        }
+        setInterval(cloudSave, 10000);
 
-        // Кнопка настройки
-        document.getElementById('set-btn').onclick = () => {
-            overlay.style.display = 'flex';
-            let adminBtn = user.email === ADMIN_EMAIL ? `<button class="buy-btn" onclick="openAdmin()" style="width:100%; margin-top:10px">👑 АДМИН-ПАНЕЛЬ</button>` : '';
-            mBox.innerHTML = `
-                <h2 style="margin:0">НАСТРОЙКИ</h2>
-                <input type="text" id="newName" class="input-style" placeholder="Новый ник" value="${myName}">
-                <button class="buy-btn" style="width:100%; background:var(--secondary)" onclick="saveNick()">СОХРАНИТЬ</button>
-                ${adminBtn}
-                <button class="buy-btn" style="width:100%; background:#444; margin-top:10px" onclick="closeM()">ЗАКРЫТЬ</button>
+        // МАГАЗИН
+        document.getElementById('buy-power').onclick = () => { if(state.money >= state.c1){ state.money -= state.c1; state.power++; state.c1 *= 4; syncUI(); cloudSave(); } };
+        document.getElementById('buy-mult').onclick = () => { if(state.money >= state.c2){ state.money -= state.c2; state.mult *= 2; state.c2 *= 10; syncUI(); cloudSave(); } };
+        document.getElementById('buy-bot').onclick = () => { if(state.money >= state.c3){ state.money -= state.c3; state.bot += (5 * state.mult); state.c3 *= 5; syncUI(); cloudSave(); } };
+
+        // МОДАЛЬНЫЕ ОКНА ЛОГИКА
+        const modal = document.getElementById('modal-layer');
+        const inner = document.getElementById('modal-inner');
+        window.closeModal = () => modal.style.display = 'none';
+
+        // НАСТРОЙКИ И АДМИНКА
+        document.getElementById('btn-settings').onclick = () => {
+            modal.style.display = 'flex';
+            let admUI = auth.currentUser.email === MASTER_ADMIN ? `<button class="action-btn" style="width:100%; margin-top:10px" onclick="window.runAdmin()">👑 ПАНЕЛЬ УПРАВЛЕНИЯ</button>` : '';
+            inner.innerHTML = `
+                <h3>НАСТРОЙКИ ПРОФИЛЯ</h3>
+                <input type="text" id="new-nick" class="main-input" placeholder="Никнейм" value="${state.name}">
+                <button class="action-btn" style="width:100%; background:var(--secondary)" onclick="window.saveNick()">ОБНОВИТЬ</button>
+                ${admUI}
+                <button class="action-btn" style="width:100%; background:#333; margin-top:15px" onclick="window.closeModal()">ЗАКРЫТЬ</button>
             `;
         };
 
         window.saveNick = async () => {
-            const n = document.getElementById('newName').value.trim();
-            if(n.length > 1) { myName = n; updateUI(); await save(); closeM(); }
+            const n = document.getElementById('new-nick').value.trim();
+            if(n.length > 1) { state.name = n; syncUI(); await cloudSave(); window.closeModal(); }
         };
 
-        // Админка
-        window.openAdmin = () => {
-            mBox.innerHTML = `
-                <h2 style="color:var(--gold)">АДМИН-ПАНЕЛЬ</h2>
-                <input type="text" id="aTarget" class="input-style" placeholder="ID или НИК">
-                <input type="number" id="aAmount" class="input-style" placeholder="Сумма">
-                <button class="buy-btn" style="width:100%; background:var(--secondary)" onclick="admOp('give')">ВЫДАТЬ</button>
-                <button class="buy-btn" style="width:100%; background:#ff4d4d; margin-top:5px" onclick="admOp('reset')">ОБНУЛИТЬ</button>
-                <button class="buy-btn" style="width:100%; background:#444; margin-top:15px" onclick="closeM()">НАЗАД</button>
+        // ФУНКЦИИ АДМИНИСТРАТОРА (GUI + LOGIC)
+        window.runAdmin = () => {
+            inner.innerHTML = `
+                <h3 style="color:var(--accent)">АДМИН-ЦЕНТР</h3>
+                <input type="text" id="adm-target" class="main-input" placeholder="ID или НИК игрока">
+                <input type="number" id="adm-val" class="main-input" placeholder="Количество монет">
+                <button class="action-btn" style="width:100%; background:var(--secondary)" onclick="window.admExec('give')">ВЫДАТЬ СРЕДСТВА</button>
+                <button class="action-btn" style="width:100%; background:var(--primary); margin-top:8px" onclick="window.admExec('reset')">ОБНУЛИТЬ ИГРОКА</button>
+                <button class="action-btn" style="width:100%; background:#222; margin-top:20px" onclick="window.closeModal()">НАЗАД</button>
             `;
         };
 
-        window.admOp = async (type) => {
-            const t = document.getElementById('aTarget').value;
-            const v = parseFloat(document.getElementById('aAmount').value) || 0;
-            let q = !isNaN(t) ? query(collection(db, "leaders"), where("gameId", "==", parseInt(t))) : query(collection(db, "leaders"), where("name", "==", t));
+        window.admExec = async (mode) => {
+            const target = document.getElementById('adm-target').value;
+            const amount = parseFloat(document.getElementById('adm-val').value) || 0;
+            if(!target) return window.sendNotice("ОШИБКА", "Укажите цель!", true);
+
+            let q = !isNaN(target) ? query(collection(db, "leaders"), where("gameId", "==", parseInt(target))) : query(collection(db, "leaders"), where("name", "==", target));
             const snap = await getDocs(q);
-            if(snap.empty) return alert("Игрок не найден!");
-            const ref = snap.docs[0].ref;
-            const d = snap.docs[0].data();
-            if(type === 'give') {
-                await setDoc(ref, { score: d.score + v }, { merge: true });
-                alert(`Успех! Выдано игроку ${d.name} (ID: #${d.gameId})`);
+            if(snap.empty) return window.sendNotice("ОШИБКА", "Игрок не найден!", true);
+
+            const userRef = snap.docs[0].ref;
+            const userData = snap.docs[0].data();
+
+            if(mode === 'give') {
+                await setDoc(userRef, { score: userData.score + amount }, { merge: true });
+                window.sendNotice("УСПЕХ!", `Выдано ${fNum(amount)} монет игроку ${userData.name} (ID: #${userData.gameId})`);
             } else {
-                await setDoc(ref, { score: 0, power: 1, mult: 1, bot: 0 }, { merge: true });
-                alert(`Прогресс игрока ${d.name} сброшен!`);
-            }
-        };
-
-        // Топ лидеров
-        document.getElementById('top-btn').onclick = () => {
-            overlay.style.display = 'flex';
-            mBox.innerHTML = `<h2>🏆 ТОП-10</h2><div id="l-list">Загрузка...</div><button class="buy-btn" style="width:100%; margin-top:15px" onclick="closeM()">ЗАКРЫТЬ</button>`;
-            onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(10)), (snap) => {
-                const l = document.getElementById('l-list');
-                if(!l) return;
-                l.innerHTML = "";
-                let i = 1;
-                snap.forEach(d => {
-                    const data = d.data();
-                    l.innerHTML += `
-                        <div class="leader-item">
-                            <span><span class="leader-rank">#${i++}</span> ${data.name} <small style="display:block; font-size:10px; color:#666">ID: ${data.gameId}</small></span>
-                            <b>${nForm(data.score)}</b>
-                        </div>`;
-                });
-            });
-        };
-
-    </script>
-</body>
-</html>
+                await setDoc(userRef, { score: 0, power: 1, mult: 1, bot: 0 }
