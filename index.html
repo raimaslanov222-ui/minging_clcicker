@@ -12,7 +12,6 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: white; display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
         
-        /* Авторизация */
         #auth-screen { position: fixed; inset: 0; background: #0f0f1a; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-box { width: 100%; max-width: 320px; background: #1a1a2e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #05050a; color: white; outline: none; }
@@ -20,7 +19,6 @@
         #login-btn { background: #4ecca3; color: white; margin-bottom: 10px; }
         #reg-btn { background: transparent; color: #4ecca3; border: 1px solid #4ecca3; }
 
-        /* Игра */
         #game-ui { display: none; flex-direction: column; height: 100vh; }
         .header { background: linear-gradient(180deg, #ff3333 0%, #800000 100%); padding: 20px; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; position: relative; }
         #money { font-size: 3rem; font-weight: 900; margin: 0; }
@@ -35,7 +33,6 @@
         #main-button:active { transform: scale(0.9); }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 300px; text-align: center; font-size: 0.8rem; color: #aaa; }
-
         .shop-panel { background: #1a1a2e; padding: 20px; border-radius: 30px 30px 0 0; border: 1px solid #333; }
         .shop-item { display: flex; justify-content: space-between; align-items: center; background: #252545; padding: 12px; border-radius: 15px; margin-bottom: 8px; }
         .shop-item button { background: #ffcc00; color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; min-width: 90px; }
@@ -57,7 +54,6 @@
             <input type="password" id="pass" placeholder="Пароль">
             <button class="auth-btn" id="login-btn">ВОЙТИ</button>
             <button class="auth-btn" id="reg-btn">РЕГИСТРАЦИЯ</button>
-            <p style="font-size: 0.7rem; color: #888; margin-top: 15px;">Данные сохраняются автоматически</p>
         </div>
     </div>
 
@@ -120,32 +116,41 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Устанавливаем вечную сессию
+        // ОБНОВЛЕННЫЙ СПИСОК ЗАПРЕЩЕННЫХ СЛОВ
+        const badWords = ["Raimloh", "Raimpidor", "Raimxuilo", "Райимлох", "admin", "moderator"];
+
         setPersistence(auth, browserLocalPersistence);
 
         let user = null, money = 0, power = 1, mult = 1, bot = 0;
         let cost1 = 10, cost2 = 100, cost3 = 500;
 
-        // Автозаполнение полей из памяти устройства
         window.onload = () => {
             if(localStorage.getItem('m_email')) document.getElementById('email').value = localStorage.getItem('m_email');
             if(localStorage.getItem('m_pass')) document.getElementById('pass').value = localStorage.getItem('m_pass');
         };
 
-        const saveCredentials = () => {
-            localStorage.setItem('m_email', document.getElementById('email').value);
-            localStorage.setItem('m_pass', document.getElementById('pass').value);
+        function isBadName(name) {
+            return badWords.some(word => name.toLowerCase().includes(word.toLowerCase()));
+        }
+
+        const handleAuth = (type) => {
+            const mail = document.getElementById('email').value;
+            const p = document.getElementById('pass').value;
+            
+            if (isBadName(mail.split('@')[0])) {
+                alert("Это имя запрещено из-за оскорбительного содержания!");
+                return;
+            }
+
+            localStorage.setItem('m_email', mail);
+            localStorage.setItem('m_pass', p);
+
+            if(type === 'reg') createUserWithEmailAndPassword(auth, mail, p).catch(e => alert(e.message));
+            else signInWithEmailAndPassword(auth, mail, p).catch(e => alert(e.message));
         };
 
-        document.getElementById('reg-btn').onclick = () => {
-            saveCredentials();
-            createUserWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
-        };
-        
-        document.getElementById('login-btn').onclick = () => {
-            saveCredentials();
-            signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
-        };
+        document.getElementById('reg-btn').onclick = () => handleAuth('reg');
+        document.getElementById('login-btn').onclick = () => handleAuth('login');
 
         onAuthStateChanged(auth, async (u) => {
             if (u) {
@@ -186,9 +191,12 @@
 
         async function saveGame() {
             if (!user) return;
+            let name = user.email.split('@')[0];
+            if (isBadName(name)) name = "Заблокирован";
+
             document.getElementById('auto-save-status').innerText = "Сохранение...";
             await setDoc(doc(db, "leaders", user.uid), {
-                name: user.email.split('@')[0], score: money,
+                name: name, score: money,
                 power: power, mult: mult, bot: bot,
                 cost1: cost1, cost2: cost2, cost3: cost3
             });
