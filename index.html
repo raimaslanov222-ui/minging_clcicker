@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Minding Clicker Ultra</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0f0f1a">
+    
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: white; display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
         
+        /* Экран входа */
         #auth-screen { position: fixed; inset: 0; background: #0f0f1a; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-box { width: 100%; max-width: 320px; background: #1a1a2e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #05050a; color: white; outline: none; }
@@ -15,39 +20,54 @@
         #login-btn { background: #4ecca3; color: white; margin-bottom: 10px; }
         #reg-btn { background: transparent; color: #4ecca3; border: 1px solid #4ecca3; }
 
-        #game-ui { display: none; flex-direction: column; height: 100vh; overflow-y: auto; }
-        .header { background: linear-gradient(180deg, #ff3333 0%, #800000 100%); padding: 20px; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; position: sticky; top: 0; z-index: 10; }
+        /* Игровой интерфейс */
+        #game-ui { display: none; flex-direction: column; height: 100vh; }
+        .header { background: linear-gradient(180deg, #ff3333 0%, #800000 100%); padding: 20px; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
         #money { font-size: 3rem; font-weight: 900; margin: 0; }
         
-        .main-area { padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        #main-button { width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #ff4d4d, #b30000); border: 6px solid white; cursor: pointer; transition: 0.1s; box-shadow: 0 0 25px rgba(255, 77, 77, 0.4); }
+        .main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 10px; }
+        
+        /* ТВОЯ КНОПКА С КАРТИНКОЙ */
+        #main-button { 
+            width: 170px; height: 170px; 
+            border-radius: 50%; 
+            background-image: url('button.png'); 
+            background-size: cover; 
+            background-position: center;
+            border: 6px solid white; 
+            cursor: pointer; 
+            transition: transform 0.1s; 
+            box-shadow: 0 0 25px rgba(255, 77, 77, 0.4); 
+        }
         #main-button:active { transform: scale(0.9); }
 
-        .shop-panel { background: #1a1a2e; padding: 20px; border-radius: 30px 30px 0 0; border: 1px solid #333; margin-top: auto; }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; background: #252545; padding: 12px; border-radius: 15px; margin-bottom: 8px; }
-        .shop-item button { background: #ffcc00; color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; min-width: 100px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 300px; text-align: center; font-size: 0.8rem; color: #aaa; }
+
+        .shop-panel { background: #1a1a2e; padding: 20px; border-radius: 30px 30px 0 0; border: 1px solid #333; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; background: #252545; padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; }
+        .shop-item button { background: #ffcc00; color: black; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; min-width: 90px; }
         .shop-item button:disabled { background: #444; color: #777; }
 
-        #save-btn { width: 100%; background: #4ecca3; border: none; padding: 15px; border-radius: 15px; font-weight: bold; color: white; margin: 10px 0; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; text-align: center; font-size: 0.8rem; color: #aaa; }
+        #save-btn { width: 100%; background: #4ecca3; border: none; padding: 15px; border-radius: 15px; font-weight: bold; color: white; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(78, 204, 163, 0.3); }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box">
-            <h2>Minding ID</h2>
-            <input type="email" id="email" placeholder="Email">
+            <h2 style="margin:0">Minding Clicker</h2>
+            <p style="font-size:0.8rem; color:#888">Введите почту и пароль</p>
+            <input type="email" id="email" placeholder="Email (например 1@m.ru)">
             <input type="password" id="pass" placeholder="Пароль">
             <button class="auth-btn" id="login-btn">ВОЙТИ</button>
-            <button class="auth-btn" id="reg-btn">РЕГИСТРАЦИЯ</button>
+            <button class="auth-btn" id="reg-btn">СОЗДАТЬ АККАУНТ</button>
         </div>
     </div>
 
     <div id="game-ui">
         <div class="header">
             <div id="money">0</div>
-            <div style="font-size: 0.8rem; opacity: 0.8">БАЛАНС</div>
+            <div style="font-size: 0.8rem; opacity: 0.8; letter-spacing: 2px;">БАЛАНС</div>
         </div>
 
         <div class="main-area">
@@ -55,7 +75,7 @@
             <div class="stats-grid">
                 <div id="p-text">Клик: +1</div>
                 <div id="m-text">Множ: x1</div>
-                <div id="b-text" style="grid-column: span 2">Авто-бот: 0 м/сек</div>
+                <div id="b-text" style="grid-column: span 2; color: #4ecca3;">Авто-бот: 0 м/сек</div>
             </div>
             <button id="save-btn">💾 СОХРАНИТЬ ПРОГРЕСС</button>
         </div>
@@ -73,7 +93,7 @@
                 <div><b>Авто-бот</b><br><small id="c3">Цена: 500</small></div>
                 <button id="buy3">КУПИТЬ</button>
             </div>
-            <div id="leader-list" style="margin-top:10px"></div>
+            <div id="leader-list" style="margin-top:5px; height: 60px; overflow: hidden;"></div>
         </div>
     </div>
 
@@ -98,9 +118,8 @@
         let user = null, money = 0, power = 1, mult = 1, bot = 0;
         let cost1 = 10, cost2 = 100, cost3 = 500;
 
-        // Вход / Регистрация
-        document.getElementById('reg-btn').onclick = () => createUserWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
-        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
+        document.getElementById('reg-btn').onclick = () => createUserWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка: " + e.message));
+        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка: " + e.message));
 
         onAuthStateChanged(auth, async (u) => {
             if (u) {
@@ -108,30 +127,24 @@
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('game-ui').style.display = 'flex';
                 
-                // ЗАГРУЗКА ДАННЫХ ПРИ ВХОДЕ
                 const docSnap = await getDoc(doc(db, "leaders", user.uid));
                 if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    money = data.score || 0;
-                    power = data.power || 1;
-                    mult = data.mult || 1;
-                    bot = data.bot || 0;
-                    cost1 = data.cost1 || 10;
-                    cost2 = data.cost2 || 100;
-                    cost3 = data.cost3 || 500;
+                    const d = docSnap.data();
+                    money = d.score || 0; power = d.power || 1; mult = d.mult || 1;
+                    bot = d.bot || 0; cost1 = d.cost1 || 10; cost2 = d.cost2 || 100; cost3 = d.cost3 || 500;
                 }
                 updateUI();
             }
         });
 
-        // Клик и Бот
         document.getElementById('main-button').onclick = () => { money += (power * mult); updateUI(); };
-        setInterval(() => { if(bot > 0) { money += bot; updateUI(); } }, 1000);
+        
+        // РАБОТА БОТА
+        setInterval(() => { if(bot > 0) { money += (bot / 10); updateUI(); } }, 100);
 
-        // Магазин
         document.getElementById('buy1').onclick = () => { if(money >= cost1) { money -= cost1; power++; cost1 *= 4; updateUI(); } };
         document.getElementById('buy2').onclick = () => { if(money >= cost2) { money -= cost2; mult *= 2; cost2 *= 10; updateUI(); } };
-        document.getElementById('buy3').onclick = () => { if(money >= cost3) { money -= cost3; bot += (5 * mult); cost3 *= 5; updateUI(); } };
+        document.getElementById('buy3').onclick = () => { if(money >= cost3) { money -= cost3; bot += (2 * mult); cost3 *= 5; updateUI(); } };
 
         function updateUI() {
             document.getElementById('money').innerText = Math.floor(money);
@@ -146,28 +159,21 @@
             document.getElementById('buy3').disabled = money < cost3;
         }
 
-        // СОХРАНЕНИЕ ВСЕГО ПРОГРЕССА
         document.getElementById('save-btn').onclick = async () => {
             if (!user) return;
             await setDoc(doc(db, "leaders", user.uid), {
-                name: user.email.split('@')[0],
-                score: money,
-                power: power,
-                mult: mult,
-                bot: bot,
-                cost1: cost1,
-                cost2: cost2,
-                cost3: cost3
+                name: user.email.split('@')[0], score: money,
+                power: power, mult: mult, bot: bot,
+                cost1: cost1, cost2: cost2, cost3: cost3
             });
-            alert("Прогресс сохранен!");
+            alert("Прогресс сохранен в облако!");
         };
 
-        // Топ лидеров
         onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(3)), (snap) => {
             const list = document.getElementById('leader-list');
-            list.innerHTML = "<center style='font-size:0.7rem; color:#777; margin-bottom:5px'>ТОП-3</center>";
+            list.innerHTML = "";
             snap.forEach(d => {
-                list.innerHTML += `<div style="display:flex; justify-content:space-between; background:#05050a; padding:5px 10px; border-radius:8px; margin-bottom:3px; font-size:0.8rem">
+                list.innerHTML += `<div style="display:flex; justify-content:space-between; background:#05050a; padding:4px 10px; border-radius:8px; margin-bottom:2px; font-size:0.7rem">
                     <span>${d.data().name}</span><b>${Math.floor(d.data().score)}</b>
                 </div>`;
             });
