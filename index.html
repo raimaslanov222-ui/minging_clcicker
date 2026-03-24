@@ -1,201 +1,64 @@
-<!<!DOCTYPE html>
+<!<<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minding Clicker Pro</title>
+    <title>Minding Clicker Online</title>
     <style>
-        /* --- СТИЛИ (GUI) --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #0f0f1a; color: white; min-height: 100vh; display: flex; flex-direction: column; }
         
-        body { 
-            margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; 
-            background-color: #0f0f1a; color: white; min-height: 100vh; 
-            display: flex; flex-direction: column; overflow-x: hidden; 
-        }
+        .red-hill { height: 25vh; background: linear-gradient(180deg, #ff3333 0%, #800000 100%); border-bottom-left-radius: 50% 15%; border-bottom-right-radius: 50% 15%; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 5px 25px rgba(255, 0, 0, 0.5); }
+        #money { font-size: 3.5rem; margin: 0; font-weight: 900; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); }
+        .info { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; }
 
-        /* Красная горка сверху */
-        .red-hill { 
-            height: 35vh; 
-            background: linear-gradient(180deg, #ff3333 0%, #800000 100%); 
-            border-bottom-left-radius: 50% 15%; border-bottom-right-radius: 50% 15%; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            box-shadow: 0 5px 30px rgba(255, 0, 0, 0.5); z-index: 1; 
-        }
-
-        #money { font-size: 4.5rem; margin: 0; font-weight: 900; text-shadow: 2px 4px 10px rgba(0,0,0,0.4); }
-        .record-box { background: rgba(0,0,0,0.3); padding: 5px 20px; border-radius: 50px; margin-top: 5px; font-weight: bold; border: 1px solid rgba(255,255,255,0.2); }
-
-        /* Игровая зона */
-        .game-content { 
-            flex: 1; display: flex; flex-direction: column; align-items: center; 
-            z-index: 2; margin-top: -40px; padding: 20px; gap: 20px; 
-        }
-
-        /* Огромная кнопка */
+        .game-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 15px; margin-top: -20px; }
+        
         #main-button { 
-            width: 260px; height: 260px; border-radius: 50%; 
-            background-color: #ff4d4d; border: 8px solid #ffffff; 
-            background-image: url('button.png'); background-size: cover; background-position: center; 
-            box-shadow: 0 10px 50px rgba(255, 77, 77, 0.6); 
-            cursor: pointer; transition: transform 0.05s ease; 
+            width: 200px; height: 200px; border-radius: 50%; background: #ff4d4d; border: 6px solid white;
+            background-image: url('button.png'); background-size: cover; background-position: center;
+            box-shadow: 0 10px 30px rgba(255, 77, 77, 0.5); cursor: pointer; transition: transform 0.05s;
         }
         #main-button:active { transform: scale(0.92); }
 
-        /* Панели магазина и лидеров */
-        .panel { width: 100%; max-width: 400px; background: #1a1a2e; padding: 15px; border-radius: 20px; border: 2px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        .mini-info { display: flex; justify-content: space-around; margin-bottom: 12px; color: #4ecca3; font-weight: bold; font-size: 1rem; }
-        .shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        
-        .upgrade-item { 
-            background: #252545; border: 1px solid #ff3333; color: white; 
-            padding: 12px 2px; border-radius: 15px; font-size: 0.8rem; font-weight: bold; cursor: pointer;
-        }
-        .upgrade-item:active { background: #ff3333; }
+        .panel { width: 100%; max-width: 400px; background: #1a1a2e; padding: 15px; border-radius: 20px; border: 1px solid #333; }
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .upgrade-btn { background: #252545; border: 1px solid #ff3333; color: white; padding: 10px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.75rem; }
 
-        .leaderboard h3 { margin: 0 0 10px 0; text-align: center; color: #ffcc00; font-size: 1.1rem; text-transform: uppercase; }
-        .leader-entry { display: flex; justify-content: space-between; padding: 8px 10px; border-bottom: 1px solid #333; font-size: 0.95rem; }
-        .leader-entry:last-child { border: none; }
+        .leaderboard h3 { margin: 0 0 10px 0; text-align: center; color: #ffcc00; font-size: 1rem; }
+        .leader-entry { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #222; font-size: 0.9rem; }
+        .leader-entry b { color: #4ecca3; }
+
+        #save-btn { width: 100%; margin-top: 10px; background: #ffcc00; color: black; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="red-hill">
         <div id="money">0</div>
-        <div class="record-box">🏆 Рекорд: <span id="highscore">0</span></div>
+        <div class="info">Клик: +<span id="power">1</span> | Авто: +<span id="auto">0</span>/с</div>
     </div>
 
     <div class="game-content">
         <div id="main-button"></div>
 
         <div class="panel">
-            <div class="mini-info">
-                <span>Клик: +<b id="click-power">1</b></span>
-                <span>Авто: +<b id="cps">0</b>/с</span>
-            </div>
             <div class="shop-grid">
-                <button class="upgrade-item" id="buy-click">💪 СИЛА<br><span id="click-price">10</span></button>
-                <button class="upgrade-item" id="buy-auto">🤖 АВТО<br><span id="auto-price">50</span></button>
-                <button class="upgrade-item" id="buy-boost">🚀 БУСТ<br><span id="boost-price">500</span></button>
+                <button class="upgrade-btn" onclick="buyUpgrade('click')">💪 СИЛА (+1)<br><span id="c-price">10</span> 💰</button>
+                <button class="upgrade-btn" onclick="buyUpgrade('auto')">🤖 АВТО (+1)<br><span id="a-price">50</span> 💰</button>
             </div>
+            <button id="save-btn" onclick="publishRecord()">🏆 ОПУБЛИКОВАТЬ РЕКОРД</button>
         </div>
 
-        <div class="panel leaderboard">
-            <h3>📊 Топ рекордов</h3>
-            <div id="leader-list"></div>
+        <div class="panel">
+            <div class="leaderboard">
+                <h3>📊 МИРОВОЙ ТОП-5</h3>
+                <div id="leader-list">Загрузка...</div>
+            </div>
         </div>
     </div>
 
-    <script>
-        /* --- ЛОГИКА ИГРЫ (СКРИПТ) --- */
-        let money = parseFloat(localStorage.getItem('money')) || 0;
-        let clickPower = parseInt(localStorage.getItem('clickPower')) || 1;
-        let autoIncome = parseInt(localStorage.getItem('autoIncome')) || 0;
-        let highscore = parseFloat(localStorage.getItem('highscore')) || 0;
-        let leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
-
-        let prices = {
-            click: parseInt(localStorage.getItem('p_click')) || 10,
-            auto: parseInt(localStorage.getItem('p_auto')) || 50,
-            boost: parseInt(localStorage.getItem('p_boost')) || 500
-        };
-
-        function updateUI() {
-            document.getElementById('money').innerText = Math.floor(money);
-            document.getElementById('highscore').innerText = Math.floor(highscore);
-            document.getElementById('click-power').innerText = clickPower;
-            document.getElementById('cps').innerText = autoIncome;
-            document.getElementById('click-price').innerText = prices.click;
-            document.getElementById('auto-price').innerText = prices.auto;
-            document.getElementById('boost-price').innerText = prices.boost;
-            renderLeaderboard();
-        }
-
-        function saveGame() {
-            localStorage.setItem('money', money);
-            localStorage.setItem('clickPower', clickPower);
-            localStorage.setItem('autoIncome', autoIncome);
-            localStorage.setItem('p_click', prices.click);
-            localStorage.setItem('p_auto', prices.auto);
-            localStorage.setItem('p_boost', prices.boost);
-        }
-
-        function checkRecord() {
-            if (money > highscore) {
-                highscore = money;
-                localStorage.setItem('highscore', highscore);
-                updateLeaderboard(highscore);
-            }
-        }
-
-        function updateLeaderboard(score) {
-            let entry = { name: "Ты", score: Math.floor(score) };
-            leaderboard = [entry]; // Пока сохраняем только твой лучший результат
-            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
-        }
-
-        function renderLeaderboard() {
-            const list = document.getElementById('leader-list');
-            if (leaderboard.length === 0) {
-                list.innerHTML = "<div style='text-align:center; color:#666;'>Пока нет рекордов</div>";
-                return;
-            }
-            list.innerHTML = leaderboard.map((entry, i) => `
-                <div class="leader-entry">
-                    <span>${i+1}. ${entry.name}</span>
-                    <b>${entry.score} 💰</b>
-                </div>
-            `).join('');
-        }
-
-        // Клик (поддержка касаний и мыши)
-        const doClick = (e) => {
-            if (e.type === 'touchstart') e.preventDefault();
-            money += clickPower;
-            checkRecord();
-            updateUI();
-            saveGame();
-        };
-
-        const btn = document.getElementById('main-button');
-        btn.addEventListener('touchstart', doClick);
-        btn.addEventListener('mousedown', doClick);
-
-        // Покупки
-        document.getElementById('buy-click').onclick = () => {
-            if (money >= prices.click) {
-                money -= prices.click; clickPower += 1;
-                prices.click = Math.round(prices.click * 1.5);
-                updateUI(); saveGame();
-            }
-        };
-
-        document.getElementById('buy-auto').onclick = () => {
-            if (money >= prices.auto) {
-                money -= prices.auto; autoIncome += 1;
-                prices.auto = Math.round(prices.auto * 1.6);
-                updateUI(); saveGame();
-            }
-        };
-
-        document.getElementById('buy-boost').onclick = () => {
-            if (money >= prices.boost) {
-                money -= prices.boost; clickPower *= 2;
-                prices.boost = Math.round(prices.boost * 4);
-                updateUI(); saveGame();
-            }
-        };
-
-        // Авто-доход каждую секунду
-        setInterval(() => {
-            money += autoIncome;
-            checkRecord();
-            updateUI();
-            saveGame();
-        }, 1000);
-
-        updateUI();
-    </script>
-</body>
-</html>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot } from "https://www.
 
