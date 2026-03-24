@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>InfinityB - Clicker</title>
+    <title>InfinityB - Omega</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="click-particles"></div>
 
     <div id="game-ui">
         <header class="top-header">
@@ -20,10 +21,10 @@
         </header>
 
         <main class="main-area">
+            <h1 id="balance">0</h1>
             <div id="main-clicker">
                 <img src="https://img.icons8.com/ios-filled/100/ffffff/cursor.png" alt="click">
             </div>
-            
             <div class="stats-text">
                 Клик: <span id="click-val">+0</span> | Множ: <span id="mult-val">x1</span><br>
                 <span class="auto-text">Авто-бот: <span id="auto-val">0</span> /сек</span>
@@ -31,27 +32,18 @@
         </main>
 
         <footer class="shop-area">
-            <div class="shop-item">
-                <div class="item-info">
-                    <b>Сила клика</b>
-                    <p>Цена: <span id="cost-p">0</span></p>
-                </div>
-                <button class="buy-btn" id="buy-power">КУПИТЬ</button>
-            </div>
-            <div class="shop-item">
-                <div class="item-info">
-                    <b>Множитель</b>
-                    <p>Цена: <span id="cost-m">0</span></p>
-                </div>
-                <button class="buy-btn" id="buy-mult">КУПИТЬ</button>
-            </div>
-            <div class="shop-item">
-                <div class="item-info">
-                    <b>Авто-бот</b>
-                    <p>Цена: <span id="cost-a">0</span></p>
-                </div>
-                <button class="buy-btn" id="buy-auto">КУПИТЬ</button>
-            </div>
+            <button class="shop-card" id="buy-power">
+                <b>Сила клика</b>
+                <span id="cost-p">10</span>
+            </button>
+            <button class="shop-card" id="buy-mult">
+                <b>Множитель</b>
+                <span id="cost-m">100</span>
+            </button>
+            <button class="shop-card" id="buy-auto">
+                <b>Авто-бот</b>
+                <span id="cost-a">500</span>
+            </button>
         </footer>
     </div>
 
@@ -60,25 +52,29 @@
             <h2>НАСТРОЙКИ</h2>
             <input type="text" id="new-name" placeholder="Новый ник">
             <button class="action-btn save" id="save-name">СОХРАНИТЬ</button>
-            <button class="action-btn admin" id="open-admin" style="display: none;">👑 АДМИН-ПАНЕЛЬ</button>
+            <button class="action-btn admin" id="open-admin" style="display:none">👑 АДМИН-ПАНЕЛЬ</button>
             <button class="action-btn close-modal">ЗАКРЫТЬ</button>
         </div>
     </div>
 
     <div class="modal" id="modal-admin">
         <div class="modal-content admin-theme">
-            <h2>АДМИНКА</h2>
-            <input type="number" id="adm-id" placeholder="ID игрока">
-            <input type="number" id="adm-sum" placeholder="Сумма">
-            <button class="action-btn save" id="adm-give">ВЫДАТЬ</button>
-            <button class="action-btn reset" id="adm-reset">ОБНУЛИТЬ</button>
+            <h2>АДМИН-ПАНЕЛЬ</h2>
+            <input type="text" id="adm-target" placeholder="ID или Имя игрока">
+            <input type="number" id="adm-val" placeholder="Сумма/Минуты">
+            <div class="admin-grid">
+                <button class="action-btn save" id="adm-give">ВЫДАТЬ</button>
+                <button class="action-btn reset" id="adm-fine">ШТРАФ</button>
+                <button class="action-btn reset" id="adm-reset">ОБНУЛИТЬ</button>
+                <button class="action-btn ban" id="adm-ban">БАН (МИН)</button>
+            </div>
             <button class="action-btn close-modal">НАЗАД</button>
         </div>
     </div>
 
     <div class="modal" id="modal-leaders">
         <div class="modal-content">
-            <h2>🏆 ТОП-10 ЛИДЕРОВ</h2>
+            <h2>🏆 ТОП ЛИДЕРОВ</h2>
             <div id="leader-list"></div>
             <button class="action-btn close-modal">ЗАКРЫТЬ</button>
         </div>
