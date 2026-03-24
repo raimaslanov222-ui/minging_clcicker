@@ -12,62 +12,61 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: white; display: flex; flex-direction: column; min-height: 100vh; overflow: hidden; }
         
-        /* Экран входа */
-        #auth-screen { position: fixed; inset: 0; background: #0f0f1a; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        /* Авторизация */
+        #auth-screen { position: fixed; inset: 0; background: #0f0f1a; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-box { width: 100%; max-width: 320px; background: #1a1a2e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; }
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #05050a; color: white; outline: none; }
         .auth-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         #login-btn { background: #4ecca3; color: white; margin-bottom: 10px; }
         #reg-btn { background: transparent; color: #4ecca3; border: 1px solid #4ecca3; }
 
-        /* Игровой интерфейс */
+        /* Игра */
         #game-ui { display: none; flex-direction: column; height: 100vh; }
-        .header { background: linear-gradient(180deg, #ff3333 0%, #800000 100%); padding: 20px; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+        .header { background: linear-gradient(180deg, #ff3333 0%, #800000 100%); padding: 20px; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; position: relative; }
         #money { font-size: 3rem; font-weight: 900; margin: 0; }
-        
-        .main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 10px; }
-        
-        /* ТВОЯ КНОПКА С КАРТИНКОЙ */
+        #open-top-btn { position: absolute; left: 20px; top: 20px; background: rgba(255,255,255,0.2); border: none; border-radius: 10px; padding: 10px; color: white; cursor: pointer; font-size: 1.2rem; }
+
+        .main-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
         #main-button { 
-            width: 170px; height: 170px; 
-            border-radius: 50%; 
-            background-image: url('button.png'); 
-            background-size: cover; 
-            background-position: center;
-            border: 6px solid white; 
-            cursor: pointer; 
-            transition: transform 0.1s; 
-            box-shadow: 0 0 25px rgba(255, 77, 77, 0.4); 
+            width: 180px; height: 180px; border-radius: 50%; 
+            background-image: url('button.png'); background-size: cover; background-position: center;
+            border: 6px solid white; cursor: pointer; transition: 0.1s; box-shadow: 0 0 25px rgba(255, 77, 77, 0.4); 
         }
         #main-button:active { transform: scale(0.9); }
 
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 300px; text-align: center; font-size: 0.8rem; color: #aaa; }
 
         .shop-panel { background: #1a1a2e; padding: 20px; border-radius: 30px 30px 0 0; border: 1px solid #333; }
-        .shop-item { display: flex; justify-content: space-between; align-items: center; background: #252545; padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; }
-        .shop-item button { background: #ffcc00; color: black; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; min-width: 90px; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; background: #252545; padding: 12px; border-radius: 15px; margin-bottom: 8px; }
+        .shop-item button { background: #ffcc00; color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; min-width: 90px; }
         .shop-item button:disabled { background: #444; color: #777; }
 
-        #save-btn { width: 100%; background: #4ecca3; border: none; padding: 15px; border-radius: 15px; font-weight: bold; color: white; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(78, 204, 163, 0.3); }
+        #top-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+        .top-box { width: 100%; max-width: 300px; background: #1a1a2e; border-radius: 20px; border: 1px solid #ffcc00; padding: 20px; position: relative; }
+        .close-top { position: absolute; right: 15px; top: 10px; font-size: 1.5rem; cursor: pointer; color: #ff3333; }
+        .leader-row { display: flex; justify-content: space-between; padding: 10px; background: #05050a; margin-top: 5px; border-radius: 10px; }
+        #auto-save-status { font-size: 0.6rem; color: #4ecca3; margin-top: 5px; opacity: 0.7; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box">
-            <h2 style="margin:0">Minding Clicker</h2>
-            <p style="font-size:0.8rem; color:#888">Введите почту и пароль</p>
-            <input type="email" id="email" placeholder="Email (например 1@m.ru)">
+            <h2>Minding Clicker</h2>
+            <input type="email" id="email" placeholder="Email">
             <input type="password" id="pass" placeholder="Пароль">
             <button class="auth-btn" id="login-btn">ВОЙТИ</button>
-            <button class="auth-btn" id="reg-btn">СОЗДАТЬ АККАУНТ</button>
+            <button class="auth-btn" id="reg-btn">РЕГИСТРАЦИЯ</button>
+            <p style="font-size: 0.7rem; color: #888; margin-top: 15px;">Данные сохраняются автоматически</p>
         </div>
     </div>
 
     <div id="game-ui">
         <div class="header">
+            <button id="open-top-btn">🏆</button>
             <div id="money">0</div>
-            <div style="font-size: 0.8rem; opacity: 0.8; letter-spacing: 2px;">БАЛАНС</div>
+            <div style="font-size: 0.7rem; opacity: 0.7; letter-spacing: 1px;">МОНЕТЫ</div>
+            <div id="auto-save-status">Синхронизация...</div>
         </div>
 
         <div class="main-area">
@@ -77,29 +76,35 @@
                 <div id="m-text">Множ: x1</div>
                 <div id="b-text" style="grid-column: span 2; color: #4ecca3;">Авто-бот: 0 м/сек</div>
             </div>
-            <button id="save-btn">💾 СОХРАНИТЬ ПРОГРЕСС</button>
         </div>
 
         <div class="shop-panel">
             <div class="shop-item">
-                <div><b>Сила +1</b><br><small id="c1">Цена: 10</small></div>
+                <div><b>Сила +1</b><br><small id="c1">10</small></div>
                 <button id="buy1">КУПИТЬ</button>
             </div>
             <div class="shop-item">
-                <div><b>Множ. x2</b><br><small id="c2">Цена: 100</small></div>
+                <div><b>Множ. x2</b><br><small id="c2">100</small></div>
                 <button id="buy2">КУПИТЬ</button>
             </div>
             <div class="shop-item">
-                <div><b>Авто-бот</b><br><small id="c3">Цена: 500</small></div>
+                <div><b>Авто-бот</b><br><small id="c3">500</small></div>
                 <button id="buy3">КУПИТЬ</button>
             </div>
-            <div id="leader-list" style="margin-top:5px; height: 60px; overflow: hidden;"></div>
+        </div>
+    </div>
+
+    <div id="top-modal">
+        <div class="top-box">
+            <span class="close-top" onclick="document.getElementById('top-modal').style.display='none'">×</span>
+            <h3 style="text-align:center; color:#ffcc00; margin-top:0">🏆 ТОП ЛИДЕРОВ</h3>
+            <div id="leader-list">Загрузка...</div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -115,18 +120,38 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Устанавливаем вечную сессию
+        setPersistence(auth, browserLocalPersistence);
+
         let user = null, money = 0, power = 1, mult = 1, bot = 0;
         let cost1 = 10, cost2 = 100, cost3 = 500;
 
-        document.getElementById('reg-btn').onclick = () => createUserWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка: " + e.message));
-        document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert("Ошибка: " + e.message));
+        // Автозаполнение полей из памяти устройства
+        window.onload = () => {
+            if(localStorage.getItem('m_email')) document.getElementById('email').value = localStorage.getItem('m_email');
+            if(localStorage.getItem('m_pass')) document.getElementById('pass').value = localStorage.getItem('m_pass');
+        };
+
+        const saveCredentials = () => {
+            localStorage.setItem('m_email', document.getElementById('email').value);
+            localStorage.setItem('m_pass', document.getElementById('pass').value);
+        };
+
+        document.getElementById('reg-btn').onclick = () => {
+            saveCredentials();
+            createUserWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
+        };
+        
+        document.getElementById('login-btn').onclick = () => {
+            saveCredentials();
+            signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
+        };
 
         onAuthStateChanged(auth, async (u) => {
             if (u) {
                 user = u;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('game-ui').style.display = 'flex';
-                
                 const docSnap = await getDoc(doc(db, "leaders", user.uid));
                 if (docSnap.exists()) {
                     const d = docSnap.data();
@@ -138,13 +163,13 @@
         });
 
         document.getElementById('main-button').onclick = () => { money += (power * mult); updateUI(); };
-        
-        // РАБОТА БОТА
         setInterval(() => { if(bot > 0) { money += (bot / 10); updateUI(); } }, 100);
 
-        document.getElementById('buy1').onclick = () => { if(money >= cost1) { money -= cost1; power++; cost1 *= 4; updateUI(); } };
-        document.getElementById('buy2').onclick = () => { if(money >= cost2) { money -= cost2; mult *= 2; cost2 *= 10; updateUI(); } };
-        document.getElementById('buy3').onclick = () => { if(money >= cost3) { money -= cost3; bot += (2 * mult); cost3 *= 5; updateUI(); } };
+        document.getElementById('buy1').onclick = () => { if(money >= cost1) { money -= cost1; power++; cost1 *= 4; updateUI(); saveGame(); } };
+        document.getElementById('buy2').onclick = () => { if(money >= cost2) { money -= cost2; mult *= 2; cost2 *= 10; updateUI(); saveGame(); } };
+        document.getElementById('buy3').onclick = () => { if(money >= cost3) { money -= cost3; bot += (5 * mult); cost3 *= 5; updateUI(); saveGame(); } };
+
+        document.getElementById('open-top-btn').onclick = () => { document.getElementById('top-modal').style.display = 'flex'; };
 
         function updateUI() {
             document.getElementById('money').innerText = Math.floor(money);
@@ -159,23 +184,29 @@
             document.getElementById('buy3').disabled = money < cost3;
         }
 
-        document.getElementById('save-btn').onclick = async () => {
+        async function saveGame() {
             if (!user) return;
+            document.getElementById('auto-save-status').innerText = "Сохранение...";
             await setDoc(doc(db, "leaders", user.uid), {
                 name: user.email.split('@')[0], score: money,
                 power: power, mult: mult, bot: bot,
                 cost1: cost1, cost2: cost2, cost3: cost3
             });
-            alert("Прогресс сохранен в облако!");
-        };
+            document.getElementById('auto-save-status').innerText = "Облако синхронизировано";
+        }
 
-        onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(3)), (snap) => {
+        setInterval(saveGame, 10000);
+
+        onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(10)), (snap) => {
             const list = document.getElementById('leader-list');
             list.innerHTML = "";
+            let i = 1;
             snap.forEach(d => {
-                list.innerHTML += `<div style="display:flex; justify-content:space-between; background:#05050a; padding:4px 10px; border-radius:8px; margin-bottom:2px; font-size:0.7rem">
-                    <span>${d.data().name}</span><b>${Math.floor(d.data().score)}</b>
+                list.innerHTML += `<div class="leader-row">
+                    <span>${i}. ${d.data().name}</span>
+                    <b style="color:#ffcc00">${Math.floor(d.data().score)}</b>
                 </div>`;
+                i++;
             });
         });
     </script>
