@@ -3,89 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity B/T | Omega Edition</title>
-    
+    <title>InfinityB - Clicker</title>
     <link rel="stylesheet" href="style.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="notification-hub"></div>
-
-    <section id="auth-screen">
-        <div class="auth-container">
-            <h1 class="logo">INFINITY <span class="accent">CORE</span></h1>
-            <div class="auth-form">
-                <div class="input-field">
-                    <label>NEURAL IDENTIFIER</label>
-                    <input type="email" id="auth-email" placeholder="email@domain.com">
-                </div>
-                <div class="input-field">
-                    <label>SECURITY ACCESS KEY</label>
-                    <input type="password" id="auth-pass" placeholder="••••••••">
-                </div>
-                <button id="btn-login" class="primary-btn">INITIALIZE CONNECTION</button>
-                <button id="btn-register" class="secondary-btn">CREATE NEW UNIT</button>
+    <div id="game-ui">
+        <header class="top-header">
+            <button class="icon-btn" id="open-leaders">🏆</button>
+            <div class="header-center">
+                <h1 class="logo">InfinityB</h1>
+                <p id="user-tag">ЗАГРУЗКА... | ID: #0</p>
             </div>
-            <p class="version">v2.0.0 Global Stable</p>
-        </div>
-    </section>
-
-    <main id="game-screen" style="display: none;">
-        <header class="game-header">
-            <div class="player-info">
-                <span id="display-name">Pilot</span>
-                <span id="display-id">#0000</span>
-            </div>
-            <div class="currency-container">
-                <h1 id="balance">0</h1>
-            </div>
-            <div class="progress-zone">
-                <div class="xp-bar"><div id="xp-fill"></div></div>
-                <small id="lvl-text">LEVEL 1</small>
-            </div>
+            <button class="icon-btn" id="open-settings">⚙️</button>
         </header>
 
-        <section class="action-zone">
-            <div id="click-target">
-                <div class="inner-core"></div>
+        <main class="main-area">
+            <div id="main-clicker">
+                <img src="https://img.icons8.com/ios-filled/100/ffffff/cursor.png" alt="click">
             </div>
             
-            <div class="live-stats">
-                <div class="stat-box">
-                    <label>POWER</label>
-                    <span id="stat-power">1</span>
-                </div>
-                <div class="stat-box">
-                    <label>MULT</label>
-                    <span id="stat-mult">x1</span>
-                </div>
-                <div class="stat-box">
-                    <label>AUTO</label>
-                    <span id="stat-auto">0</span>
-                </div>
+            <div class="stats-text">
+                Клик: <span id="click-val">+0</span> | Множ: <span id="mult-val">x1</span><br>
+                <span class="auto-text">Авто-бот: <span id="auto-val">0</span> /сек</span>
             </div>
-        </section>
+        </main>
 
-        <nav class="bottom-nav">
-            <button class="nav-item active" data-target="shop-tab">UPGRADES</button>
-            <button class="nav-item" data-target="leader-tab">RANKING</button>
-            <button class="nav-item" id="admin-nav" style="display: none;" data-target="admin-tab">ADMIN</button>
-            <button class="nav-item" id="btn-logout">EXIT</button>
-        </nav>
-
-        <div class="tab-content">
-            <div id="shop-tab" class="tab-pane active">
+        <footer class="shop-area">
+            <div class="shop-item">
+                <div class="item-info">
+                    <b>Сила клика</b>
+                    <p>Цена: <span id="cost-p">0</span></p>
                 </div>
-            <div id="leader-tab" class="tab-pane">
-                <div id="leaderboard-list"></div>
+                <button class="buy-btn" id="buy-power">КУПИТЬ</button>
             </div>
-            <div id="admin-tab" class="tab-pane">
+            <div class="shop-item">
+                <div class="item-info">
+                    <b>Множитель</b>
+                    <p>Цена: <span id="cost-m">0</span></p>
                 </div>
+                <button class="buy-btn" id="buy-mult">КУПИТЬ</button>
+            </div>
+            <div class="shop-item">
+                <div class="item-info">
+                    <b>Авто-бот</b>
+                    <p>Цена: <span id="cost-a">0</span></p>
+                </div>
+                <button class="buy-btn" id="buy-auto">КУПИТЬ</button>
+            </div>
+        </footer>
+    </div>
+
+    <div class="modal" id="modal-settings">
+        <div class="modal-content">
+            <h2>НАСТРОЙКИ</h2>
+            <input type="text" id="new-name" placeholder="Новый ник">
+            <button class="action-btn save" id="save-name">СОХРАНИТЬ</button>
+            <button class="action-btn admin" id="open-admin" style="display: none;">👑 АДМИН-ПАНЕЛЬ</button>
+            <button class="action-btn close-modal">ЗАКРЫТЬ</button>
         </div>
-    </main>
+    </div>
+
+    <div class="modal" id="modal-admin">
+        <div class="modal-content admin-theme">
+            <h2>АДМИНКА</h2>
+            <input type="number" id="adm-id" placeholder="ID игрока">
+            <input type="number" id="adm-sum" placeholder="Сумма">
+            <button class="action-btn save" id="adm-give">ВЫДАТЬ</button>
+            <button class="action-btn reset" id="adm-reset">ОБНУЛИТЬ</button>
+            <button class="action-btn close-modal">НАЗАД</button>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-leaders">
+        <div class="modal-content">
+            <h2>🏆 ТОП-10 ЛИДЕРОВ</h2>
+            <div id="leader-list"></div>
+            <button class="action-btn close-modal">ЗАКРЫТЬ</button>
+        </div>
+    </div>
 
     <script type="module" src="app.js"></script>
-    </body>
+</body>
 </html>
