@@ -3,115 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minding Clicker ID</title>
+    <title>Minding Clicker Ultra</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #0f0f1a; color: white; min-height: 100vh; display: flex; flex-direction: column; }
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: #0f0f1a; color: white; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* Экран входа */
         #auth-screen { position: fixed; inset: 0; background: #0f0f1a; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-box { width: 100%; max-width: 320px; background: #1a1a2e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #0f0f1a; color: white; outline: none; }
-        .auth-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        #login-btn { background: #4ecca3; color: white; }
-        #reg-btn { background: transparent; color: #4ecca3; border: 1px solid #4ecca3; margin-top: 10px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #444; background: #05050a; color: white; outline: none; }
+        .auth-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        #login-btn { background: #4ecca3; color: white; margin-bottom: 10px; }
+        #reg-btn { background: transparent; color: #4ecca3; border: 1px solid #4ecca3; }
 
-        /* Игра */
-        #game-ui { display: none; flex: 1; }
-        .red-hill { height: 20vh; background: linear-gradient(180deg, #ff3333 0%, #800000 100%); border-bottom-left-radius: 50% 15%; border-bottom-right-radius: 50% 15%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        #money { font-size: 3rem; margin: 0; font-weight: 900; }
-        .game-content { display: flex; flex-direction: column; align-items: center; padding: 20px; gap: 15px; }
-        #main-button { width: 160px; height: 160px; border-radius: 50%; background: #ff4d4d; border: 5px solid white; background-image: url('button.png'); background-size: cover; box-shadow: 0 10px 30px rgba(255, 77, 77, 0.5); cursor: pointer; }
-        #main-button:active { transform: scale(0.95); }
-        .panel { width: 100%; max-width: 400px; background: #1a1a2e; padding: 15px; border-radius: 20px; border: 1px solid #333; }
-        .leader-entry { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; }
+        #game-ui { display: none; flex-direction: column; height: 100vh; overflow-y: auto; }
+        .header { background: linear-gradient(180deg, #ff3333 0%, #800000 100%); padding: 20px; text-align: center; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; position: sticky; top: 0; z-index: 10; }
+        #money { font-size: 3rem; font-weight: 900; margin: 0; }
+        
+        .main-area { padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        #main-button { width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, #ff4d4d, #b30000); border: 6px solid white; cursor: pointer; transition: 0.1s; box-shadow: 0 0 25px rgba(255, 77, 77, 0.4); }
+        #main-button:active { transform: scale(0.9); }
+
+        .shop-panel { background: #1a1a2e; padding: 20px; border-radius: 30px 30px 0 0; border: 1px solid #333; margin-top: auto; }
+        .shop-item { display: flex; justify-content: space-between; align-items: center; background: #252545; padding: 12px; border-radius: 15px; margin-bottom: 8px; }
+        .shop-item button { background: #ffcc00; color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; min-width: 100px; }
+        .shop-item button:disabled { background: #444; color: #777; }
+
+        #save-btn { width: 100%; background: #4ecca3; border: none; padding: 15px; border-radius: 15px; font-weight: bold; color: white; margin: 10px 0; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; text-align: center; font-size: 0.8rem; color: #aaa; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box">
-            <h2 style="margin: 0 0 15px 0">Minding ID</h2>
+            <h2>Minding ID</h2>
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="pass" placeholder="Пароль">
             <button class="auth-btn" id="login-btn">ВОЙТИ</button>
-            <button class="auth-btn" id="reg-btn">СОЗДАТЬ АККАУНТ</button>
+            <button class="auth-btn" id="reg-btn">РЕГИСТРАЦИЯ</button>
         </div>
     </div>
 
     <div id="game-ui">
-        <div class="red-hill">
+        <div class="header">
             <div id="money">0</div>
-            <div style="font-size:0.8rem; opacity:0.8">Ваш счет</div>
+            <div style="font-size: 0.8rem; opacity: 0.8">БАЛАНС</div>
         </div>
-        <div class="game-content">
+
+        <div class="main-area">
             <div id="main-button"></div>
-            <div class="panel">
-                <button id="save-btn" style="width:100%; background:#ffcc00; border:none; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer">🏆 СОХРАНИТЬ РЕКОРД</button>
-                <button onclick="auth.signOut().then(()=>location.reload())" style="width:100%; background:none; border:none; color:gray; margin-top:15px; cursor:pointer">Выйти</button>
+            <div class="stats-grid">
+                <div id="p-text">Клик: +1</div>
+                <div id="m-text">Множ: x1</div>
+                <div id="b-text" style="grid-column: span 2">Авто-бот: 0 м/сек</div>
             </div>
-            <div class="panel">
-                <h3 style="text-align:center; margin:0 0 10px 0; color:#ffcc00">📊 МИРОВОЙ ТОП-5</h3>
-                <div id="leader-list">Загрузка...</div>
+            <button id="save-btn">💾 СОХРАНИТЬ ПРОГРЕСС</button>
+        </div>
+
+        <div class="shop-panel">
+            <div class="shop-item">
+                <div><b>Сила +1</b><br><small id="c1">Цена: 10</small></div>
+                <button id="buy1">КУПИТЬ</button>
             </div>
+            <div class="shop-item">
+                <div><b>Множ. x2</b><br><small id="c2">Цена: 100</small></div>
+                <button id="buy2">КУПИТЬ</button>
+            </div>
+            <div class="shop-item">
+                <div><b>Авто-бот</b><br><small id="c3">Цена: 500</small></div>
+                <button id="buy3">КУПИТЬ</button>
+            </div>
+            <div id="leader-list" style="margin-top:10px"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Твои настройки из скриншотов
         const firebaseConfig = {
             apiKey: "AIzaSyA6v-Qacyh1dDl7J8-XsQY6NxcGcNzBt9o",
             authDomain: "mindingclicker.firebaseapp.com",
             projectId: "mindingclicker",
             storageBucket: "mindingclicker.firebasestorage.app",
             messagingSenderId: "484824275063",
-            appId: "1:484824275063:web:b98565344eea2760a34005"
+            appId: "1:484824275063:web:b98565344eea2760a34e72"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        let user = null, money = 0;
 
-        // Вход и регистрация
+        let user = null, money = 0, power = 1, mult = 1, bot = 0;
+        let cost1 = 10, cost2 = 100, cost3 = 500;
+
+        // Вход / Регистрация
         document.getElementById('reg-btn').onclick = () => createUserWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
         document.getElementById('login-btn').onclick = () => signInWithEmailAndPassword(auth, email.value, pass.value).catch(e => alert(e.message));
 
-        onAuthStateChanged(auth, (u) => {
+        onAuthStateChanged(auth, async (u) => {
             if (u) {
                 user = u;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('game-ui').style.display = 'flex';
+                
+                // ЗАГРУЗКА ДАННЫХ ПРИ ВХОДЕ
+                const docSnap = await getDoc(doc(db, "leaders", user.uid));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    money = data.score || 0;
+                    power = data.power || 1;
+                    mult = data.mult || 1;
+                    bot = data.bot || 0;
+                    cost1 = data.cost1 || 10;
+                    cost2 = data.cost2 || 100;
+                    cost3 = data.cost3 || 500;
+                }
+                updateUI();
             }
         });
 
-        // Клик
-        document.getElementById('main-button').onclick = () => {
-            money++;
-            document.getElementById('money').innerText = money;
-        };
+        // Клик и Бот
+        document.getElementById('main-button').onclick = () => { money += (power * mult); updateUI(); };
+        setInterval(() => { if(bot > 0) { money += bot; updateUI(); } }, 1000);
 
-        // Сохранение рекорда по уникальному UID игрока
+        // Магазин
+        document.getElementById('buy1').onclick = () => { if(money >= cost1) { money -= cost1; power++; cost1 *= 4; updateUI(); } };
+        document.getElementById('buy2').onclick = () => { if(money >= cost2) { money -= cost2; mult *= 2; cost2 *= 10; updateUI(); } };
+        document.getElementById('buy3').onclick = () => { if(money >= cost3) { money -= cost3; bot += (5 * mult); cost3 *= 5; updateUI(); } };
+
+        function updateUI() {
+            document.getElementById('money').innerText = Math.floor(money);
+            document.getElementById('p-text').innerText = `Клик: +${power}`;
+            document.getElementById('m-text').innerText = `Множ: x${mult}`;
+            document.getElementById('b-text').innerText = `Авто-бот: ${bot} м/сек`;
+            document.getElementById('c1').innerText = `Цена: ${cost1}`;
+            document.getElementById('c2').innerText = `Цена: ${cost2}`;
+            document.getElementById('c3').innerText = `Цена: ${cost3}`;
+            document.getElementById('buy1').disabled = money < cost1;
+            document.getElementById('buy2').disabled = money < cost2;
+            document.getElementById('buy3').disabled = money < cost3;
+        }
+
+        // СОХРАНЕНИЕ ВСЕГО ПРОГРЕССА
         document.getElementById('save-btn').onclick = async () => {
             if (!user) return;
-            // Использование user.uid вместо имени гарантирует ОДНУ строку в топе для одного игрока
             await setDoc(doc(db, "leaders", user.uid), {
-                name: user.email.split('@')[0], 
-                score: money
+                name: user.email.split('@')[0],
+                score: money,
+                power: power,
+                mult: mult,
+                bot: bot,
+                cost1: cost1,
+                cost2: cost2,
+                cost3: cost3
             });
-            alert("Твой результат обновлен!");
+            alert("Прогресс сохранен!");
         };
 
-        // Загрузка топа в реальном времени
-        onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(5)), (snap) => {
+        // Топ лидеров
+        onSnapshot(query(collection(db, "leaders"), orderBy("score", "desc"), limit(3)), (snap) => {
             const list = document.getElementById('leader-list');
-            list.innerHTML = "";
+            list.innerHTML = "<center style='font-size:0.7rem; color:#777; margin-bottom:5px'>ТОП-3</center>";
             snap.forEach(d => {
-                list.innerHTML += `<div class="leader-entry"><span>${d.data().name}</span><b>${d.data().score} 💰</b></div>`;
+                list.innerHTML += `<div style="display:flex; justify-content:space-between; background:#05050a; padding:5px 10px; border-radius:8px; margin-bottom:3px; font-size:0.8rem">
+                    <span>${d.data().name}</span><b>${Math.floor(d.data().score)}</b>
+                </div>`;
             });
         });
     </script>
