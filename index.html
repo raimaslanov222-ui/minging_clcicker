@@ -3,339 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity Clicker: FX Edition v34</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Infinity Clicker: Eternal v45</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --main: #ff003c; --blue: #00f2ff; --green: #39ff14; --gold: #ffcc00; --bg: #050508; --card: #111116; }
-        body.theme-blue { --main: #00f2ff; } 
-        body.theme-green { --main: #39ff14; }
+        :root {
+            --main: #00f2ff;
+            --bg: #050508;
+            --card: #111116;
+            --panel: #16161d;
+            --green: #39ff14;
+            --red: #ff003c;
+            --gold: #ffcc00;
+            --shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+        }
+
+        /* Reset & Base */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
-        body { background: var(--bg); color: #fff; margin: 0; overflow: hidden; font-family: 'Montserrat', sans-serif; height: 100vh; transition: 0.3s; }
+        body { 
+            background: var(--bg); color: #fff; margin: 0; 
+            font-family: 'Montserrat', sans-serif; height: 100vh; 
+            overflow: hidden; display: flex; flex-direction: column; 
+        }
 
-        /* Notifications */
-        #notify-container { position: fixed; top: 10px; right: 10px; z-index: 50000; display: flex; flex-direction: column; gap: 5px; }
-        .toast { background: rgba(0,0,0,0.9); border-left: 4px solid var(--main); padding: 10px; border-radius: 5px; font-family: 'Orbitron'; font-size: 10px; border: 1px solid #222; animation: sIn 0.3s forwards; }
-        @keyframes sIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--main); border-radius: 10px; }
 
-        header { height: 65px; background: #000; border-bottom: 2px solid var(--main); display: flex; align-items: center; justify-content: space-around; font-family: 'Orbitron'; z-index: 10; position: relative; }
-        header b { color: var(--main); }
+        /* Header UI */
+        header { 
+            height: 80px; background: #000; border-bottom: 2px solid var(--main); 
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 0 20px; z-index: 1000; 
+        }
+        .h-info { display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 11px; margin-bottom: 8px; }
+        .h-info b { color: var(--main); }
+        .xp-container { width: 100%; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+        #xp-fill { width: 0%; height: 100%; background: var(--main); box-shadow: 0 0 10px var(--main); transition: 0.4s; }
 
-        .screen { height: calc(100vh - 135px); overflow-y: auto; padding: 15px; display: none; flex-direction: column; align-items: center; padding-bottom: 80px; }
-        .screen.active { display: flex; }
-        
-        #big-bal { font-family: 'Orbitron'; font-size: 2.2rem; margin: 5px 0; text-shadow: 0 0 10px var(--main); font-weight: 900; }
-        
-        /* CLICK ZONE & ANIMATION */
-        .tap-area { position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; margin-top: 20px; }
+        /* Screens Management */
+        .screen { 
+            flex: 1; overflow-y: auto; padding: 20px; 
+            display: none; flex-direction: column; align-items: center; 
+            padding-bottom: 100px; width: 100%;
+        }
+        .screen.active { display: flex; animation: fade 0.3s ease-in; }
+        @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Game Screen */
+        #big-bal { font-family: 'Orbitron'; font-size: 2.2rem; font-weight: 900; margin: 20px 0; text-shadow: var(--shadow); }
+        .tap-area { position: relative; width: 200px; height: 200px; margin: 10px 0; cursor: pointer; }
         .tap-zone { 
-            width: 150px; height: 150px; border-radius: 50%; 
-            background: radial-gradient(circle, var(--main), #000); 
-            border: 4px solid rgba(255,255,255,0.1); 
-            cursor: pointer; display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 0 20px var(--main); transition: transform 0.05s ease;
-            z-index: 5;
+            width: 100%; height: 100%; border-radius: 50%; 
+            background: radial-gradient(circle, var(--main) 0%, #000 90%);
+            background-image: url('1000216837.png'); background-size: cover; background-position: center;
+            border: 4px solid var(--main); box-shadow: var(--shadow);
+            transition: transform 0.05s;
         }
         .tap-zone:active { transform: scale(0.92); }
 
-        /* Floating Text */
-        .float-text {
-            position: absolute; color: #fff; font-family: 'Orbitron'; font-weight: 900;
-            font-size: 1.2rem; pointer-events: none; z-index: 100;
-            animation: floatUp 0.8s ease-out forwards; text-shadow: 0 0 5px #000;
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 400px; margin-top: 25px; }
+        .stat-box { background: var(--panel); border: 1px solid #222; border-radius: 10px; padding: 10px; text-align: center; font-family: 'Orbitron'; }
+        .stat-box small { display: block; font-size: 8px; color: #777; margin-bottom: 4px; }
+        .stat-box b { font-size: 11px; color: var(--main); }
+
+        /* Shop Cards */
+        .shop-item { 
+            width: 100%; max-width: 450px; background: var(--card); 
+            border: 1px solid #222; border-radius: 15px; padding: 15px; 
+            margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
         }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-100px) scale(1.2); opacity: 0; }
+        .shop-text h4 { margin: 0; font-family: 'Orbitron'; font-size: 13px; color: var(--main); }
+        .shop-text p { margin: 4px 0 0; font-size: 10px; color: #666; }
+        .buy-btn { 
+            background: var(--main); color: #000; border: none; border-radius: 8px; 
+            padding: 12px 18px; font-family: 'Orbitron'; font-weight: 900; font-size: 11px; cursor: pointer;
+        }
+        .buy-btn:disabled { background: #222; color: #555; cursor: default; }
+
+        /* Top List */
+        .top-row { 
+            width: 100%; max-width: 400px; background: #0a0a0f; border-radius: 8px; 
+            padding: 12px; margin-bottom: 6px; display: flex; justify-content: space-between; 
+            font-family: 'Orbitron'; font-size: 12px; border-left: 3px solid #222;
+        }
+        .top-row.me { border-left-color: var(--main); background: rgba(0, 242, 255, 0.05); }
+
+        /* Settings & Ach */
+        .ach-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-top: 15px; }
+        .ach-icon { 
+            aspect-ratio: 1; background: #111; border: 1px solid #222; 
+            border-radius: 12px; display: flex; align-items: center; justify-content: center; 
+            font-size: 22px; filter: grayscale(1); opacity: 0.2; transition: 0.3s;
+        }
+        .ach-icon.active { filter: grayscale(0); opacity: 1; border-color: var(--gold); background: rgba(255,204,0,0.05); }
+
+        .input-group { width: 100%; max-width: 400px; margin-bottom: 15px; }
+        input { 
+            width: 100%; padding: 14px; background: #000; border: 1px solid #333; 
+            color: #fff; border-radius: 10px; font-family: 'Orbitron'; margin-bottom: 10px; 
         }
 
-        .live-stats { width: 100%; max-width: 350px; margin-top: 15px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; }
-        .stat-box { background: #0a0a0f; border: 1px solid #222; padding: 5px; border-radius: 5px; text-align: center; font-family: 'Orbitron'; font-size: 8px; }
-        .stat-box b { color: var(--main); display: block; font-size: 10px; }
+        /* Navigation */
+        nav { 
+            height: 75px; background: #000; border-top: 1px solid #222; 
+            display: flex; justify-content: space-around; align-items: center; 
+            position: fixed; bottom: 0; width: 100%; z-index: 1000; 
+        }
+        .nav-link { color: #444; font-family: 'Orbitron'; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
+        .nav-link.active { color: var(--main); transform: translateY(-3px); }
+        .nav-link i { font-size: 20px; margin-bottom: 4px; font-style: normal; }
 
-        .card { width: 100%; max-width: 400px; background: var(--card); border-radius: 10px; padding: 12px; margin-bottom: 8px; border: 1px solid #222; }
-        .card.boost { border: 1px solid var(--gold); background: linear-gradient(45deg, #111, #1a1a00); }
-        .common { border-left: 4px solid #888; } .rare { border-left: 4px solid var(--blue); } 
-        .epic { border-left: 4px solid #a335ee; } .mythic { border-left: 4px solid #ff8000; } 
-        .legendary { border-left: 4px solid var(--gold); }
+        /* Admin Overlay */
+        #adm-overlay { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); 
+            z-index: 10000; padding: 30px; flex-direction: column; overflow-y: auto;
+        }
+        .adm-card { background: #111; border: 1px solid var(--main); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
 
-        input { width: 100%; padding: 10px; margin: 5px 0; background: #000; border: 1px solid #333; border-radius: 5px; color: #fff; font-family: 'Orbitron'; font-size: 11px; }
-        .btn-p { width: 100%; padding: 10px; background: var(--main); border: none; border-radius: 5px; color: #fff; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; }
-
-        nav { height: 70px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; width: 100%; z-index: 1000; }
-        .nav-btn { color: #444; font-size: 9px; font-family: 'Orbitron'; cursor: pointer; text-align: center; }
-        .nav-btn.active { color: var(--main); }
-
-        #adm-modal { display: none; position: fixed; inset: 0; background: #000; z-index: 40000; padding: 15px; flex-direction: column; overflow-y: auto; }
-        table { width: 100%; border-collapse: collapse; font-size: 8px; font-family: 'Orbitron'; margin-top: 10px; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #111; }
-        .sync-icon { font-size: 8px; color: var(--green); display: none; }
+        /* FX */
+        .click-fx { 
+            position: absolute; pointer-events: none; font-family: 'Orbitron'; font-weight: 900; 
+            color: #fff; animation: clickAnim 0.7s ease-out forwards; z-index: 100; text-shadow: 0 0 5px #000;
+        }
+        @keyframes clickAnim { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-100px) scale(1.4); opacity: 0; } }
     </style>
 </head>
-<body id="body">
-
-<div id="notify-container"></div>
-
-<div id="auth-scr" style="position:fixed; inset:0; background:#000; z-index:60000; display:flex; align-items:center; justify-content:center;">
-    <div style="width:80%; max-width:300px; text-align:center;">
-        <h2 style="font-family:'Orbitron'; color:var(--main)">NEURAL CONNECT</h2>
-        <input type="email" id="in-e" placeholder="EMAIL">
-        <input type="password" id="in-p" placeholder="PASSWORD">
-        <button class="btn-p" onclick="doAuth('login')">LOGIN</button>
-        <button onclick="doAuth('reg')" style="background:none; border:none; color:#444; margin-top:10px; font-size:10px;">REGISTER IDENTITY</button>
-    </div>
-</div>
+<body>
 
 <header>
-    <div><small>CREDITS</small><b id="h-c">0</b></div>
-    <div><small>LEVEL</small><b id="h-l">1</b></div>
-    <button onclick="openAdm()" style="background:none; border:1px solid #333; color:var(--blue); border-radius:5px; padding:5px;">🛡️</button>
+    <div class="h-info">
+        <span>CREDITS: <b id="h-bal">0</b></span>
+        <span>LEVEL: <b id="h-lvl">1</b></span>
+    </div>
+    <div class="xp-container"><div id="xp-fill"></div></div>
 </header>
 
 <main id="sc-game" class="screen active">
-    <div id="big-bal">0</div>
-    <div class="tap-area">
-        <div class="tap-zone" id="tap-btn"><b style="font-family:'Orbitron';">CORE</b></div>
-    </div>
-    <div class="live-stats">
-        <div class="stat-box"><small>PWR</small><b id="s-pwr">+1</b></div>
-        <div class="stat-box"><small>AUTO</small><b id="s-idle">0/s</b></div>
-        <div class="stat-box"><small>MULT</small><b id="s-mult">x1.0</b></div>
+    <div id="big-bal">0.00</div>
+    <div class="tap-area" id="click-btn"><div class="tap-zone"></div></div>
+    <div class="stat-grid">
+        <div class="stat-box"><small>POWER</small><b id="st-pwr">1</b></div>
+        <div class="stat-box"><small>IDLE</small><b id="st-idle">0/s</b></div>
+        <div class="stat-box"><small>MULT</small><b id="st-mult">1.0x</b></div>
     </div>
 </main>
 
 <main id="sc-shop" class="screen">
-    <h3 style="font-family:'Orbitron'; color:var(--gold)">MARKET</h3>
+    <h2 style="font-family:'Orbitron'; align-self:flex-start; margin-bottom:20px;">MARKET</h2>
     <div id="shop-list" style="width:100%;"></div>
 </main>
 
 <main id="sc-top" class="screen">
-    <h3 style="font-family:'Orbitron'; color:var(--blue)">TOP MINERS</h3>
+    <h2 style="font-family:'Orbitron'; align-self:flex-start; margin-bottom:20px;">TOP MINERS</h2>
     <div id="top-list" style="width:100%;"></div>
 </main>
 
 <main id="sc-set" class="screen">
-    <h3 style="font-family:'Orbitron'; color:var(--main)">SETTINGS <span id="sync-ui" class="sync-icon">● SYNC</span></h3>
-    <div class="card">
-        <input type="text" id="new-nick" placeholder="New Nickname">
-        <button class="btn-p" onclick="changeNick()">SAVE NAME</button>
+    <h2 style="font-family:'Orbitron'; align-self:flex-start;">PROFILE</h2>
+    <div class="input-group">
+        <input type="text" id="nick-in" placeholder="Nickname">
+        <button class="buy-btn" style="width:100%" onclick="saveNick()">UPDATE IDENTITY</button>
     </div>
-    <div class="card">
-        <div style="display:flex; gap:5px;">
-            <button onclick="setTheme('red')" style="flex:1; background:#ff003c; border:none; height:25px;"></button>
-            <button onclick="setTheme('blue')" style="flex:1; background:#00f2ff; border:none; height:25px;"></button>
-            <button onclick="setTheme('green')" style="flex:1; background:#39ff14; border:none; height:25px;"></button>
-        </div>
-    </div>
-    <div class="card">
-        <small>ID: <b id="p-id">0</b></small><br>
-        <small>TOTAL CLICKS: <b id="p-clicks">0</b></small>
-    </div>
-    <div class="card">
+    <div class="input-group">
         <input type="text" id="promo-in" placeholder="PROMO CODE">
-        <button class="btn-p" style="background:var(--green); color:#000;" onclick="usePromo()">APPLY</button>
+        <button class="buy-btn" style="width:100%; background:var(--green); color:#000;" onclick="usePromo()">REDEEM CODE</button>
     </div>
+    <div class="shop-item" style="justify-content: space-between;">
+        <span style="font-size:11px;">ID: <b id="p-id" style="color:var(--main)">---</b></span>
+        <span style="font-size:11px;">CLICKS: <b id="p-clicks" style="color:var(--main)">0</b></span>
+    </div>
+    <h4 style="font-family:'Orbitron'; align-self:flex-start; margin: 15px 0 5px;">ACHIEVEMENTS</h4>
+    <div class="ach-grid" id="ach-list"></div>
+    
+    <button id="adm-btn" style="display:none; margin-top:40px; background:none; border:1px dashed var(--red); color:var(--red); padding:15px; font-family:'Orbitron'; border-radius:10px; width:100%;" onclick="toggleAdm(true)">🛡️ OPEN OWNER TERMINAL</button>
 </main>
 
 <nav>
-    <div class="nav-btn active" id="n-game">MINE</div>
-    <div class="nav-btn" id="n-shop">SHOP</div>
-    <div class="nav-btn" id="n-top">TOP</div>
-    <div class="nav-btn" id="n-set">SET</div>
+    <div class="nav-link active" onclick="go('game')"><i>⚡</i>MINE</div>
+    <div class="nav-link" onclick="go('shop')"><i>🛒</i>SHOP</div>
+    <div class="nav-link" onclick="go('top')"><i>🏆</i>TOP</div>
+    <div class="nav-link" onclick="go('set')"><i>⚙️</i>SET</div>
 </nav>
 
-<div id="adm-modal">
-    <h2 style="font-family:'Orbitron'; color:var(--blue)">ADMIN</h2>
-    <div class="card">
-        <input type="text" id="adm-target" placeholder="Target Short ID">
-        <input type="number" id="adm-amt" placeholder="Credits Amount">
-        <button class="btn-p" onclick="admAction()">GIVE CREDITS</button>
+<div id="adm-overlay">
+    <h1 style="font-family:'Orbitron'; color:var(--main); margin:0;">OWNER_SHELL</h1>
+    <p style="font-size:10px; color:#444; margin-bottom:25px;">ROOT ACCESS: ID_74981</p>
+    
+    <div class="adm-card">
+        <small style="color:var(--main)">CREDIT INJECTION</small>
+        <input type="number" id="adm-money" placeholder="Amount">
+        <button class="buy-btn" style="width:100%" onclick="admAddMoney()">GENERATE</button>
     </div>
-    <div class="card">
-        <input type="text" id="adm-pn" placeholder="PROMO NAME">
-        <input type="number" id="adm-pv" placeholder="Value">
-        <button class="btn-p" onclick="admPromo()">CREATE PROMO</button>
+
+    <div class="adm-card">
+        <small style="color:var(--main)">CREATE PROMOCODE</small>
+        <input type="text" id="adm-p-name" placeholder="CODE NAME">
+        <input type="number" id="adm-p-val" placeholder="Reward">
+        <button class="buy-btn" style="width:100%; background:var(--gold)" onclick="admCreatePromo()">SAVE TO DATABASE</button>
     </div>
-    <div class="card">
-        <button class="btn-p" style="background:var(--blue); color:#000;" onclick="loadArchive()">SYNC DATABASE</button>
-        <div style="overflow-x:auto;">
-            <table>
-                <thead><tr><th>ID</th><th>NICK</th><th>CLICKS</th><th>BAL</th></tr></thead>
-                <tbody id="db-body"></tbody>
-            </table>
-        </div>
-    </div>
-    <button class="btn-p" onclick="closeAdm()" style="background:#333; margin-top:10px;">EXIT</button>
+
+    <button class="buy-btn" style="margin-top:auto; background:#222; color:#fff;" onclick="toggleAdm(false)">EXIT TERMINAL</button>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, orderBy, limit, getDocs, where, arrayUnion, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, onSnapshot, updateDoc, setDoc, getDoc, collection, query, orderBy, limit, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const cfg = { apiKey: "AIzaSyDRv2Q060oBb1_1NXuqU4ixLVGy6EEr3To", authDomain: "infinity-clicker-7e01c.firebaseapp.com", projectId: "infinity-clicker-7e01c", storageBucket: "infinity-clicker-7e01c.firebasestorage.app", messagingSenderId: "888672687755", appId: "1:888672687755:web:6dda24bd7e4809c4d5668e" };
     const app = initializeApp(cfg); const auth = getAuth(app); const db = getFirestore(app);
 
-    let s = { credits: 0, maxCredits: 0, shortId: 0, clickPwr: 1, idle: 0, totalClicks: 0, multiplier: 1, nickname: '', theme: 'red', upg: {} };
+    const OWNER_ID = 74981;
+    let s = { credits: 0, maxCredits: 0, totalClicks: 0, clickPwr: 1, idle: 0, multiplier: 1, shortId: 0, nickname: 'User', lvl: 1, xp: 0, upg: {}, ach: [] };
 
-    window.toast = (m) => { const c = document.getElementById('notify-container'); const d = document.createElement('div'); d.className = 'toast'; d.innerText = m; c.appendChild(d); setTimeout(()=>d.remove(), 2500); };
-    const fmt = (n) => { if(Math.abs(n) < 1000) return Math.floor(n); const i = Math.floor(Math.log10(Math.abs(n))/3)-1; return (n/Math.pow(1000, i+1)).toFixed(2) + ["K","M","B","T"][i]; };
-
-    const saveToCloud = async () => {
-        if(!auth.currentUser) return;
-        document.getElementById('sync-ui').style.display = 'inline';
-        await updateDoc(doc(db, "users", auth.currentUser.uid), s);
-        setTimeout(() => document.getElementById('sync-ui').style.display = 'none', 1000);
+    // Format Numbers
+    const fmt = n => {
+        if (n < 1000) return n.toFixed(2);
+        const p = ["K","M","B","T","Qa","Qi","Sx","Sp","Oc"];
+        const i = Math.floor(Math.log10(n)/3);
+        return (n/Math.pow(1000, i)).toFixed(2) + p[i-1];
     };
 
+    // UI Updates
     const sync = () => {
+        document.getElementById('h-bal').innerText = fmt(s.credits);
         document.getElementById('big-bal').innerText = fmt(s.credits);
-        document.getElementById('h-c').innerText = fmt(s.credits);
-        document.getElementById('h-l').innerText = Math.floor(s.maxCredits / 2000) + 1;
-        document.getElementById('s-pwr').innerText = "+" + fmt(s.clickPwr);
-        document.getElementById('s-idle').innerText = fmt(s.idle) + "/s";
-        document.getElementById('s-mult').innerText = "x" + (s.multiplier || 1).toFixed(1);
+        document.getElementById('h-lvl').innerText = s.lvl;
+        document.getElementById('st-pwr').innerText = fmt(s.clickPwr);
+        document.getElementById('st-idle').innerText = fmt(s.idle)+"/s";
+        document.getElementById('st-mult').innerText = s.multiplier.toFixed(1)+"x";
         document.getElementById('p-id').innerText = s.shortId;
-        document.getElementById('p-clicks').innerText = s.totalClicks || 0;
+        document.getElementById('p-clicks').innerText = s.totalClicks;
         
-        const sl = document.getElementById('shop-list'); sl.innerHTML = '';
-        [
-            {id:'bp', n:'+1 Power', p:100, pw:1, r:'boost'},
-            {id:'bm', n:'x2 Multiplier', p:15000, m:2, r:'boost'},
-            {id:'s1', n:'Common Slave', p:150, i:5, r:'common'},
-            {id:'s2', n:'Rare Droid', p:1500, i:50, r:'rare'},
-            {id:'s3', n:'Epic Factory', p:12000, i:450, r:'epic'},
-            {id:'s4', n:'Mythic Matrix', p:80000, i:3000, r:'mythic'},
-            {id:'s5', n:'Legendary Lord', p:500000, i:15000, r:'legendary'}
-        ].forEach(it => {
+        const xpReq = s.lvl * 3000;
+        document.getElementById('xp-fill').style.width = Math.min((s.xp/xpReq)*100, 100) + "%";
+        
+        if(s.shortId === OWNER_ID) document.getElementById('adm-btn').style.display = 'block';
+
+        renderShop();
+        renderAch();
+    };
+
+    const renderShop = () => {
+        const cont = document.getElementById('shop-list'); cont.innerHTML = '';
+        const items = [
+            {id:'u1', n:'Micro Processor', d:'+1 Click Power', b:100, t:'pwr', v:1},
+            {id:'u2', n:'Overclock Link', d:'+10 Click Power', b:1200, t:'pwr', v:10},
+            {id:'a1', n:'Auto Script', d:'+5 Credits/sec', b:250, t:'idle', v:5},
+            {id:'a2', n:'Mining Drone', d:'+60 Credits/sec', b:3500, t:'idle', v:60},
+            {id:'a3', n:'Server Rack', d:'+500 Credits/sec', b:22000, t:'idle', v:500},
+            {id:'m1', n:'Quantum Core', d:'x2 Multiplier', b:100000, t:'mult', v:2}
+        ];
+        items.forEach(it => {
             const count = s.upg[it.id] || 0;
-            const pr = Math.floor(it.p * Math.pow(1.65, count));
-            sl.innerHTML += `<div class="card ${it.r} ${it.r==='boost'?'boost':''}">
-                <b>${it.n} [${count}]</b><br>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <small>${it.i?'+'+it.i+'/s':it.pw?'+1 Pwr':'x2 Mult'}</small>
-                    <button class="btn-p" style="width:auto; padding:5px 12px;" onclick="buy('${it.id}',${pr},${it.i||0},${it.pw||0},${it.m||0})">${fmt(pr)}</button>
-                </div>
-            </div>`;
+            const price = Math.floor(it.b * Math.pow(1.65, count));
+            cont.innerHTML += `<div class="shop-item"><div class="shop-text"><h4>${it.n} [${count}]</h4><p>${it.d}</p></div>
+            <button class="buy-btn" ${s.credits>=price?'':'disabled'} onclick="buy('${it.id}',${price},'${it.t}',${it.v})">${fmt(price)}</button></div>`;
         });
     };
 
-    window.buy = (id, p, i, pw, m) => {
-        if(s.credits >= p) {
-            s.credits -= p; s.upg[id] = (s.upg[id] || 0) + 1;
-            s.idle += i; s.clickPwr += pw; if(m) s.multiplier *= m;
-            sync(); saveToCloud(); toast("UPGRADE APPLIED");
-        }
+    const renderAch = () => {
+        const achs = [
+            {id:'ac1', i:'🎯', r:()=>s.totalClicks>=100},
+            {id:'ac2', i:'⚡', r:()=>s.lvl>=10},
+            {id:'ac3', i:'💎', r:()=>s.maxCredits>=100000},
+            {id:'ac4', i:'🔥', r:()=>s.clickPwr>=50}
+        ];
+        const cont = document.getElementById('ach-list'); cont.innerHTML = '';
+        achs.forEach(a => {
+            const unlocked = s.ach.includes(a.id) || a.r();
+            if(unlocked && !s.ach.includes(a.id)) { s.ach.push(a.id); save(); }
+            cont.innerHTML += `<div class="ach-icon ${unlocked?'active':''}">${a.i}</div>`;
+        });
     };
 
-    // CLICK HANDLER WITH ANIMATION
-    document.getElementById('tap-btn').onclick = (e) => {
-        const gain = s.clickPwr * (s.multiplier || 1);
-        s.credits += gain; s.totalClicks++;
+    window.buy = (id, p, t, v) => {
+        if(s.credits < p) return;
+        s.credits -= p; s.upg[id] = (s.upg[id] || 0) + 1;
+        if(t==='pwr') s.clickPwr += v; else if(t==='idle') s.idle += v; else s.multiplier *= v;
+        sync(); save();
+    };
+
+    document.getElementById('click-btn').onclick = (e) => {
+        const gain = s.clickPwr * s.multiplier;
+        s.credits += gain; s.totalClicks++; s.xp += gain/10;
         if(s.credits > s.maxCredits) s.maxCredits = s.credits;
+        
+        if(s.xp >= s.lvl * 3000) { s.xp = 0; s.lvl++; }
+
+        const fx = document.createElement('div');
+        fx.className = 'click-fx'; fx.innerText = `+${fmt(gain)}`;
+        fx.style.left = e.clientX + 'px'; fx.style.top = e.clientY + 'px';
+        document.body.appendChild(fx); setTimeout(()=>fx.remove(), 700);
         sync();
-
-        // Create Float Text
-        const ft = document.createElement('div');
-        ft.className = 'float-text';
-        ft.innerText = `+${fmt(gain)}`;
-        // Position it near the click or in center of zone
-        const rect = e.target.getBoundingClientRect();
-        ft.style.left = (e.clientX - 20) + 'px';
-        ft.style.top = (e.clientY - 20) + 'px';
-        document.body.appendChild(ft);
-        setTimeout(() => ft.remove(), 800);
     };
 
-    window.doAuth = async (m) => {
-        const e = document.getElementById('in-e').value; const p = document.getElementById('in-p').value;
-        try {
-            if(m==='login') await signInWithEmailAndPassword(auth, e, p);
-            else {
-                const r = await createUserWithEmailAndPassword(auth, e, p);
-                s.shortId = Math.floor(10000 + Math.random()*89999);
-                await setDoc(doc(db, "users", r.user.uid), s);
-            }
-        } catch(ex) { toast(ex.message); }
-    };
-
-    onAuthStateChanged(auth, async (u) => {
+    onAuthStateChanged(auth, async u => {
         if(u) {
-            document.getElementById('auth-scr').style.display = 'none';
-            onSnapshot(doc(db, "users", u.uid), (snap) => {
-                if(snap.exists()){
-                    const cloud = snap.data();
-                    if(Math.abs(s.credits - cloud.credits) > 100) {
-                        s.credits = cloud.credits; s.maxCredits = cloud.maxCredits;
-                        s.multiplier = cloud.multiplier || 1; s.clickPwr = cloud.clickPwr || 1;
-                        s.idle = cloud.idle || 0; s.upg = cloud.upg || {};
-                    }
-                    s.shortId = cloud.shortId; s.nickname = cloud.nickname;
-                    s.theme = cloud.theme || 'red'; setTheme(s.theme); sync();
-                }
-            });
-            setInterval(saveToCloud, 5000);
+            const ref = doc(db, "users", u.uid);
+            const snap = await getDoc(ref);
+            if(snap.exists()) s = {...s, ...snap.data()};
+            else { s.shortId = Math.floor(10000+Math.random()*89999); await setDoc(ref, s); }
+            sync();
+            onSnapshot(ref, d => { if(d.exists()) { s = {...s, ...d.data()}; sync(); }});
         }
     });
 
-    window.setTheme = (t) => { document.getElementById('body').className = 'theme-'+t; s.theme = t; };
-    window.changeNick = () => { 
-        const n = document.getElementById('new-nick').value;
-        if(n.length > 2) { s.nickname = n; sync(); saveToCloud(); toast("SAVED"); }
-    };
+    async function save() { if(auth.currentUser) await updateDoc(doc(db,"users",auth.currentUser.uid), s); }
 
-    window.loadTop = async () => {
-        const q = query(collection(db, "users"), orderBy("maxCredits", "desc"), limit(10));
-        const sn = await getDocs(q); const l = document.getElementById('top-list'); l.innerHTML = '';
-        sn.forEach((d, i) => l.innerHTML += `<div class="card">#${i+1} ${d.data().nickname || d.data().shortId} - <b>${fmt(d.data().maxCredits)}</b></div>`);
-    };
-
-    window.loadArchive = async () => {
-        const sn = await getDocs(collection(db, "users")); const b = document.getElementById('db-body'); b.innerHTML = '';
-        sn.forEach(d => { const u = d.data(); b.innerHTML += `<tr><td>${u.shortId}</td><td>${u.nickname||'---'}</td><td>${u.totalClicks||0}</td><td>${fmt(u.credits)}</td></tr>`; });
-    };
-
-    window.admAction = async () => {
-        const tid = Number(document.getElementById('adm-target').value);
-        const amt = Number(document.getElementById('adm-amt').value);
-        const q = query(collection(db, "users"), where("shortId", "==", tid));
-        const sn = await getDocs(q);
-        if(!sn.empty) {
-            await updateDoc(doc(db, "users", sn.docs[0].id), { credits: (sn.docs[0].data().credits || 0) + amt });
-            toast("DONE"); loadArchive();
-        }
-    };
-
-    window.admPromo = async () => {
-        await setDoc(doc(db, "promocodes", document.getElementById('adm-pn').value.toUpperCase()), { value: Number(document.getElementById('adm-pv').value), usedBy: [] });
-        toast("PROMO CREATED");
-    };
-
-    window.usePromo = async () => {
-        const ref = doc(db, "promocodes", document.getElementById('promo-in').value.toUpperCase());
-        const sn = await getDoc(ref);
-        if(sn.exists() && !sn.data().usedBy.includes(auth.currentUser.uid)) {
-            s.credits += sn.data().value;
-            await updateDoc(ref, { usedBy: arrayUnion(auth.currentUser.uid) });
-            saveToCloud(); sync(); toast("REWARDED");
-        }
-    };
-
-    setInterval(() => { if(s.idle > 0) { s.credits += (s.idle/10); sync(); } }, 100);
-
-    const go = (id) => {
-        document.querySelectorAll('.screen').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    window.go = id => {
+        document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('sc-'+id).classList.add('active');
-        document.getElementById('n-'+id).classList.add('active');
+        event.currentTarget.classList.add('active');
         if(id === 'top') loadTop();
     };
 
-    document.getElementById('n-game').onclick = () => go('game');
-    document.getElementById('n-shop').onclick = () => go('shop');
-    document.getElementById('n-top').onclick = () => go('top');
-    document.getElementById('n-set').onclick = () => go('set');
-    window.openAdm = () => { document.getElementById('adm-modal').style.display='flex'; loadArchive(); };
-    window.closeAdm = () => document.getElementById('adm-modal').style.display='none';
+    window.loadTop = async () => {
+        const q = query(collection(db, "users"), orderBy("maxCredits", "desc"), limit(50));
+        const snap = await getDocs(q);
+        const cont = document.getElementById('top-list'); cont.innerHTML = '';
+        snap.forEach((d, i) => {
+            const u = d.data();
+            cont.innerHTML += `<div class="top-row ${u.shortId===s.shortId?'me':''}"><span>#${i+1} ${u.nickname}</span><b>${fmt(u.maxCredits)}</b></div>`;
+        });
+    };
+
+    window.saveNick = () => { s.nickname = document.getElementById('nick-in').value; save(); };
+    
+    window.usePromo = async () => {
+        const code = document.getElementById('promo-in').value.toUpperCase();
+        const ref = doc(db, "promos", code);
+        const snap = await getDoc(ref);
+        if(snap.exists() && !snap.data().usedBy.includes(auth.currentUser.uid)) {
+            s.credits += snap.data().val;
+            await updateDoc(ref, { usedBy: arrayUnion(auth.currentUser.uid) });
+            save(); alert("PROMO APPLIED!");
+        } else alert("ALREADY USED OR INVALID");
+    };
+
+    // Owner Functions
+    window.toggleAdm = s => document.getElementById('adm-overlay').style.display = s ? 'flex' : 'none';
+    window.admAddMoney = () => { s.credits += Number(document.getElementById('adm-money').value); save(); toggleAdm(false); };
+    window.admCreatePromo = async () => {
+        const name = document.getElementById('adm-p-name').value.toUpperCase();
+        const val = Number(document.getElementById('adm-p-val').value);
+        await setDoc(doc(db, "promos", name), { val: val, usedBy: [] });
+        alert("PROMO SAVED");
+    };
+
+    setInterval(() => { if(s.idle > 0) { s.credits += s.idle/10; sync(); } }, 100);
+    setInterval(save, 10000);
 </script>
 </body>
 </html>
