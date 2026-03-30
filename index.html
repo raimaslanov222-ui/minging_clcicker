@@ -3,326 +3,255 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Infinity Clicker v69: Admin Ultimate</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <title>Glass OS Ultra - Liquid Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <style>
-        :root { --main: #00f2ff; --bg: #050508; --card: #111116; --red: #ff003c; --green: #39ff14; --gold: #ffcc00; --purp: #bc13fe; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; user-select: none; }
-        body { background: var(--bg); color: #fff; margin: 0; font-family: 'Montserrat', sans-serif; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        :root {
+            /* Конфигурация Liquid Glass */
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-shine: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 60%);
+            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            --blur-val: 25px;
+            --saturate-val: 190%;
+            --accent: #00bcd4;
+            --text-main: #ffffff;
+        }
+
+        body, html { 
+            height: 100%; margin: 0; overflow: hidden; 
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #000;
+        }
+
+        #wallpaper {
+            position: fixed; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?q=80&w=2000') center/cover;
+            z-index: -1; 
+            transition: 0.8s;
+            filter: contrast(115%) brightness(85%);
+        }
+
+        /* Desktop */
+        #desktop {
+            height: calc(100% - 90px); padding: 25px;
+            display: flex; flex-direction: column; gap: 25px;
+            align-items: flex-start;
+        }
+
+        .icon {
+            width: 80px; text-align: center; color: white; font-size: 11px;
+            touch-action: none; user-select: none;
+            transition: transform 0.1s;
+        }
+        .icon:active { transform: scale(0.9); }
+
+        .icon-img {
+            width: 65px; height: 65px; 
+            background: rgba(255, 255, 255, 0.06);
+            background-image: var(--glass-shine);
+            backdrop-filter: blur(15px) saturate(150%);
+            -webkit-backdrop-filter: blur(15px) saturate(150%);
+            border-radius: 18px;
+            border: 1px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; margin: 0 auto 6px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* Glass Windows */
+        .window {
+            position: absolute; top: 15%; left: 5%; width: 90%; height: 70%;
+            background: var(--glass-bg);
+            background-image: var(--glass-shine);
+            backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
+            -webkit-backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            box-shadow: var(--glass-shadow);
+            display: none; flex-direction: column; z-index: 10;
+            overflow: hidden;
+            animation: openWin 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            touch-action: none;
+        }
+
+        @keyframes openWin {
+            from { transform: scale(0.8) translateY(30px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .win-header {
+            padding: 18px 22px; display: flex; justify-content: space-between; align-items: center;
+            cursor: move; background: rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-main); font-weight: 600;
+        }
+
+        .btn-close { 
+            background: #ff5f57; border: none; width: 14px; height: 14px; 
+            border-radius: 50%; cursor: pointer;
+            box-shadow: 0 0 12px rgba(255, 95, 87, 0.6);
+        }
+
+        .win-body { flex: 1; padding: 20px; overflow-y: auto; color: var(--text-main); }
+
+        /* UI Elements */
+        video { width: 100%; border-radius: 15px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        #notif-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; z-index: 200000; pointer-events: none; }
-        .toast { background: rgba(10, 10, 15, 0.95); border-left: 4px solid var(--main); padding: 15px; margin-bottom: 10px; border-radius: 10px; font-family: 'Orbitron'; font-size: 12px; animation: toastIn 0.4s forwards; }
-        .toast.success { border-left-color: var(--green); color: var(--green); }
-        .toast.error { border-left-color: var(--red); color: var(--red); }
-        .toast.admin { border-left-color: var(--gold); color: var(--gold); font-weight: bold; }
-        @keyframes toastIn { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+        #gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        #gallery-grid img { width: 100%; border-radius: 12px; border: 1px solid var(--glass-border); }
 
-        header { height: 95px; background: #000; border-bottom: 2px solid var(--main); display: flex; flex-direction: column; justify-content: center; padding: 0 20px; }
-        .h-row { display: flex; justify-content: space-between; font-family: 'Orbitron'; font-size: 11px; margin-bottom: 8px; }
-        .lvl-tag { background: var(--main); color: #000; padding: 2px 6px; border-radius: 4px; font-weight: 900; }
-        .xp-bg { width: 100%; height: 8px; background: #1a1a1a; border-radius: 4px; overflow: hidden; }
-        #xp-bar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--main), var(--purp)); transition: 0.3s; }
+        button, input[type="text"] {
+            background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
+            color: white; padding: 12px; border-radius: 12px; width: 100%;
+            backdrop-filter: blur(5px); margin-bottom: 10px; font-size: 14px;
+        }
 
-        .screen { flex: 1; overflow-y: auto; padding: 20px; display: none; flex-direction: column; align-items: center; width: 100%; padding-bottom: 120px; }
-        .screen.active { display: flex; }
-        
-        #display-bal { font-family: 'Orbitron'; font-size: 2.8rem; font-weight: 900; margin: 20px 0; text-shadow: 0 0 20px var(--main); transition: 0.3s; }
-        .x2-active { color: var(--gold) !important; text-shadow: 0 0 30px var(--gold) !important; }
+        /* Dock Bar */
+        #dock {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 85%; max-width: 380px; height: 70px;
+            background: rgba(255, 255, 255, 0.05);
+            background-image: var(--glass-shine);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border-radius: 24px; border: 1px solid var(--glass-border);
+            display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.6);
+            z-index: 1000;
+        }
 
-        .main-btn { width: 180px; height: 180px; border-radius: 50%; border: 6px solid var(--main); display: flex; align-items: center; justify-content: center; cursor: pointer; background: radial-gradient(circle, #00f2ff22 0%, #000 85%); transition: 0.1s; }
-        .main-btn:active { transform: scale(0.92); }
-        .main-btn span { font-size: 60px; }
-
-        .item-card { width: 100%; max-width: 450px; background: var(--card); border: 1px solid #222; border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .item-info b { font-family: 'Orbitron'; color: #fff; font-size: 12px; display: block; }
-        .item-info p { margin: 2px 0 0; font-size: 10px; color: #777; }
-        
-        .btn-buy { background: var(--main); color: #000; border: none; border-radius: 6px; padding: 10px; font-family: 'Orbitron'; font-weight: 900; font-size: 10px; cursor: pointer; min-width: 85px; }
-        .btn-buy:disabled { background: #222; color: #444; }
-
-        nav { height: 75px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; width: 100%; }
-        .nav-item { color: #444; font-family: 'Orbitron'; font-size: 9px; text-align: center; cursor: pointer; }
-        .nav-item.active { color: var(--main); }
-
-        #admin-panel { display: none; position: fixed; inset: 0; background: #050508; z-index: 150000; padding: 25px; flex-direction: column; overflow-y: auto; }
-        .input-box { width: 100%; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-family: 'Orbitron'; margin-bottom: 10px; font-size: 12px; }
-        .float-text { position: fixed; pointer-events: none; font-family: 'Orbitron'; font-weight: 900; font-size: 22px; color: #fff; animation: floatUp 0.7s forwards; z-index: 10000; }
-        @keyframes floatUp { from { transform: translate(-50%, -50%); opacity: 1; } to { transform: translate(-50%, -120px); opacity: 0; } }
-
-        #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 190000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .dock-item { font-size: 30px; transition: 0.2s; cursor: pointer; }
+        .dock-item:active { transform: translateY(-10px) scale(1.2); }
     </style>
 </head>
 <body>
 
-<div id="notif-container"></div>
+<div id="wallpaper"></div>
 
-<div id="auth-screen">
-    <div style="width:100%; max-width:340px; background:var(--card); padding:25px; border-radius:15px; border:1px solid var(--main);">
-        <h3 style="font-family:Orbitron; text-align:center; color:var(--main); margin-top:0;">DATABASE CONNECT</h3>
-        <input type="email" id="auth-email" class="input-box" placeholder="Email">
-        <input type="password" id="auth-pass" class="input-box" placeholder="Password">
-        <button class="btn-buy" style="width:100%; margin-bottom:10px;" onclick="window.handleAuth('login')">ВОЙТИ</button>
-        <button class="btn-buy" style="width:100%; background:none; border:1px solid var(--main); color:var(--main);" onclick="window.handleAuth('reg')">РЕГИСТРАЦИЯ</button>
+<div id="desktop">
+    <div class="icon" onclick="openApp('camera')">
+        <div class="icon-img">📸</div><span>Камера</span>
+    </div>
+    <div class="icon" onclick="openApp('gallery')">
+        <div class="icon-img">🖼️</div><span>Галерея</span>
+    </div>
+    <div class="icon" onclick="openApp('settings')">
+        <div class="icon-img">⚙️</div><span>Настройки</span>
     </div>
 </div>
 
-<header>
-    <div class="h-row">
-        <span>CREDITS: <b id="h-bal" style="color:var(--main)">0</b></span>
-        <span>LVL: <b id="h-lvl" class="lvl-tag">1</b></span>
+<div id="win-camera" class="window">
+    <div class="win-header"><span>HD Camera</span><button class="btn-close" onclick="closeApp('camera')"></button></div>
+    <div class="win-body">
+        <video id="cam-video" autoplay playsinline></video>
+        <button onclick="startCam()" style="margin-top:15px; background: var(--accent);">Включить объектив</button>
     </div>
-    <div class="xp-bg"><div id="xp-bar"></div></div>
-</header>
-
-<main id="sc-mine" class="screen active">
-    <div id="display-bal">0</div>
-    <div class="main-btn" id="tap-trigger"><span>💎</span></div>
-    <div style="margin-top:15px; font-family:Orbitron; font-size:9px; color:#555; text-align:center; line-height:1.6;">
-        POWER: <span id="stat-pwr" style="color:var(--main)">+1</span> | MULTI: <span id="stat-mult" style="color:var(--gold)">x1</span><br>
-        AUTO-MINE: <span id="stat-idle" style="color:var(--main)">0/s</span><br>
-        MY ID: <span id="stat-id" style="color:#888">#00000</span>
-    </div>
-</main>
-
-<main id="sc-shop" class="screen">
-    <h4 style="font-family:Orbitron; color:var(--main); margin:0 0 15px; width:100%; max-width:450px;">EQUIPMENT</h4>
-    <div id="shelf-pwr" style="width:100%; max-width:450px;"></div>
-    <h4 style="font-family:Orbitron; color:var(--purp); margin:20px 0 15px; width:100%; max-width:450px;">AUTOMATION</h4>
-    <div id="shelf-idle" style="width:100%; max-width:450px;"></div>
-</main>
-
-<main id="sc-top" class="screen">
-    <h4 style="font-family:Orbitron; color:var(--gold); margin:0 0 15px;">TOP MINERS</h4>
-    <div id="top-list" style="width:100%; max-width:450px;"></div>
-</main>
-
-<main id="sc-set" class="screen">
-    <div style="width:100%; max-width:380px;">
-        <p style="font-family:Orbitron; font-size:10px; color:var(--green); margin-bottom:5px;">PROMO CODE</p>
-        <input type="text" id="promo-input" class="input-box" placeholder="ENTER CODE">
-        <button class="btn-buy" style="width:100%; background:var(--green); color:#000;" onclick="window.claimPromo()">ACTIVATE</button>
-        
-        <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-        
-        <p style="font-family:Orbitron; font-size:10px; color:var(--main); margin-bottom:5px;">PROFILE</p>
-        <input type="text" id="nick-input" class="input-box" placeholder="New Nickname">
-        <button class="btn-buy" style="width:100%;" onclick="window.updateNick()">CHANGE NICK</button>
-
-        <button id="btn-admin" style="display:none; margin-top:30px; border:1px dashed var(--red); color:var(--red); background:none; padding:15px; width:100%; font-family:Orbitron; font-size:12px;" onclick="window.toggleAdmin(true)">🛡️ ACCESS ADMIN PANEL</button>
-        
-        <button class="btn-buy" style="margin-top:20px; background:var(--red); width:100%; color:#fff;" onclick="auth.signOut(); location.reload();">LOGOUT</button>
-    </div>
-</main>
-
-<div id="admin-panel">
-    <h2 style="font-family:Orbitron; color:var(--gold); margin-top:0;">ROOT TERMINAL</h2>
-    
-    <div style="background:#0d0d12; padding:15px; border-radius:10px; border:1px solid #222; margin-bottom:15px;">
-        <p style="font-size:9px; color:var(--main); font-family:Orbitron; margin-bottom:10px;">CREDIT MODERATION</p>
-        <input type="text" id="adm-target" class="input-box" placeholder="User Nickname or ID">
-        <input type="number" id="adm-amt" class="input-box" placeholder="Amount">
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button class="btn-buy" style="background:var(--green); color:#000;" onclick="window.adminModify(true)">GIVE (+)</button>
-            <button class="btn-buy" style="background:var(--red); color:#fff;" onclick="window.adminModify(false)">TAKE (-)</button>
-        </div>
-    </div>
-
-    <div style="background:#0d0d12; padding:15px; border-radius:10px; border:1px solid #222;">
-        <p style="font-size:9px; color:var(--purp); font-family:Orbitron; margin-bottom:10px;">CREATE PROMO</p>
-        <input type="text" id="adm-p-code" class="input-box" placeholder="CODE NAME">
-        <input type="number" id="adm-p-val" class="input-box" placeholder="VALUE">
-        <button class="btn-buy" style="width:100%; background:var(--purp); color:#fff;" onclick="window.adminCreatePromo()">GENERATE</button>
-    </div>
-
-    <button class="btn-buy" style="margin-top:auto; background:#222; width:100%;" onclick="window.toggleAdmin(false)">DISCONNECT</button>
 </div>
 
-<nav>
-    <div class="nav-item active" onclick="window.nav('mine', this)">MINE</div>
-    <div class="nav-item" onclick="window.nav('shop', this)">SHOP</div>
-    <div class="nav-item" onclick="window.nav('top', this)">TOP</div>
-    <div class="nav-item" onclick="window.nav('set', this)">SET</div>
-</nav>
+<div id="win-gallery" class="window">
+    <div class="win-header"><span>Галерея</span><button class="btn-close" onclick="closeApp('gallery')"></button></div>
+    <div class="win-body">
+        <input type="file" id="file-input" multiple hidden onchange="loadImages(this.files)">
+        <button onclick="document.getElementById('file-input').click()">Загрузить из памяти</button>
+        <div id="gallery-grid"></div>
+    </div>
+</div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, onSnapshot, updateDoc, setDoc, getDoc, collection, query, orderBy, limit, getDocs, where, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const config = { apiKey: "AIzaSyDRv2Q060oBb1_1NXuqU4ixLVGy6EEr3To", authDomain: "infinity-clicker-7e01c.firebaseapp.com", projectId: "infinity-clicker-7e01c", storageBucket: "infinity-clicker-7e01c.firebasestorage.app", messagingSenderId: "888672687755", appId: "1:888672687755:web:6dda24bd7e4809c4d5668e" };
-    const app = initializeApp(config); const auth = getAuth(app); const db = getFirestore(app);
-
-    const ADMIN_ID = 74981;
-    let u = { credits: 0, maxCredits: 0, pwr: 1, idle: 0, mult: 1, shortId: 0, nickname: 'Miner', lvl: 1, xp: 0, upg: {} };
-
-    const SHOP_DATA = {
-        pwr: [
-            {id:'p1', n:'Лазерная указка', d:'Клик +1.', b:50, v:1, t:'pwr'},
-            {id:'p2', n:'Кибер-перчатка', d:'Клик +15.', b:1500, v:15, t:'pwr'},
-            {id:'p3', n:'Плазменный резак', d:'Клик +100.', b:25000, v:100, t:'pwr'},
-            {id:'mx', n:'X2 Ускоритель', d:'Вечный x2 ко всему доходу!', b:100000, v:2, t:'mult'}
-        ],
-        idle: [
-            {id:'i1', n:'Дрон-сборщик', d:'+5/сек.', b:400, v:5, t:'idle'},
-            {id:'i2', n:'Майнинг-ферма', d:'+60/сек.', b:8000, v:60, t:'idle'},
-            {id:'i3', n:'Звезда Смерти', d:'+1000/сек.', b:150000, v:1000, t:'idle'}
-        ]
-    };
-
-    window.notify = (t, type='') => {
-        const c = document.getElementById('notif-container');
-        const e = document.createElement('div'); e.className = `toast ${type}`;
-        e.innerHTML = `<span>${t}</span>`; c.appendChild(e);
-        setTimeout(() => { e.style.opacity='0'; setTimeout(()=>e.remove(), 500); }, 3000);
-    };
-
-    window.format = n => n < 1000 ? Math.floor(n) : (n/1000).toFixed(1)+'K';
-
-    window.syncUI = () => {
-        document.getElementById('h-bal').innerText = window.format(u.credits);
-        document.getElementById('display-bal').innerText = window.format(u.credits);
-        document.getElementById('display-bal').className = u.mult > 1 ? 'x2-active' : '';
-        document.getElementById('h-lvl').innerText = u.lvl;
-        document.getElementById('stat-pwr').innerText = "+" + window.format(u.pwr);
-        document.getElementById('stat-mult').innerText = "x" + u.mult;
-        document.getElementById('stat-idle').innerText = window.format(u.idle * u.mult) + "/s";
-        document.getElementById('stat-id').innerText = "#" + u.shortId;
-        document.getElementById('xp-bar').style.width = Math.min((u.xp / (u.lvl * 5000)) * 100, 100) + "%";
+<div id="win-settings" class="window">
+    <div class="win-header"><span>Параметры</span><button class="btn-close" onclick="closeApp('settings')"></button></div>
+    <div class="win-body">
+        <p>Размытие стекла:</p>
+        <input type="range" min="0" max="50" value="25" oninput="document.documentElement.style.setProperty('--blur-val', this.value + 'px')" style="width:100%; margin:15px 0;">
         
-        if(u.shortId === ADMIN_ID) document.getElementById('btn-admin').style.display = 'block';
-        renderShop();
-    };
+        <p>Ссылка на обои:</p>
+        <input type="text" id="bg-url" placeholder="https://image-link.jpg">
+        <button onclick="setBg()">Применить фон</button>
+    </div>
+</div>
 
-    const renderShop = () => {
-        const draw = (contId, items) => {
-            const el = document.getElementById(contId); el.innerHTML = '';
-            items.forEach(it => {
-                const count = u.upg[it.id] || 0;
-                if(it.id === 'mx' && u.mult >= 2) return;
-                const cost = Math.floor(it.b * Math.pow(1.6, count));
-                el.innerHTML += `<div class="item-card"><div class="item-info"><b>${it.n} [${count}]</b><p>${it.d}</p></div>
-                <button class="btn-buy" ${u.credits >= cost ? '' : 'disabled'} onclick="window.buyItem('${it.id}',${cost},'${it.t}',${it.v})">${window.format(cost)}</button></div>`;
-            });
-        };
-        draw('shelf-pwr', SHOP_DATA.pwr); draw('shelf-idle', SHOP_DATA.idle);
-    };
+<div id="dock">
+    <div class="dock-item" onclick="openApp('camera')">📷</div>
+    <div class="dock-item" onclick="openApp('gallery')">🖼️</div>
+    <div class="dock-item" onclick="openApp('settings')">⚙️</div>
+</div>
 
-    window.buyItem = (id, cost, type, val) => {
-        if(u.credits >= cost) {
-            u.credits -= cost;
-            u.upg[id] = (u.upg[id] || 0) + 1;
-            if(type === 'pwr') u.pwr += val; 
-            else if(type === 'idle') u.idle += val;
-            else if(type === 'mult') u.mult = val; 
-            window.notify("УСПЕШНО!", "success"); window.syncUI(); window.save();
-        }
-    };
+<script>
+    let camStream = null;
 
-    document.getElementById('tap-trigger').onclick = (e) => {
-        const gain = u.pwr * u.mult;
-        u.credits += gain; u.xp += gain;
-        if(u.xp >= u.lvl * 5000) { u.xp = 0; u.lvl++; window.notify("LVL UP!", "success"); }
-        if(u.credits > u.maxCredits) u.maxCredits = u.credits;
-        
-        const ft = document.createElement('div'); ft.className = 'float-text'; 
-        ft.innerText = '+' + window.format(gain);
-        if(u.mult > 1) ft.style.color = 'var(--gold)';
-        ft.style.left = e.clientX + 'px'; ft.style.top = e.clientY + 'px';
-        document.body.appendChild(ft); setTimeout(() => ft.remove(), 700);
-        window.syncUI();
-    };
-
-    // ADMIN FUNCTIONS
-    window.adminModify = async (isAdd) => {
-        const target = document.getElementById('adm-target').value.trim();
-        const amt = Math.abs(Number(document.getElementById('adm-amt').value));
-        if(!target || !amt) return window.notify("Data missing", "error");
-
-        window.notify("Searching...", "admin");
-        let q = isNaN(target) ? query(collection(db, "users"), where("nickname", "==", target)) : query(collection(db, "users"), where("shortId", "==", Number(target)));
-        
-        const snap = await getDocs(q);
-        if(!snap.empty) {
-            const d = snap.docs[0];
-            const newBal = isAdd ? (d.data().credits + amt) : Math.max(0, d.data().credits - amt);
-            await updateDoc(doc(db, "users", d.id), { 
-                credits: newBal, 
-                maxCredits: isAdd ? Math.max(d.data().maxCredits, newBal) : d.data().maxCredits 
-            });
-            window.notify(`User ${target} updated!`, "success");
-        } else window.notify("User not found", "error");
-    };
-
-    window.adminCreatePromo = async () => {
-        const c = document.getElementById('adm-p-code').value.toUpperCase().trim();
-        const v = Number(document.getElementById('adm-p-val').value);
-        if(!c || !v) return;
-        await setDoc(doc(db, "promos", c), { val: v, usedBy: [] });
-        window.notify("PROMO CREATED: " + c, "success");
-    };
-
-    window.claimPromo = async () => {
-        const c = document.getElementById('promo-input').value.toUpperCase().trim();
-        if(!c) return;
-        const s = await getDoc(doc(db, "promos", c));
-        if(s.exists() && (!s.data().usedBy || !s.data().usedBy.includes(auth.currentUser.uid))) {
-            u.credits += s.data().val;
-            await updateDoc(doc(db, "promos", c), { usedBy: arrayUnion(auth.currentUser.uid) });
-            window.notify("PROMO OK!", "success"); window.syncUI(); window.save();
-        } else window.notify("INVALID OR USED", "error");
-    };
-
-    window.updateNick = () => {
-        const n = document.getElementById('nick-input').value.trim();
-        if(n.length < 2) return window.notify("Too short", "error");
-        u.nickname = n; window.save(); window.notify("NICK UPDATED", "success");
-    };
-
-    // CORE
-    window.nav = (id, el) => {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('sc-'+id).classList.add('active'); el.classList.add('active');
-        if(id === 'top') window.refreshTop();
-    };
-
-    window.refreshTop = async () => {
-        const snap = await getDocs(query(collection(db, "users"), orderBy("maxCredits", "desc"), limit(10)));
-        const list = document.getElementById('top-list'); list.innerHTML = '';
-        snap.forEach((d, i) => {
-            list.innerHTML += `<div class="item-card"><span>#${i+1} ${d.data().nickname}</span><b>${window.format(d.data().maxCredits)}</b></div>`;
-        });
-    };
-
-    window.handleAuth = async (m) => {
-        const e = document.getElementById('auth-email').value;
-        const p = document.getElementById('auth-pass').value;
-        try {
-            if(m==='login') await signInWithEmailAndPassword(auth,e,p);
-            else {
-                const r = await createUserWithEmailAndPassword(auth,e,p);
-                const newId = Math.floor(10000 + Math.random() * 80000);
-                await setDoc(doc(db,"users",r.user.uid), {...u, shortId:newId, nickname:e.split('@')[0]});
-            }
-        } catch(err) { window.notify("AUTH ERROR", "error"); }
-    };
-
-    onAuthStateChanged(auth, async user => {
-        if(user) {
-            document.getElementById('auth-screen').style.display='none';
-            const ref = doc(db,"users",user.uid);
-            const s = await getDoc(ref);
-            if(s.exists()){ 
-                u={...u,...s.data()}; window.syncUI(); 
-                onSnapshot(ref,d=> {if(d.exists()){u=d.data(); window.syncUI();}});
-            }
-        }
+    // Инициализация Drag-and-Drop для иконок и окон
+    interact('.icon').draggable({
+        listeners: { move(event) {
+            const target = event.target;
+            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            target.style.transform = `translate(${x}px, ${y}px)`;
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        }}
     });
 
-    window.save = async () => { if(auth.currentUser) await updateDoc(doc(db,"users",auth.currentUser.uid), u); };
-    window.toggleAdmin = s => { if(u.shortId === ADMIN_ID) document.getElementById('admin-panel').style.display = s?'flex':'none'; };
+    interact('.window').draggable({
+        allowFrom: '.win-header',
+        listeners: { move(event) {
+            const target = event.target;
+            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            target.style.left = '0'; target.style.top = '0';
+            target.style.transform = `translate(${x}px, ${y}px)`;
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        }}
+    }).on('down', function(event) {
+        // Вывод окна на передний план при нажатии
+        document.querySelectorAll('.window').forEach(w => w.style.zindex = 10);
+        event.currentTarget.style.zindex = 100;
+    });
 
-    setInterval(() => { if(u.idle > 0) { u.credits += (u.idle * u.mult)/10; window.syncUI(); } }, 100);
+    function openApp(id) { 
+        const win = document.getElementById('win-' + id);
+        win.style.display = 'flex'; 
+    }
+
+    function closeApp(id) { 
+        document.getElementById('win-' + id).style.display = 'none'; 
+        if(id === 'camera') stopCam();
+    }
+
+    // Камера
+    async function startCam() {
+        try {
+            camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            document.getElementById('cam-video').srcObject = camStream;
+        } catch (e) {
+            alert("Для доступа к камере нужен HTTPS (GitHub Pages) или localhost.");
+        }
+    }
+
+    function stopCam() {
+        if(camStream) camStream.getTracks().forEach(track => track.stop());
+    }
+
+    // Галерея
+    function loadImages(files) {
+        const grid = document.getElementById('gallery-grid');
+        Array.from(files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                grid.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Обои
+    function setBg() {
+        const url = document.getElementById('bg-url').value;
+        if(url) document.getElementById('wallpaper').style.backgroundImage = `url('${url}')`;
+    }
 </script>
+
 </body>
 </html>
