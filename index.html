@@ -2,256 +2,250 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Glass OS Ultra - Liquid Edition</title>
-    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beas Voice Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            /* Конфигурация Liquid Glass */
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --glass-shine: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 60%);
-            --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            --blur-val: 25px;
-            --saturate-val: 190%;
-            --accent: #00bcd4;
-            --text-main: #ffffff;
+        .pulse {
+            animation: pulse-animation 1.5s infinite;
         }
-
-        body, html { 
-            height: 100%; margin: 0; overflow: hidden; 
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: #000;
+        @keyframes pulse-animation {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(139, 92, 246, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
         }
-
-        #wallpaper {
-            position: fixed; width: 100%; height: 100%;
-            background: url('https://images.unsplash.com/photo-1635776062127-d379bfcba9f8?q=80&w=2000') center/cover;
-            z-index: -1; 
-            transition: 0.8s;
-            filter: contrast(115%) brightness(85%);
+        body {
+            background: radial-gradient(circle at center, #1e1b4b 0%, #09090b 100%);
         }
-
-        /* Desktop */
-        #desktop {
-            height: calc(100% - 90px); padding: 25px;
-            display: flex; flex-direction: column; gap: 25px;
-            align-items: flex-start;
+        .listening-glow {
+            box-shadow: 0 0 50px rgba(236, 72, 153, 0.4);
         }
-
-        .icon {
-            width: 80px; text-align: center; color: white; font-size: 11px;
-            touch-action: none; user-select: none;
-            transition: transform 0.1s;
-        }
-        .icon:active { transform: scale(0.9); }
-
-        .icon-img {
-            width: 65px; height: 65px; 
-            background: rgba(255, 255, 255, 0.06);
-            background-image: var(--glass-shine);
-            backdrop-filter: blur(15px) saturate(150%);
-            -webkit-backdrop-filter: blur(15px) saturate(150%);
-            border-radius: 18px;
-            border: 1px solid var(--glass-border);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 32px; margin: 0 auto 6px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-
-        /* Glass Windows */
-        .window {
-            position: absolute; top: 15%; left: 5%; width: 90%; height: 70%;
-            background: var(--glass-bg);
-            background-image: var(--glass-shine);
-            backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
-            -webkit-backdrop-filter: blur(var(--blur-val)) saturate(var(--saturate-val));
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            box-shadow: var(--glass-shadow);
-            display: none; flex-direction: column; z-index: 10;
-            overflow: hidden;
-            animation: openWin 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            touch-action: none;
-        }
-
-        @keyframes openWin {
-            from { transform: scale(0.8) translateY(30px); opacity: 0; }
-            to { transform: scale(1) translateY(0); opacity: 1; }
-        }
-
-        .win-header {
-            padding: 18px 22px; display: flex; justify-content: space-between; align-items: center;
-            cursor: move; background: rgba(255, 255, 255, 0.04);
-            border-bottom: 1px solid var(--glass-border);
-            color: var(--text-main); font-weight: 600;
-        }
-
-        .btn-close { 
-            background: #ff5f57; border: none; width: 14px; height: 14px; 
-            border-radius: 50%; cursor: pointer;
-            box-shadow: 0 0 12px rgba(255, 95, 87, 0.6);
-        }
-
-        .win-body { flex: 1; padding: 20px; overflow-y: auto; color: var(--text-main); }
-
-        /* UI Elements */
-        video { width: 100%; border-radius: 15px; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        #gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        #gallery-grid img { width: 100%; border-radius: 12px; border: 1px solid var(--glass-border); }
-
-        button, input[type="text"] {
-            background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
-            color: white; padding: 12px; border-radius: 12px; width: 100%;
-            backdrop-filter: blur(5px); margin-bottom: 10px; font-size: 14px;
-        }
-
-        /* Dock Bar */
-        #dock {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 85%; max-width: 380px; height: 70px;
-            background: rgba(255, 255, 255, 0.05);
-            background-image: var(--glass-shine);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
-            border-radius: 24px; border: 1px solid var(--glass-border);
-            display: flex; justify-content: space-around; align-items: center;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.6);
-            z-index: 1000;
-        }
-
-        .dock-item { font-size: 30px; transition: 0.2s; cursor: pointer; }
-        .dock-item:active { transform: translateY(-10px) scale(1.2); }
     </style>
 </head>
-<body>
+<body class="text-white min-h-screen flex flex-col items-center justify-center p-6 font-sans">
 
-<div id="wallpaper"></div>
-
-<div id="desktop">
-    <div class="icon" onclick="openApp('camera')">
-        <div class="icon-img">📸</div><span>Камера</span>
-    </div>
-    <div class="icon" onclick="openApp('gallery')">
-        <div class="icon-img">🖼️</div><span>Галерея</span>
-    </div>
-    <div class="icon" onclick="openApp('settings')">
-        <div class="icon-img">⚙️</div><span>Настройки</span>
-    </div>
-</div>
-
-<div id="win-camera" class="window">
-    <div class="win-header"><span>HD Camera</span><button class="btn-close" onclick="closeApp('camera')"></button></div>
-    <div class="win-body">
-        <video id="cam-video" autoplay playsinline></video>
-        <button onclick="startCam()" style="margin-top:15px; background: var(--accent);">Включить объектив</button>
-    </div>
-</div>
-
-<div id="win-gallery" class="window">
-    <div class="win-header"><span>Галерея</span><button class="btn-close" onclick="closeApp('gallery')"></button></div>
-    <div class="win-body">
-        <input type="file" id="file-input" multiple hidden onchange="loadImages(this.files)">
-        <button onclick="document.getElementById('file-input').click()">Загрузить из памяти</button>
-        <div id="gallery-grid"></div>
-    </div>
-</div>
-
-<div id="win-settings" class="window">
-    <div class="win-header"><span>Параметры</span><button class="btn-close" onclick="closeApp('settings')"></button></div>
-    <div class="win-body">
-        <p>Размытие стекла:</p>
-        <input type="range" min="0" max="50" value="25" oninput="document.documentElement.style.setProperty('--blur-val', this.value + 'px')" style="width:100%; margin:15px 0;">
+    <div class="max-w-md w-full bg-white/5 backdrop-blur-2xl rounded-[2.5rem] p-10 shadow-2xl border border-white/10 text-center">
+        <div class="mb-8">
+            <h1 class="text-4xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
+                BEAS VOICE
+            </h1>
+            <div id="connection-status" class="flex items-center justify-center gap-2 mt-2">
+                <span id="status-dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span id="status-label" class="text-[10px] text-gray-400 uppercase tracking-widest">Система готова</span>
+            </div>
+        </div>
         
-        <p>Ссылка на обои:</p>
-        <input type="text" id="bg-url" placeholder="https://image-link.jpg">
-        <button onclick="setBg()">Применить фон</button>
+        <div class="mb-12 relative">
+            <button id="mic-button" class="w-32 h-32 bg-gradient-to-tr from-purple-600 to-blue-500 rounded-full flex items-center justify-center mx-auto transition-all duration-500 hover:scale-105 active:scale-90 shadow-xl shadow-purple-500/20">
+                <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-white transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+            </button>
+            <p id="status-text" class="mt-8 text-sm font-light text-purple-200/70">Нажмите для активации</p>
+        </div>
+
+        <div class="bg-black/40 rounded-3xl p-6 mb-8 min-h-[120px] flex flex-col items-center justify-center border border-white/5">
+            <p id="transcript" class="text-xl font-medium text-white/90 leading-snug">...</p>
+            <p id="feedback" class="text-xs text-pink-400 mt-2 font-bold tracking-wider uppercase"></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-left transition-opacity duration-300 hover:bg-white/10">
+                <p class="text-[9px] text-purple-400 font-bold uppercase mb-2 italic">Apps</p>
+                <div class="text-[11px] text-gray-300 space-y-1">
+                    <p>• YouTube</p>
+                    <p>• Telegram</p>
+                    <p>• TikTok</p>
+                </div>
+            </div>
+            <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-left transition-opacity duration-300 hover:bg-white/10">
+                <p class="text-[9px] text-blue-400 font-bold uppercase mb-2 italic">Social</p>
+                <div class="text-[11px] text-gray-300 space-y-1">
+                    <p>• WhatsApp</p>
+                    <p>• VK / Insta</p>
+                    <p>• Google</p>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<div id="dock">
-    <div class="dock-item" onclick="openApp('camera')">📷</div>
-    <div class="dock-item" onclick="openApp('gallery')">🖼️</div>
-    <div class="dock-item" onclick="openApp('settings')">⚙️</div>
-</div>
+    <script>
+        const micBtn = document.getElementById('mic-button');
+        const statusText = document.getElementById('status-text');
+        const transcriptDisplay = document.getElementById('transcript');
+        const feedbackDisplay = document.getElementById('feedback');
+        const micIcon = document.getElementById('mic-icon');
+        const statusDot = document.getElementById('status-dot');
 
-<script>
-    let camStream = null;
-
-    // Инициализация Drag-and-Drop для иконок и окон
-    interact('.icon').draggable({
-        listeners: { move(event) {
-            const target = event.target;
-            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-            target.style.transform = `translate(${x}px, ${y}px)`;
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-        }}
-    });
-
-    interact('.window').draggable({
-        allowFrom: '.win-header',
-        listeners: { move(event) {
-            const target = event.target;
-            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-            target.style.left = '0'; target.style.top = '0';
-            target.style.transform = `translate(${x}px, ${y}px)`;
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-        }}
-    }).on('down', function(event) {
-        // Вывод окна на передний план при нажатии
-        document.querySelectorAll('.window').forEach(w => w.style.zindex = 10);
-        event.currentTarget.style.zindex = 100;
-    });
-
-    function openApp(id) { 
-        const win = document.getElementById('win-' + id);
-        win.style.display = 'flex'; 
-    }
-
-    function closeApp(id) { 
-        document.getElementById('win-' + id).style.display = 'none'; 
-        if(id === 'camera') stopCam();
-    }
-
-    // Камера
-    async function startCam() {
-        try {
-            camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-            document.getElementById('cam-video').srcObject = camStream;
-        } catch (e) {
-            alert("Для доступа к камере нужен HTTPS (GitHub Pages) или localhost.");
+        // Звуковая система ассистента
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playBeep(type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            if (type === 'start') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(660, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + 0.05);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+            } else if (type === 'stop') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(220, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.15);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+            }
         }
-    }
 
-    function stopCam() {
-        if(camStream) camStream.getTracks().forEach(track => track.stop());
-    }
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            statusText.innerText = "Beas не поддерживается";
+        } else {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ru-RU';
+            recognition.continuous = true;
+            recognition.interimResults = true;
 
-    // Галерея
-    function loadImages(files) {
-        const grid = document.getElementById('gallery-grid');
-        Array.from(files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                grid.appendChild(img);
+            let isListening = false;
+
+            const apps = {
+                'youtube': { 
+                    keywords: ['ютуб', 'youtube', 'ютубчик', 'ютюб'], 
+                    link: 'intent://www.youtube.com/#Intent;scheme=http;package=com.google.android.youtube;end', 
+                    web: 'https://www.youtube.com' 
+                },
+                'telegram': { 
+                    keywords: ['телеграм', 'телегу', 'telegram', 'тг'], 
+                    link: 'tg://resolve', 
+                    web: 'https://t.me' 
+                },
+                'vk': { 
+                    keywords: ['вк', 'вконтакте', 'vk'], 
+                    link: 'vk://vk.com', 
+                    web: 'https://vk.com' 
+                },
+                'whatsapp': { 
+                    keywords: ['ватсап', 'вацап', 'whatsapp'], 
+                    link: 'whatsapp://', 
+                    web: 'https://web.whatsapp.com' 
+                },
+                'instagram': { 
+                    keywords: ['инстаграм', 'инсту', 'instagram'], 
+                    link: 'instagram://', 
+                    web: 'https://instagram.com' 
+                },
+                'tiktok': { 
+                    keywords: ['тикток', 'тик ток', 'tiktok'], 
+                    link: 'snssdk1180://', 
+                    web: 'https://www.tiktok.com' 
+                },
+                'google': {
+                    keywords: ['гугл', 'поиск', 'google'],
+                    link: 'intent://google.com/#Intent;scheme=http;package=com.google.android.googlequicksearchbox;end',
+                    web: 'https://google.com'
+                }
             };
-            reader.readAsDataURL(file);
-        });
-    }
 
-    // Обои
-    function setBg() {
-        const url = document.getElementById('bg-url').value;
-        if(url) document.getElementById('wallpaper').style.backgroundImage = `url('${url}')`;
-    }
-</script>
+            micBtn.onclick = () => {
+                if (!isListening) {
+                    audioCtx.resume().then(() => {
+                        playBeep('start');
+                        recognition.start();
+                    });
+                } else {
+                    playBeep('stop');
+                    recognition.stop();
+                }
+            };
 
+            recognition.onstart = () => {
+                isListening = true;
+                statusText.innerText = "BEAS СЛУШАЕТ...";
+                statusText.classList.add('text-pink-400', 'font-bold');
+                statusDot.classList.replace('bg-green-500', 'bg-pink-500');
+                micBtn.classList.add('pulse', 'listening-glow');
+                micBtn.classList.replace('from-purple-600', 'from-pink-600');
+                micIcon.classList.add('scale-110');
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                statusText.innerText = "Нажмите для активации";
+                statusText.classList.remove('text-pink-400', 'font-bold');
+                statusDot.classList.replace('bg-pink-500', 'bg-green-500');
+                micBtn.classList.remove('pulse', 'listening-glow');
+                micBtn.classList.replace('from-pink-600', 'from-purple-600');
+                micIcon.classList.remove('scale-110');
+            };
+
+            recognition.onresult = (event) => {
+                let current = event.results[event.results.length - 1];
+                let text = current[0].transcript.toLowerCase().trim();
+                transcriptDisplay.innerText = text;
+
+                if (current.isFinal) {
+                    handleVoiceCommand(text);
+                }
+            };
+
+            function handleVoiceCommand(cmd) {
+                let found = false;
+
+                for (let key in apps) {
+                    const app = apps[key];
+                    if (app.keywords.some(k => cmd.includes(k))) {
+                        openApp(app, key);
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    if (cmd.includes('привет')) {
+                        speak("Привет! Я Биас. Что включить?");
+                    } else if (cmd.includes('очистить') || cmd.includes('удали')) {
+                        transcriptDisplay.innerText = "...";
+                    } else {
+                        feedbackDisplay.innerText = "???";
+                        setTimeout(() => feedbackDisplay.innerText = "", 1500);
+                    }
+                }
+            }
+
+            function openApp(app, name) {
+                speak("Включаю " + name);
+                feedbackDisplay.innerText = "OPENING " + name.toUpperCase();
+
+                // Использование Intent ссылки для Android
+                window.location.href = app.link;
+
+                // Резервный вариант (веб-версия)
+                setTimeout(() => {
+                    if (document.hasFocus()) { 
+                        window.open(app.web, "_blank");
+                    }
+                }, 1200);
+            }
+
+            function speak(text) {
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'ru-RU';
+                utter.rate = 1.1;
+                window.speechSynthesis.speak(utter);
+            }
+        }
+    </script>
 </body>
 </html>
+
